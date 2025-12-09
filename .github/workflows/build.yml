@@ -1,0 +1,86 @@
+name: Build
+
+on:
+  workflow_run:
+    workflows: [ "Docker" ]
+    types:
+      - completed
+  push:
+    paths:
+      - '**/*.java'
+      - '**/*.kt'
+      - '**/*.gradle'
+      - '**/*.gradle.kts'
+      - '**/gradle-wrapper.properties'
+      - '.github/workflows/*.yml'
+    branches:
+      - main
+  pull_request:
+    paths:
+      - '**/*.java'
+      - '**/*.kt'
+      - '**/*.gradle'
+      - '**/*.gradle.kts'
+      - '**/gradle-wrapper.properties'
+      - '.github/workflows/*.yml'
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: [ '8', '11', '17', '21' ]
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all history for comparison
+        run: git fetch origin main --depth=1
+
+      - name: Check if Gradle Dependencies Changed
+        id: check_gradle_cache
+        run: |
+          if git diff --name-only origin/main...HEAD | grep -E '(\.gradle$|\.gradle\.kts$|gradle-wrapper\.properties$)'; then
+            echo "gradle_cache_valid=false" >> $GITHUB_ENV
+          else
+            echo "gradle_cache_valid=true" >> $GITHUB_ENV
+          fi
+
+      - name: Restore Gradle Dependencies
+        if: env.gradle_cache_valid == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches/modules-2
+            ~/.gradle/wrapper
+          key: gradle-deps-${{ runner.os }}-${{ hashFiles('**/*.gradle', '**/*.gradle.kts', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-deps-${{ runner.os }}-
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-home-cache-cleanup: true
+
+      - name: Clear Old Gradle Cache if Needed
+        if: env.gradle_cache_valid == 'false'
+        run: rm -rf ~/.gradle/caches ~/.gradle/wrapper
+
+      - name: Grant execute permission for Gradle
+        working-directory: ./
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        working-directory: ./
+        run: ./gradlew build --no-daemon
