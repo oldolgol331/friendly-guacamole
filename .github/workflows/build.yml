@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java-version: [ '8', '11', '17', '21' ]
+        java-version: [ '21' ]
 
     steps:
       - name: Checkout sources
@@ -84,3 +84,16 @@ jobs:
       - name: Build with Gradle
         working-directory: ./
         run: ./gradlew build --no-daemon
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ticket-app:latest
