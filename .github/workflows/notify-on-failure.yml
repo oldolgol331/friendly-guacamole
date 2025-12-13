@@ -2,7 +2,7 @@ name: Notify on Failure
 
 on:
   workflow_run:
-    workflows: [ "Build", "Docker" ]
+    workflows: [ "Build", "Docker", "Deploy" ]
     types:
       - completed
 
