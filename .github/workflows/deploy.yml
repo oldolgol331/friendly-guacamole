@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+env:
+  DOCKER_NETWORK: app-network
+  CONTAINER_NAME: dev-ticket-container
+
 jobs:
   build-app:
     runs-on: ubuntu-latest
@@ -102,7 +106,11 @@ jobs:
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/ticket-api:latest
             sudo docker stop dev-ticket-api || true
             sudo docker rm dev-ticket-api || true
-            sudo docker run -d -p 8080:8080 --name dev-ticket-api ${{ secrets.DOCKERHUB_USERNAME }}/ticket-api:latest
+            sudo docker run -d \
+              --name ${{ env.CONTAINER_NAME }} \
+              -p 8080:8080 \
+              --network ${{ env.DOCKER_NETWORK }} \
+              ${{ secrets.DOCKERHUB_USERNAME }}/ticket-api:latest
 
       - name: Remove GitHub IP from Security Group
         if: always()
