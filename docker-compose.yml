@@ -4,7 +4,7 @@ services:
   mysql:
     image: groonga/mroonga:mysql-8.0.43-15.17
     container_name: demo-mysql
-    restart: always
+    restart: unless-stopped
     networks:
       - demo-network
     environment:
@@ -18,29 +18,49 @@ services:
       - ./mysql/data:/var/lib/mysql
       - ./mysql/conf.d:/etc/mysql/conf.d
       - ./mysql/log:/var/log/mysql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
   redis:
     image: redis:6.2.21
     container_name: demo-redis
-    restart: always
+    restart: unless-stopped
     networks:
       - demo-network
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      TZ: Asia/Seoul
     ports:
       - ${REDIS_HOST_PORT}:${REDIS_CONTAINER_PORT}
+    volumes:
+      - ./redis/data:/data
     command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}" ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
   dbgate:
     image: dbgate/dbgate:6.6.11
     container_name: demo-dbgate
-    restart: always
+    restart: unless-stopped
     networks:
       - demo-network
     ports:
       - ${DBGATE_HOST_PORT}:${DBGATE_CONTAINER_PORT}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
   nginx-proxy-manager:
     image: jc21/nginx-proxy-manager:2.13.5
     container_name: demo-nginx-proxy-manager
-    restart: always
+    restart: unless-stopped
     networks:
       - demo-network
     environment:
@@ -52,6 +72,12 @@ services:
     volumes:
       - ./npm/data:/data
       - ./npm/letsencrypt:/etc/letsencrypt
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
 
 networks:
   demo-network:

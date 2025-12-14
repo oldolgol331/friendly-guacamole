@@ -108,14 +108,17 @@ jobs:
             sudo docker rm ${{ env.CONTAINER_NAME }} || true
             sudo docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
-              -p 8080:8080 \
+              --network ${{ env.DOCKER_NETWORK }} \
               -e SPRING_PROFILES_ACTIVE=prod \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e REDIS_HOST=${{ secrets.REDIS_HOST }} \
               -e REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
-              --network ${{ env.DOCKER_NETWORK }} \
+              -p 8080:8080 \
+              --log-opt max-size=10m \
+              --log-opt max-file=3 \
+              --log-opt compress=true \
               ${{ secrets.DOCKERHUB_USERNAME }}/ticket-api:latest
 
       - name: Remove GitHub IP from Security Group
