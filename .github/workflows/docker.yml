@@ -39,7 +39,7 @@ jobs:
       - name: Define External Images
         id: define_external_images
         run: |
-          IMAGES=("image:tag" "image:tag" "image:tag") # Modify as needed
+          IMAGES=("groonga/mroonga:mysql-8.0.43-15.17" "dbgate/dbgate:6.6.11")
           echo "external_images=${IMAGES[*]}" >> $GITHUB_ENV
 
       - name: Setup Docker Buildx
