@@ -34,6 +34,20 @@ spring:
         #highlight_sql: true
         #use_sql_comments: true
     open-in-view: false
+  data:
+    redis:
+      client-type: lettuce
+      database: 0
+      host: localhost
+      port: 6379
+      password:
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
 #logging:
   #level:
     #org.hibernate.sql: debug

@@ -207,4 +207,7 @@ gradle-app.setting
 !mysql/conf.d/my.cnf
 mysql/
 
+# Redis file
+redis/
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,intellij,java,gradle
