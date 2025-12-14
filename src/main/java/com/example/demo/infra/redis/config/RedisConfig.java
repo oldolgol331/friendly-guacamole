@@ -48,6 +48,7 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(final RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
 
         ObjectMapper copiedObjectMapper = objectMapper.copy();
         copiedObjectMapper.activateDefaultTyping(BasicPolymorphicTypeValidator.builder()
