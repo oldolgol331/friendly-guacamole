@@ -210,4 +210,7 @@ mysql/
 # Redis file
 redis/
 
+# Nginx Proxy Manager file
+npm/
+
 # End of https://www.toptal.com/developers/gitignore/api/windows,intellij,java,gradle

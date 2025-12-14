@@ -37,6 +37,21 @@ services:
       - demo-network
     ports:
       - ${DBGATE_HOST_PORT}:${DBGATE_CONTAINER_PORT}
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:2.13.5
+    container_name: demo-nginx-proxy-manager
+    restart: always
+    networks:
+      - demo-network
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - ${NPM_HTTP_HOST_PORT}:${NPM_HTTP_CONTAINER_PORT}
+      - ${NPM_HTTPS_HOST_PORT}:${NPM_HTTPS_CONTAINER_PORT}
+      - ${NPM_ADMIN_HOST_PORT}:${NPM_ADMIN_CONTAINER_PORT}
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
 
 networks:
   demo-network:
