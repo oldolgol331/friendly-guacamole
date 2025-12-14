@@ -104,8 +104,8 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/ticket-api:latest
-            sudo docker stop dev-ticket-api || true
-            sudo docker rm dev-ticket-api || true
+            sudo docker stop ${{ env.CONTAINER_NAME }} || true
+            sudo docker rm ${{ env.CONTAINER_NAME }} || true
             sudo docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
               -p 8080:8080 \
