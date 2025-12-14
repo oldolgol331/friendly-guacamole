@@ -141,6 +141,9 @@ fabric.properties
 hs_err_pid*
 replay_pid*
 
+# Querydsl generated file
+**/generated/**/Q*.java
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
@@ -198,5 +201,10 @@ gradle-app.setting
 .env
 .env.*
 !.env.example
+
+### Docker ###
+# MySQL file
+!mysql/conf.d/my.cnf
+mysql/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,intellij,java,gradle

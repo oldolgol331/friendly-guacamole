@@ -109,6 +109,10 @@ jobs:
             sudo docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
               -p 8080:8080 \
+              -e SPRING_PROFILES_ACTIVE=prod \
+              -e DB_HOST=${{}} \
+              -e DB_USER=${{}} \
+              -e DB_PASSWORD=${{}} \
               --network ${{ env.DOCKER_NETWORK }} \
               ${{ secrets.DOCKERHUB_USERNAME }}/ticket-api:latest
 

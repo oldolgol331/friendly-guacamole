@@ -1,0 +1,32 @@
+name: demo-docker
+
+services:
+  mysql:
+    image: groonga/mroonga:mysql-8.0.43-15.17
+    container_name: demo-mysql
+    restart: always
+    networks:
+      - demo-network
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul
+    ports:
+      - ${DB_HOST_PORT}:${DB_CONTAINER_PORT}
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/log:/var/log/mysql
+  dbgate:
+    image: dbgate/dbgate:6.6.11
+    container_name: demo-dbgate
+    restart: always
+    networks:
+      - demo-network
+    ports:
+      - ${DBGATE_HOST_PORT}:${DBGATE_CONTAINER_PORT}
+
+networks:
+  demo-network:
+    driver: bridge

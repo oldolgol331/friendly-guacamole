@@ -1,0 +1,57 @@
+server:
+  address: ${SERVER_ADDRESS:0.0.0.0}
+  port: ${SERVER_PORT:8080}
+  max-http-request-header-size: 8KB
+  servlet:
+    context-path: /
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+    session:
+      #timeout: 30m
+      persistent: false
+  error:
+    path: /error
+  tomcat:
+    accept-count: 100
+    max-connections: 8192
+    max-http-form-post-size: 2MB
+    max-swallow-size: 2MB
+    uri-encoding: UTF-8
+    threads:
+      max: 200
+      min-spare: 10
+    mbeanregistry:
+      enabled: true
+  shutdown: graceful
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0B
+      max-file-size: 1MB
+      max-request-size: 10MB
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  task:
+    execution:
+      pool:
+        allow-core-thread-timeout: true
+        core-size: 8
+        keep-alive: 60s
+        #max-size:
+        #queue-capacity:
+      thread-name-prefix: task-
+      shutdown:
+        await-termination: false
+        #await-termination-period:
+    scheduling:
+      pool:
+        size: 1
+      thread-name-prefix: scheduling-
+      shutdown:
+        await-termination: false
+        #await-termination-period:

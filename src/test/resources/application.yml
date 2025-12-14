@@ -1,0 +1,8 @@
+spring:
+  config:
+    import:
+      - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_db.yml
+  profiles:
+    group:
+      test: [ "test_db", "dev_server" ]
+    active: test

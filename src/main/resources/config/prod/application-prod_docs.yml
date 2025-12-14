@@ -1,0 +1,19 @@
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+    groups:
+      enabled: false
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    layout: BaseLayout
+    operations-sorter: alpha
+    tags-sorter: alpha
+    doc-expansion: none
+  auto-tag-classes: true
+  cache:
+    disabled: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  model-and-view-allowed: false

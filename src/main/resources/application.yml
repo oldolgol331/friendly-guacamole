@@ -1,3 +1,13 @@
 spring:
   application:
     name: demo
+  config:
+    import:
+      - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_db.yml
+      - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_docs.yml
+      - optional:classpath:config/${spring.profiles.active}/application-${spring.profiles.active}_server.yml
+  profiles:
+    group:
+      dev: [ "dev_db", "dev_docs", "dev_server" ]
+      prod: [ "prod_db", "prod_docs", "prod_server" ]
+    active: dev
