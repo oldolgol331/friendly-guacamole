@@ -7,6 +7,8 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+    disable-swagger-default-url: true
+    display-request-duration: true
     layout: BaseLayout
     operations-sorter: alpha
     tags-sorter: alpha

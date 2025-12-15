@@ -25,6 +25,7 @@ server:
     mbeanregistry:
       enabled: true
   shutdown: graceful
+  forward-headers-strategy: framework
 spring:
   lifecycle:
     timeout-per-shutdown-phase: 30s
