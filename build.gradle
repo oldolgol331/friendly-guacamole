@@ -28,10 +28,16 @@ repositories {
 }
 
 // dependency versions
+def ulidCreatorVersion = '5.2.3'
 def jacksonDatabindVersion = '3.0.2'
 def springDocOpenApiVersion = '2.8.13'
 def querydslVersion = '5.1.0'
 def p6spyVersion = '1.12.0'
+def jjwtVersion = '0.13.0'
+def autoParamsVersion = '11.3.1'
+def fixtureMonkeyVersion = '1.1.15'
+def datafakerVersion = '2.5.1'
+def jqwikVersion = '1.9.3'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -39,6 +45,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // ULID Creator
+    implementation "com.github.f4b6a3:ulid-creator:$ulidCreatorVersion"
 
     // Jackson Datatype: JSR310
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
@@ -65,6 +74,34 @@ dependencies {
     runtimeOnly "com.mysql:mysql-connector-j"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // AutoParams
+    testImplementation "io.github.autoparams:autoparams:$autoParamsVersion"
+    // AutoParams Lombok
+    testImplementation "io.github.autoparams:autoparams-lombok:$autoParamsVersion"
+    // AutoParams Mockito
+    testImplementation "io.github.autoparams:autoparams-mockito:$autoParamsVersion"
+
+    // Fixture Monkey
+    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-autoparams:$fixtureMonkeyVersion"
+    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-jackson:$fixtureMonkeyVersion"
+    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-javax-validation:$fixtureMonkeyVersion"
+    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-mockito:$fixtureMonkeyVersion"
+    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-starter:$fixtureMonkeyVersion"
+
+    // Datafaker
+    testImplementation "net.datafaker:datafaker:$datafakerVersion"
+
+    // Jqwik
+    testImplementation "net.jqwik:jqwik:$jqwikVersion"
+    // Jqwik API
+    testImplementation "net.jqwik:jqwik-api:$jqwikVersion"
+    // Jqwik Engine
+    testImplementation "net.jqwik:jqwik-engine:$jqwikVersion"
+    // Jqwik Time
+    testImplementation "net.jqwik:jqwik-time:$jqwikVersion"
+    // Jqwik Testing
+    testImplementation "net.jqwik:jqwik-testing:$jqwikVersion"
 }
 
 tasks.named('test') {
