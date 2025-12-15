@@ -83,7 +83,7 @@ public class Account extends BaseAuditingEntity {
     @OneToMany(mappedBy = "account", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<OAuthConnection> oAuthConnections = new ArrayList<>(); // OAuth 연동 정보 목록
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();         // 예약 정보 목록
 
     private Account(final String email,
