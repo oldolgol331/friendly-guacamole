@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -30,7 +31,11 @@ import lombok.NoArgsConstructor;
  * 25. 12. 15.   oldolgol331          Initial creation
  */
 @Entity
-@Table(name = "oauth_connections")
+@Table(name = "oauth_connections",
+       uniqueConstraints = {@UniqueConstraint(name = "UK_oauth_connections_provider_provider_id",
+                                              columnNames = {"provider", "provider_id"}),
+                            @UniqueConstraint(name = "UK_oauth_connections_account_id_provider",
+                                              columnNames = {"account_id", "provider"})})
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class OAuthConnection extends BaseAuditingEntity {
@@ -67,8 +72,8 @@ public class OAuthConnection extends BaseAuditingEntity {
     /**
      * OAuthConnection 객체 생성
      *
-     * @param account - 계정
-     * @param provider - OAuth2 제공자
+     * @param account    - 계정
+     * @param provider   - OAuth2 제공자
      * @param providerId - OAuth2 고유 식별자
      * @return OAuthConnection 객체
      */

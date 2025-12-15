@@ -48,6 +48,10 @@ public class Performance extends BaseAuditingEntity {
     @NotBlank
     private String venue;               // 장소
 
+    @Column(columnDefinition = "TEXT")
+    @Setter
+    private String info;             // 공연 정보
+
     @Column(nullable = false)
     @Setter
     @NotNull
@@ -60,10 +64,12 @@ public class Performance extends BaseAuditingEntity {
 
     private Performance(final String name,
                         final String venue,
+                        final String info,
                         final LocalDateTime startTime,
                         final LocalDateTime endTime) {
         this.name = name;
         this.venue = venue;
+        this.info = info;
         this.startTime = startTime;
         this.endTime = endTime;
     }
@@ -73,17 +79,19 @@ public class Performance extends BaseAuditingEntity {
     /**
      * Performance 객체 생성
      *
-     * @param name - 공연명
-     * @param venue - 장소
+     * @param name      - 공연명
+     * @param venue     - 장소
+     * @param info      - 공연 정보
      * @param startTime - 공연 시작 시간
-     * @param endTime - 공연 종료 시간
+     * @param endTime   - 공연 종료 시간
      * @return Performance 객체
      */
     public static Performance of(final String name,
                                  final String venue,
+                                 final String info,
                                  final LocalDateTime startTime,
                                  final LocalDateTime endTime) {
-        return new Performance(name, venue, startTime, endTime);
+        return new Performance(name, venue, info, startTime, endTime);
     }
 
 }
