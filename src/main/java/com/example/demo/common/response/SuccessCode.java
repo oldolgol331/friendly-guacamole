@@ -25,7 +25,19 @@ public enum SuccessCode {
     REQUEST_SUCCESS(HttpStatus.OK, "요청이 성공적으로 처리되었습니다."),
     CREATE_SUCCESS(HttpStatus.CREATED, "성공적으로 생성되었습니다."),
     UPDATE_SUCCESS(HttpStatus.OK, "성공적으로 업데이트되었습니다."),
-    DELETE_SUCCESS(HttpStatus.OK, "성공적으로 삭제되었습니다.");
+    DELETE_SUCCESS(HttpStatus.OK, "성공적으로 삭제되었습니다."),
+    
+    // 계정(Account) & 인증(Auth)
+    ACCOUNT_REGISTER_SUCCESS(HttpStatus.CREATED, "회원가입이 성공적으로 완료되었습니다."),
+    ACCOUNT_LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공했습니다."),
+    ACCOUNT_LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃에 성공했습니다."),
+    AUTHENTICATION_TOKEN_RENEW_SUCCESS(HttpStatus.OK, "인증 토큰이 성공적으로 갱신되었습니다."),
+    ACCOUNT_INFO_FETCH_SUCCESS(HttpStatus.OK, "계정 정보를 성공적으로 조회했습니다."),
+    EMAIL_VERIFICATION_SUCCESS(HttpStatus.OK, "이메일 인증이 성공적으로 완료되었습니다."),
+    EMAIL_SENT(HttpStatus.OK, "이메일이 발송되었습니다."),
+    UPDATE_ACCOUNT_INFO_SUCCESS(HttpStatus.OK, "계정 정보를 성공적으로 수정했습니다."),
+    PASSWORD_CHANGED_SUCCESS(HttpStatus.OK, "비밀번호가 성공적으로 변경되었습니다."),
+    ACCOUNT_WITHDRAWN_SUCCESS(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다.");
 
     private final HttpStatus status;
     private final String     message;
