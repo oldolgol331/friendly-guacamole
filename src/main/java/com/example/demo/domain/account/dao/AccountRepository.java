@@ -17,7 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 12. 15.   oldolgol331          Initial creation
  */
-public interface AccountRepository extends JpaRepository<Account, UUID> {
+public interface AccountRepository extends JpaRepository<Account, UUID>, AccountRepositoryCustom {
 
     Optional<Account> findByIdAndStatus(UUID id, AccountStatus status);
 
