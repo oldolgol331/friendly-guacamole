@@ -4,6 +4,7 @@ import static com.example.demo.domain.seat.model.SeatStatus.AVAILABLE;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.example.demo.common.model.BaseAuditingEntity;
@@ -69,6 +70,7 @@ public class Seat extends BaseAuditingEntity {
     private Performance performance;    // 공연
 
     @Version
+    @Getter(PRIVATE)
     private Long version;
 
     private Seat(final String seatCode, final int price, final SeatStatus status, final Performance performance) {
