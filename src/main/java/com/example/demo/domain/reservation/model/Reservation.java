@@ -1,5 +1,6 @@
 package com.example.demo.domain.reservation.model;
 
+import static com.example.demo.domain.seat.model.SeatStatus.RESERVED;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -72,8 +73,7 @@ public class Reservation extends BaseAuditingEntity {
     @Column(nullable = false)
     private LocalDateTime reservationTime;  // 예약 확정 시간
 
-    private Reservation(final Account account, final Seat seat, final LocalDateTime reservationTime) {
-        this.account = account;
+    private Reservation(final Seat seat, final LocalDateTime reservationTime) {
         this.seat = seat;
         this.reservationTime = reservationTime;
     }
@@ -91,7 +91,22 @@ public class Reservation extends BaseAuditingEntity {
     public static Reservation of(final Account account, final Seat seat, final LocalDateTime reservationTime) {
         if (reservationTime.isBefore(LocalDateTime.now()))
             throw new IllegalArgumentException("예약 확정 시간은 현재 시간보다 과거일 수 없습니다.");
-        return new Reservation(account, seat, reservationTime);
+        Reservation reservation = new Reservation(seat, reservationTime);
+        seat.setStatus(RESERVED);
+        reservation.setRelationshipWithAccount(account);
+        return reservation;
+    }
+
+    // ========================= 연관관계 메서드 =========================
+
+    /**
+     * 계정과의 관계를 설정합니다.
+     *
+     * @param account - 계정
+     */
+    private void setRelationshipWithAccount(final Account account) {
+        this.account = account;
+        account.getReservations().add(this);
     }
 
 }

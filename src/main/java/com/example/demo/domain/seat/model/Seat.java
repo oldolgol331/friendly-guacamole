@@ -73,11 +73,10 @@ public class Seat extends BaseAuditingEntity {
     @Getter(PRIVATE)
     private Long version;
 
-    private Seat(final String seatCode, final int price, final SeatStatus status, final Performance performance) {
+    private Seat(final String seatCode, final int price, final SeatStatus status) {
         this.seatCode = seatCode;
         this.price = price;
         this.status = status;
-        this.performance = performance;
     }
 
     // ========================= 생성자 메서드 =========================
@@ -85,8 +84,8 @@ public class Seat extends BaseAuditingEntity {
     /**
      * Seat 객체 생성
      *
-     * @param seatCode - 좌석 번호
-     * @param price - 가격
+     * @param seatCode    - 좌석 번호
+     * @param price       - 가격
      * @param performance - Performance 객체
      * @return Seat 객체
      */
@@ -99,9 +98,10 @@ public class Seat extends BaseAuditingEntity {
 
     /**
      * Seat 객체 생성
-     * @param seatCode - 좌석 번호
-     * @param price - 가격
-     * @param status - 좌석 상태
+     *
+     * @param seatCode    - 좌석 번호
+     * @param price       - 가격
+     * @param status      - 좌석 상태
      * @param performance - Performance 객체
      * @return Seat 객체
      */
@@ -110,10 +110,12 @@ public class Seat extends BaseAuditingEntity {
                           final SeatStatus status,
                           final Performance performance) {
         validatePrice(price);
-        return new Seat(seatCode, price, status, performance);
+        Seat seat = new Seat(seatCode, price, status);
+        seat.setRelationshipWithPerformance(performance);
+        return seat;
     }
 
-    // ========================= 검증 메서드 =========================
+    // ========================= 연관관계 메서드 =========================
 
     /**
      * 가격 유효성을 검사합니다.
@@ -122,6 +124,18 @@ public class Seat extends BaseAuditingEntity {
      */
     private static void validatePrice(final int input) {
         if (input < 0) throw new IllegalArgumentException("가격은 0원 이상이어야 합니다");
+    }
+
+    // ========================= 검증 메서드 =========================
+
+    /**
+     * 공연과의 관계를 설정합니다.
+     *
+     * @param performance - 공연
+     */
+    private void setRelationshipWithPerformance(final Performance performance) {
+        this.performance = performance;
+        performance.getSeats().add(this);
     }
 
     // ========================= 비즈니스 메서드 =========================

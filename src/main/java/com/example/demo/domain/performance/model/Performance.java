@@ -4,14 +4,19 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.example.demo.common.model.BaseAuditingEntity;
+import com.example.demo.domain.seat.model.Seat;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,31 +41,34 @@ public class Performance extends BaseAuditingEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "performance_id", nullable = false, updatable = false)
-    private Long id;
+    private Long id;                                // ID
 
     @Column(nullable = false)
     @Setter
     @NotBlank
-    private String name;                // 공연명
+    private String name;                            // 공연 이름
 
     @Column(nullable = false)
     @Setter
     @NotBlank
-    private String venue;               // 장소
+    private String venue;                           // 공연 장소
 
     @Column(columnDefinition = "TEXT")
     @Setter
-    private String info;             // 공연 정보
+    private String info;                            // 공연 정보
 
     @Column(nullable = false)
     @Setter
     @NotNull
-    private LocalDateTime startTime;    // 공연 시작 시간
+    private LocalDateTime startTime;                // 공연 시작 시간
 
     @Column(nullable = false)
     @Setter
     @NotNull
-    private LocalDateTime endTime;      // 공연 종료 시간
+    private LocalDateTime endTime;                  // 공연 종료 시간
+
+    @OneToMany(mappedBy = "performance", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Seat> seats = new ArrayList<>();   // 공연 좌석 정보 목록
 
     private Performance(final String name,
                         final String venue,
