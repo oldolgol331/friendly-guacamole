@@ -51,7 +51,8 @@ CREATE TABLE performances
     end_time       DATETIME     NOT NULL COMMENT '공연 종료 시간',
     created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
     updated_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
-    CONSTRAINT PK_performances PRIMARY KEY (performance_id)
+    CONSTRAINT PK_performances PRIMARY KEY (performance_id),
+    FULLTEXT INDEX IDX_fulltext_performances_name_info (name, info) WITH PARSER ngram
 ) COMMENT '공연 테이블';
 
 CREATE TABLE seats
