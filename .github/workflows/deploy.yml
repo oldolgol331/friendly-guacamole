@@ -115,6 +115,25 @@ jobs:
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e REDIS_HOST=${{ secrets.REDIS_HOST }} \
               -e REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
+              -e SMTP_HOST=${{ secrets.SMTP_HOST }} \
+              -e SMTP_PORT=${{ secrets.SMTP_PORT }} \
+              -e SMTP_USERNAME=${{ secrets.SMTP_USERNAME }} \
+              -e SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }} \
+              -e SMTP_FROM=${{ secrets.SMTP_FROM }} \
+              -e OAUTH2_GOOGLE_CLIENT_ID=${{ secrets.OAUTH2_GOOGLE_CLIENT_ID }} \
+              -e OAUTH2_GOOGLE_CLIENT_SECRET=${{ secrets.OAUTH2_GOOGLE_CLIENT_SECRET }} \
+              -e OAUTH2_GOOGLE_REDIRECT_URI=${{ secrets.OAUTH2_GOOGLE_REDIRECT_URI }} \
+              -e OAUTH2_NAVER_CLIENT_ID=${{ secrets.OAUTH2_NAVER_CLIENT_ID }} \
+              -e OAUTH2_NAVER_CLIENT_SECRET=${{ secrets.OAUTH2_NAVER_CLIENT_SECRET }} \
+              -e OAUTH2_NAVER_REDIRECT_URI=${{ secrets.OAUTH2_NAVER_REDIRECT_URI }} \
+              -e OAUTH2_KAKAO_CLIENT_ID=${{ secrets.OAUTH2_KAKAO_CLIENT_ID }} \
+              -e OAUTH2_KAKAO_CLIENT_SECRET=${{ secrets.OAUTH2_KAKAO_CLIENT_SECRET }} \
+              -e OAUTH2_KAKAO_REDIRECT_URI=${{ secrets.OAUTH2_KAKAO_REDIRECT_URI }} \
+              -e JWT_ISSUER=${{ secrets.JWT_ISSUER }} \
+              -e JWT_ACCESS_TOKEN_SECRET=${{ secrets.JWT_ACCESS_TOKEN_SECRET }} \
+              -e JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }} \
+              -e EMAIL_VERIFICATION_BASE_URL=${{ secrets.EMAIL_VERIFICATION_BASE_URL }} \
+              -e EMAIL_PASSWORD_RESET_BASE_URL=${{ secrets.EMAIL_PASSWORD_RESET_BASE_URL }} \
               -p 8080:8080 \
               --log-opt max-size=10m \
               --log-opt max-file=3 \
