@@ -6,10 +6,10 @@ COPY gradle gradle
 COPY build.gradle settings.gradle ./
 RUN chmod +x ./gradlew
 
-RUN ./gradlew dependencies --no-daemon
+RUN gradle dependencies --no-daemon
 
 COPY src src
-RUN ./gradlew build --no-daemon -x test
+RUN gradle build --no-daemon -x test
 
 RUN java -Djarmode=layertools -jar build/libs/*.jar extract
 
