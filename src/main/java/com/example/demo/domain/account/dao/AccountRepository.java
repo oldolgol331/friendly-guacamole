@@ -31,4 +31,6 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, Account
 
     boolean existsByNickname(String nickname);
 
+    void deleteByEmail(String email);
+
 }
