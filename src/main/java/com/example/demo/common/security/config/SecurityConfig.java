@@ -77,14 +77,23 @@ public class SecurityConfig {
                                          "/v3/api-docs/**").permitAll()
 
                         // Auth
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/signin", "/api/v1/auth/refresh").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/auth/signout").authenticated()
+
+                        // Account
+                        .requestMatchers(HttpMethod.GET, "/api/v1/accounts/verify-email").permitAll()
                         .requestMatchers(HttpMethod.POST,
-                                         "/api/v1/auth/signin",
-                                         "/api/v1/auth/refresh").permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                         "/api/v1/auth/signout").authenticated()
+                                         "/api/v1/accounts",
+                                         "/api/v1/accounts/verify-email-resend",
+                                         "/api/v1/accounts/password-reset-request",
+                                         "/api/v1/accounts/password-reset-confirm").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/accounts").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/accounts").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts").authenticated()
 
                         // ETC
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
 
                 .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                                              .successHandler(oAuth2AuthenticationSuccessHandler)
