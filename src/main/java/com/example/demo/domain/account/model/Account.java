@@ -9,7 +9,6 @@ import static com.example.demo.common.response.ErrorCode.INVALID_PASSWORD_FORMAT
 import static com.example.demo.common.response.ErrorCode.MISSING_INPUT_VALUE;
 import static com.example.demo.domain.account.constant.AccountConst.EMAIL_PATTERN;
 import static com.example.demo.domain.account.constant.AccountConst.NICKNAME_PATTERN;
-import static com.example.demo.domain.account.constant.AccountConst.PASSWORD_PATTERN;
 import static com.example.demo.domain.account.model.AccountRole.USER;
 import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
 import static com.example.demo.domain.account.model.AccountStatus.BLOCKED;
@@ -214,8 +213,6 @@ public class Account extends BaseAuditingEntity {
     private static void validatePassword(final String input) {
         if (input == null || input.isBlank())
             throw new CustomException(MISSING_INPUT_VALUE, "비밀번호는 필수입니다.");
-        if (!PASSWORD_PATTERN.matcher(input).matches())
-            throw new CustomException(INVALID_PASSWORD_FORMAT);
     }
 
     /**
