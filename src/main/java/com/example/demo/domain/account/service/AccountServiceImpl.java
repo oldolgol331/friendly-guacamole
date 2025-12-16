@@ -253,6 +253,7 @@ public class AccountServiceImpl implements AccountService {
 
         Account account = accountRepository.findByEmail(lowerCaseEmail)
                                            .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+        accountStatusCheck(account);
 
         if (account.getPassword() == null || account.getPassword().isBlank())   // OAuth 계정인 경우
             throw new CustomException(OAUTH_USER_CANNOT_RESET_PASSWORD);
