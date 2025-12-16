@@ -76,6 +76,9 @@ public class SecurityConfig {
                                          "/swagger-ui.html",
                                          "/v3/api-docs/**").permitAll()
 
+                        // Actuator
+                        .requestMatchers("/monitor").hasAuthority("ROLE_ADMIN")
+
                         // Auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/signin", "/api/v1/auth/refresh").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/auth/signout").authenticated()
