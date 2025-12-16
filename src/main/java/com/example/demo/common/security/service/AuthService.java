@@ -80,7 +80,7 @@ public class AuthService {
         if (!jwtProvider.validateRefreshToken(refreshToken))
             throw new CustomException(INVALID_REFRESH_TOKEN);
 
-        UUID id = jwtProvider.getMemberIdFromRefreshToken(refreshToken);
+        UUID id = jwtProvider.getAccountIdFromRefreshToken(refreshToken);
 
         String refreshTokenFromRedis = redisRepository.getValue(REDIS_REFRESH_TOKEN_PREFIX + id.toString(),
                                                                 String.class)

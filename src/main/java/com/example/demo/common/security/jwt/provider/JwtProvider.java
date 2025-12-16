@@ -202,7 +202,7 @@ public class JwtProvider {
      * @param token - 토큰
      * @return 유효하면 회원 ID, 아니면 null
      */
-    public UUID getMemberIdFromRefreshToken(final String token) {
+    public UUID getAccountIdFromRefreshToken(final String token) {
         if (!validateToken(token, refreshTokenKey)) return null;
         return UUID.fromString(getClaims(token, refreshTokenKey).getSubject());
     }
