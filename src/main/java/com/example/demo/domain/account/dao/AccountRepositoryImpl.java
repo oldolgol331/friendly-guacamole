@@ -47,7 +47,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
                                                   .join(ACCOUNT.oAuthConnections, OAUTH_CONNECTION)
                                                   .where(OAUTH_CONNECTION.provider.eq(provider),
                                                          OAUTH_CONNECTION.providerId.eq(providerId),
-                                                         OAUTH_CONNECTION.deletedAt.isNotNull())
+                                                         OAUTH_CONNECTION.deletedAt.isNull())
                                                   .fetchOne());
     }
 
