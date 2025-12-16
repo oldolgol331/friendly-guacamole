@@ -1,5 +1,10 @@
 package com.example.demo.common.security.service;
 
+import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
+
+import com.example.demo.common.security.model.CustomUserDetails;
+import com.example.demo.domain.account.dao.AccountRepository;
+import com.example.demo.domain.account.model.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,21 +26,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-//    private final AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // TODO: 계정(Account) 엔티티 조회
-//        Account account = accountRepository.findByEmailAndStatusAndDeletedAtNull(username.toLowerCase(), ACTIVE)
-//                                           .orElseThrow(() -> new UsernameNotFoundException(
-//                                                   "계정이 존재하지 않습니다: " + username.toLowerCase()
-//                                           ));
-//        return CustomUserDetails.of(account.getId(),
-//                                    account.getEmail(),
-//                                    account.getPassword(),
-//                                    account.getRole(),
-//                                    account.getStatus());
-        return null;
+        Account account = accountRepository.findByEmailAndStatusAndDeletedAtNull(username.toLowerCase(), ACTIVE)
+                                           .orElseThrow(() -> new UsernameNotFoundException(
+                                                   "계정이 존재하지 않습니다: " + username.toLowerCase()
+                                           ));
+        return CustomUserDetails.of(account.getId(),
+                                    account.getEmail(),
+                                    account.getPassword(),
+                                    account.getRole(),
+                                    account.getStatus());
     }
 
 }

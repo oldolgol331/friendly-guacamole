@@ -1,5 +1,8 @@
 package com.example.demo.infra.security.oauth.service;
 
+import com.example.demo.common.security.model.CustomUserDetails;
+import com.example.demo.domain.account.model.Account;
+import com.example.demo.domain.account.service.AccountService;
 import com.example.demo.infra.security.oauth.model.OAuthProfile;
 import com.example.demo.infra.security.oauth.model.OAuthProfileFactory;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +27,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-//    private final AccountService accountService;
+    private final AccountService accountService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -34,18 +37,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuthProfile oAuthProfile = OAuthProfileFactory.getOAuthProfile(registrationId, oAuth2User.getAttributes());
 
-        // TODO: OAuth2 인증 방식으로 계정(Account) 엔티티 조회 또는 생성
-//        Account account = accountService.findOrCreateAccountForOAuth(oAuthProfile.getProvider(),
-//                                                                     oAuthProfile.getProviderUserId(),
-//                                                                     oAuthProfile.getEmail(),
-//                                                                     oAuthProfile.getNickname());
-//
-//        return CustomUserDetails.of(account.getId(),
-//                                    account.getEmail(),
-//                                    account.getRole(),
-//                                    account.getStatus(),
-//                                    oAuth2User.getAttributes());
-        return null;
+        Account account = accountService.findOrCreateAccountForOAuth(oAuthProfile.getProvider(),
+                                                                     oAuthProfile.getProviderUserId(),
+                                                                     oAuthProfile.getEmail(),
+                                                                     oAuthProfile.getNickname());
+
+        return CustomUserDetails.of(account.getId(),
+                                    account.getEmail(),
+                                    account.getRole(),
+                                    account.getStatus(),
+                                    oAuth2User.getAttributes());
     }
 
 }
