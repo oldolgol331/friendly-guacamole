@@ -35,6 +35,7 @@ public enum ErrorCode {
     REQUEST_TOO_LARGE(HttpStatus.PAYLOAD_TOO_LARGE, "CO011", "요청의 크기가 너무 큽니다."),
     TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, "CO012", "너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "CO013", "요청하신 리소스를 찾을 수 없습니다."),
+    MISSING_INPUT_VALUE(HttpStatus.BAD_REQUEST, "CO014", "필수 입력값이 누락되었습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "CO999", "서버 내부 오류가 발생했습니다. 관리자에게 문의하세요."),
 
     // 계정(Account) & 인증(Auth)
@@ -42,7 +43,7 @@ public enum ErrorCode {
     EMAIL_DUPLICATION(HttpStatus.CONFLICT, "AC002", "이미 사용 중인 이메일입니다."),
     NICKNAME_DUPLICATION(HttpStatus.CONFLICT, "AC003", "이미 사용 중인 닉네임입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "AC004", "비밀번호가 일치하지 않습니다."),
-    PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "AC004", "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
+    PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "AC005", "비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     ACCOUNT_INACTIVE(HttpStatus.FORBIDDEN, "AC006", "비활성화된 계정입니다. 관리자에게 문의하세요."),
     ACCOUNT_BLOCKED(HttpStatus.FORBIDDEN, "AC007", "차단된 계정입니다. 관리자에게 문의하세요."),
     ACCOUNT_ALREADY_WITHDRAWN(HttpStatus.FORBIDDEN, "AC008", "이미 탈퇴 처리된 계정입니다. 관리자에게 문의하세요."),
@@ -56,7 +57,11 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AC016", "JWT RefreshToken이 유효하지 않습니다."),
     EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "AC017", "JWT AccessToken이 만료되었습니다."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "AC018", "JWT RefreshToken이 만료되었습니다."),
-    TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AC019", "JWT 토큰이 일치하지 않습니다.");
+    TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "AC019", "JWT 토큰이 일치하지 않습니다."),
+    INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "AC020", "이메일 형식이 올바르지 않습니다."),
+    INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "AC021", "비밀번호 형식이 올바르지 않습니다. (8~20자, 영문 대문자/소문자/숫자/특수문자 포함)"),
+    INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "AC022", "닉네임 형식이 올바르지 않습니다. (2~15자, 특수문자 제외"),
+    OAUTH_PASSWORD_CHANGE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "AC023", "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다.");
 
     private final HttpStatus status;
     private final String     code;

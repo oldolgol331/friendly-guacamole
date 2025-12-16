@@ -1,5 +1,15 @@
 package com.example.demo.domain.account.model;
 
+import static com.example.demo.common.response.ErrorCode.ACCOUNT_ALREADY_WITHDRAWN;
+import static com.example.demo.common.response.ErrorCode.ACCOUNT_BLOCKED;
+import static com.example.demo.common.response.ErrorCode.ALREADY_VERIFIED_EMAIL;
+import static com.example.demo.common.response.ErrorCode.INVALID_EMAIL_FORMAT;
+import static com.example.demo.common.response.ErrorCode.INVALID_NICKNAME_FORMAT;
+import static com.example.demo.common.response.ErrorCode.INVALID_PASSWORD_FORMAT;
+import static com.example.demo.common.response.ErrorCode.MISSING_INPUT_VALUE;
+import static com.example.demo.domain.account.constant.AccountConst.EMAIL_PATTERN;
+import static com.example.demo.domain.account.constant.AccountConst.NICKNAME_PATTERN;
+import static com.example.demo.domain.account.constant.AccountConst.PASSWORD_PATTERN;
 import static com.example.demo.domain.account.model.AccountRole.USER;
 import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
 import static com.example.demo.domain.account.model.AccountStatus.BLOCKED;
@@ -8,8 +18,8 @@ import static com.example.demo.domain.account.model.AccountStatus.INACTIVE;
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.example.demo.common.error.CustomException;
 import com.example.demo.common.model.BaseAuditingEntity;
-import com.example.demo.domain.account.constant.AccountConst;
 import com.example.demo.domain.reservation.model.Reservation;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -76,7 +86,8 @@ public class Account extends BaseAuditingEntity {
     @Enumerated(STRING)
     @Column(nullable = false)
     @NotNull
-    private AccountStatus status;                                       // 계정 상태: INACTIVE(비활성), ACTIVE(활성), DELETED(탈퇴함), BLOCKED(차단됨)
+    private AccountStatus status;
+    // 계정 상태: INACTIVE(비활성), ACTIVE(활성), DELETED(탈퇴함), BLOCKED(차단됨)
 
     private LocalDateTime deletedAt = null;                             // 탈퇴 일시
 
@@ -113,9 +124,9 @@ public class Account extends BaseAuditingEntity {
     /**
      * Account 객체 생성
      *
-     * @param email - 이메일
-     * @param nickname - 닉네임
-     * @param provider - OAuth2 제공자
+     * @param email      - 이메일
+     * @param nickname   - 닉네임
+     * @param provider   - OAuth2 제공자
      * @param providerId - OAuth2 고유 식별자
      * @return Account 객체
      */
@@ -129,7 +140,7 @@ public class Account extends BaseAuditingEntity {
     /**
      * Account 객체 생성
      *
-     * @param email - 이메일
+     * @param email    - 이메일
      * @param password - 비밀번호
      * @param nickname - 닉네임
      * @return Account 객체
@@ -141,12 +152,12 @@ public class Account extends BaseAuditingEntity {
     /**
      * Account 객체 생성
      *
-     * @param email - 이메일
-     * @param nickname - 닉네임
-     * @param provider - OAuth2 제공자
+     * @param email      - 이메일
+     * @param nickname   - 닉네임
+     * @param provider   - OAuth2 제공자
      * @param providerId - OAuth2 고유 식별자
-     * @param role - 계정 권한
-     * @param status - 계정 상태
+     * @param role       - 계정 권한
+     * @param status     - 계정 상태
      * @return Account 객체
      */
     public static Account of(final String email,
@@ -165,11 +176,11 @@ public class Account extends BaseAuditingEntity {
     /**
      * Account 객체 생성
      *
-     * @param email - 이메일
+     * @param email    - 이메일
      * @param password - 비밀번호
      * @param nickname - 닉네임
-     * @param role - 계정 권한
-     * @param status - 계정 상태
+     * @param role     - 계정 권한
+     * @param status   - 계정 상태
      * @return Account 객체
      */
     public static Account of(final String email,
@@ -191,8 +202,8 @@ public class Account extends BaseAuditingEntity {
      * @param input - 입력값
      */
     private static void validateEmail(final String input) {
-        if (input == null || !AccountConst.EMAIL_PATTERN.matcher(input).matches())
-            throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
+        if (input == null || !EMAIL_PATTERN.matcher(input).matches())
+            throw new CustomException(INVALID_EMAIL_FORMAT);
     }
 
     /**
@@ -202,9 +213,9 @@ public class Account extends BaseAuditingEntity {
      */
     private static void validatePassword(final String input) {
         if (input == null || input.isBlank())
-            throw new IllegalArgumentException("비밀번호는 필수입니다.");
-        if (!AccountConst.PASSWORD_PATTERN.matcher(input).matches())
-            throw new IllegalArgumentException("비밀번호 형식이 올바르지 않습니다. 8~20자, 영문 대/소문자, 특수문자 각각 최소 1개 이상 포함되어야 합니다.");
+            throw new CustomException(MISSING_INPUT_VALUE, "비밀번호는 필수입니다.");
+        if (!PASSWORD_PATTERN.matcher(input).matches())
+            throw new CustomException(INVALID_PASSWORD_FORMAT);
     }
 
     /**
@@ -214,9 +225,9 @@ public class Account extends BaseAuditingEntity {
      */
     private static void validateNickname(final String input) {
         if (input == null || input.isBlank())
-            throw new IllegalArgumentException("닉네임은 필수입니다.");
-        if (!AccountConst.NICKNAME_PATTERN.matcher(input).matches())
-            throw new IllegalArgumentException("닉네임 형식이 올바르지 않습니다. 2~15자 영문, 한글, 숫자, '-', '_'만 가능합니다.");
+            throw new CustomException(MISSING_INPUT_VALUE, "닉네임은 필수입니다.");
+        if (!NICKNAME_PATTERN.matcher(input).matches())
+            throw new CustomException(INVALID_NICKNAME_FORMAT);
     }
 
     // ========================= JPA 콜백 메서드 =========================
@@ -239,7 +250,7 @@ public class Account extends BaseAuditingEntity {
      */
     public void setPassword(final String input) {
         if (password == null || password.isBlank())
-            throw new IllegalStateException("OAuth 연동 생성 계정은 비밀번호를 변경할 수 없습니다.");
+            throw new CustomException(INVALID_PASSWORD_FORMAT);
         validatePassword(input);
         password = input;
     }
@@ -260,7 +271,7 @@ public class Account extends BaseAuditingEntity {
      * @param input - 입력값
      */
     public void setRole(final AccountRole input) {
-        if (input == null) throw new IllegalArgumentException("계정 권한은 필수입니다.");
+        if (input == null) throw new CustomException(MISSING_INPUT_VALUE, "계정 권한은 필수입니다.");
         role = input;
     }
 
@@ -270,7 +281,7 @@ public class Account extends BaseAuditingEntity {
      * @param input - 입력값
      */
     public void setStatus(final AccountStatus input) {
-        if (input == null) throw new IllegalArgumentException("계정 상태는 필수입니다.");
+        if (input == null) throw new CustomException(MISSING_INPUT_VALUE, "계정 상태는 필수입니다.");
         if (status == DELETED && input != DELETED) deletedAt = null;
         status = input;
     }
@@ -281,9 +292,9 @@ public class Account extends BaseAuditingEntity {
     public void completeEmailVerification() {
         switch (status) {
             case INACTIVE -> status = ACTIVE;
-            case ACTIVE -> throw new IllegalStateException("이미 인증된 계정입니다.");
-            case DELETED -> throw new IllegalStateException("탈퇴한 계정입니다.");
-            case BLOCKED -> throw new IllegalStateException("차단된 회원입니다.");
+            case ACTIVE -> throw new CustomException(ALREADY_VERIFIED_EMAIL);
+            case DELETED -> throw new CustomException(ACCOUNT_ALREADY_WITHDRAWN);
+            case BLOCKED -> throw new CustomException(ACCOUNT_BLOCKED);
         }
     }
 
@@ -298,7 +309,7 @@ public class Account extends BaseAuditingEntity {
      * 계정 상태를 탈퇴로 변경합니다. 계정의 탈퇴일을 현재 시간으로 설정합니다.
      */
     public void withdraw() {
-        if (deletedAt != null || status == DELETED) throw new IllegalStateException("이미 탈퇴한 회원입니다.");
+        if (deletedAt != null || status == DELETED) throw new CustomException(ACCOUNT_ALREADY_WITHDRAWN);
         status = DELETED;
         deletedAt = LocalDateTime.now();
     }
