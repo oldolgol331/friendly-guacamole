@@ -375,6 +375,29 @@ class AccountRepositoryTest {
     }
 
     @Nested
+    @DisplayName("deleteByEmail() 테스트")
+    class DeleteByEmailTests {
+
+        @RepeatedTest(10)
+        @DisplayName("email로 Account 엔티티 삭제")
+        void deleteByEmail() {
+            // given
+            Account account = em.persistAndFlush(createAccount());
+            String  email   = account.getEmail();
+            UUID    id      = account.getId();
+
+            // when
+            accountRepository.deleteByEmail(email);
+
+            // then
+            Account deletedAccount = em.find(Account.class, id);
+
+            assertNull(deletedAccount, "deletedAccount는 null이어야 합니다.");
+        }
+
+    }
+
+    @Nested
     @DisplayName("findByProviderAndProviderId() 테스트")
     class FindByProviderAndProviderIdTests {
 
