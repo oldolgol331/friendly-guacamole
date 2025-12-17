@@ -29,7 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.example.demo.common.error.CustomException;
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.mail.properties.EmailProperties;
 import com.example.demo.common.mail.service.EmailService;
 import com.example.demo.common.util.TestUtils;
@@ -140,9 +140,9 @@ class AccountServiceTest {
             request.setConfirmPassword(request.getPassword() + ".");
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.signUpEmailUser(request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.signUpEmailUser(request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -168,9 +168,9 @@ class AccountServiceTest {
             when(accountRepository.existsByEmail(eq(email))).thenReturn(true);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.signUpEmailUser(request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.signUpEmailUser(request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -198,9 +198,9 @@ class AccountServiceTest {
             when(accountRepository.existsByNickname(eq(nickname))).thenReturn(true);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.signUpEmailUser(request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.signUpEmailUser(request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -344,9 +344,9 @@ class AccountServiceTest {
             when(redisRepository.hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(true);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.resendVerificationEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.resendVerificationEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -369,9 +369,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.resendVerificationEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.resendVerificationEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -401,9 +401,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.resendVerificationEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.resendVerificationEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -433,9 +433,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.resendVerificationEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.resendVerificationEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -465,9 +465,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.resendVerificationEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.resendVerificationEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -526,8 +526,8 @@ class AccountServiceTest {
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class, () -> accountService.verifyEmail(token),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class, () -> accountService.verifyEmail(token),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -552,8 +552,8 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(id))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class, () -> accountService.verifyEmail(token),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class, () -> accountService.verifyEmail(token),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -585,8 +585,8 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(id))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class, () -> accountService.verifyEmail(token),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class, () -> accountService.verifyEmail(token),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -618,8 +618,8 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(id))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class, () -> accountService.verifyEmail(token),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class, () -> accountService.verifyEmail(token),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -651,8 +651,8 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(id))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class, () -> accountService.verifyEmail(token),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class, () -> accountService.verifyEmail(token),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -709,9 +709,9 @@ class AccountServiceTest {
                     .thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.getAccountInfoById(accountId),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.getAccountInfoById(accountId),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -768,9 +768,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.updateAccountInfo(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.updateAccountInfo(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -799,9 +799,9 @@ class AccountServiceTest {
             when(passwordEncoder.matches(eq(wrongPassword), eq(account.getPassword()))).thenReturn(false);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.updateAccountInfo(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.updateAccountInfo(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -831,9 +831,9 @@ class AccountServiceTest {
             when(accountRepository.existsByNickname(eq(request.getNewNickname()))).thenReturn(true);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.updateAccountInfo(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.updateAccountInfo(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -882,9 +882,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.sendPasswordResetEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.sendPasswordResetEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -907,9 +907,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.sendPasswordResetEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.sendPasswordResetEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -933,9 +933,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.sendPasswordResetEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.sendPasswordResetEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -959,9 +959,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.sendPasswordResetEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.sendPasswordResetEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -986,9 +986,9 @@ class AccountServiceTest {
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.sendPasswordResetEmail(email),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.sendPasswordResetEmail(email),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1047,9 +1047,9 @@ class AccountServiceTest {
             String token = UUID.randomUUID().toString().replace("-", "");
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.confirmPasswordReset(token, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.confirmPasswordReset(token, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다. "),
@@ -1073,9 +1073,9 @@ class AccountServiceTest {
             String token = UUID.randomUUID().toString().replace("-", "");
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.confirmPasswordReset(token, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.confirmPasswordReset(token, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다. "),
@@ -1106,9 +1106,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.confirmPasswordReset(token, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.confirmPasswordReset(token, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다. "),
@@ -1141,9 +1141,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.confirmPasswordReset(token, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.confirmPasswordReset(token, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1177,9 +1177,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.confirmPasswordReset(token, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.confirmPasswordReset(token, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다. "),
@@ -1213,9 +1213,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.confirmPasswordReset(token, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.confirmPasswordReset(token, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다. "),
@@ -1273,9 +1273,9 @@ class AccountServiceTest {
             request.setConfirmNewPassword(request.getNewPassword() + ".");
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.changePassword(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.changePassword(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception이 null이 아니어야 합니다."),
@@ -1300,9 +1300,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.changePassword(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.changePassword(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1329,9 +1329,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.changePassword(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.changePassword(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1359,9 +1359,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.changePassword(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.changePassword(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1389,9 +1389,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.changePassword(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.changePassword(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1420,9 +1420,9 @@ class AccountServiceTest {
             when(passwordEncoder.matches(eq(request.getCurrentPassword()), eq(currentPassword))).thenReturn(false);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.changePassword(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.changePassword(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1471,9 +1471,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1495,9 +1495,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1520,9 +1520,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1545,9 +1545,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1570,9 +1570,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.of(account));
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1627,9 +1627,9 @@ class AccountServiceTest {
             when(accountRepository.findById(eq(accountId))).thenReturn(Optional.empty());
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1657,9 +1657,9 @@ class AccountServiceTest {
             when(passwordEncoder.matches(eq(request.getCurrentPassword()), eq(currentPassword))).thenReturn(false);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1686,9 +1686,9 @@ class AccountServiceTest {
             when(passwordEncoder.matches(eq(request.getCurrentPassword()), eq(currentPassword))).thenReturn(true);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1716,9 +1716,9 @@ class AccountServiceTest {
             when(passwordEncoder.matches(eq(request.getCurrentPassword()), eq(currentPassword))).thenReturn(true);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
@@ -1746,9 +1746,9 @@ class AccountServiceTest {
             when(passwordEncoder.matches(eq(request.getCurrentPassword()), eq(currentPassword))).thenReturn(true);
 
             // when
-            CustomException exception = assertThrows(CustomException.class,
-                                                     () -> accountService.withdrawAccount(accountId, request),
-                                                     "CustomException이 발생해야 합니다.");
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> accountService.withdrawAccount(accountId, request),
+                                                       "CustomException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),

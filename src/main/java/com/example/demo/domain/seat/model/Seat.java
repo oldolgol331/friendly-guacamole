@@ -12,7 +12,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.example.demo.common.error.CustomException;
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
 import com.example.demo.domain.performance.model.Performance;
 import jakarta.persistence.Column;
@@ -160,7 +160,7 @@ public class Seat extends BaseAuditingEntity {
      * 좌석을 예약 처리합니다.
      */
     public void reserve() {
-        if (status != AVAILABLE) throw new CustomException(SEAT_ALREADY_RESERVED);
+        if (status != AVAILABLE) throw new BusinessException(SEAT_ALREADY_RESERVED);
         status = RESERVED;
     }
 
@@ -168,7 +168,7 @@ public class Seat extends BaseAuditingEntity {
      * 예약을 취소합니다.
      */
     public void cancel() {
-        if (status == SOLD) throw new CustomException(SEAT_ALREADY_SOLD);
+        if (status == SOLD) throw new BusinessException(SEAT_ALREADY_SOLD);
         status = AVAILABLE;
     }
 
@@ -176,7 +176,7 @@ public class Seat extends BaseAuditingEntity {
      * 결제 완료 처리합니다.
      */
     public void confirmSale() {
-        if (status != RESERVED) throw new CustomException(SEAT_NOT_AVAILABLE);
+        if (status != RESERVED) throw new BusinessException(SEAT_NOT_AVAILABLE);
         status = SOLD;
     }
 

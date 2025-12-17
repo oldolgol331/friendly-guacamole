@@ -178,8 +178,8 @@ public class GlobalExceptionHandler {
                              .body(ApiResponse.error(errorCode));
     }
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ApiResponse<Void>> handleCustomException(final CustomException e) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCustomException(final BusinessException e) {
         log.error("handleCustomException: {}", e.getMessage(), e);
         return ResponseEntity.status(e.getErrorCode().getStatus())
                              .body(ApiResponse.error(e.getErrorCode()));

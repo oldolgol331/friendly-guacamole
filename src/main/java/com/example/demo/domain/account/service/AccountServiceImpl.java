@@ -19,7 +19,7 @@ import static com.example.demo.infra.redis.constant.RedisConst.PASSWORD_RESET_RA
 import static com.example.demo.infra.redis.constant.RedisConst.VERIFICATION_KEY_PREFIX;
 import static com.example.demo.infra.redis.constant.RedisConst.VERIFICATION_RATE_LIMIT_KEY_PREFIX;
 
-import com.example.demo.common.error.CustomException;
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.mail.properties.EmailProperties;
 import com.example.demo.common.mail.service.EmailService;
 import com.example.demo.domain.account.dao.AccountRepository;
@@ -75,10 +75,10 @@ public class AccountServiceImpl implements AccountService {
     public AccountInfoResponse signUpEmailUser(final AccountSignUpRequest request) {
         String lowerCaseEmail = request.getEmail().toLowerCase();
 
-        if (!request.isPasswordConfirmed()) throw new CustomException(PASSWORD_MISMATCH); // 비밀번호 != 비밀번호 확인
-        if (accountRepository.existsByEmail(lowerCaseEmail)) throw new CustomException(EMAIL_DUPLICATION);  // 이메일 중복
+        if (!request.isPasswordConfirmed()) throw new BusinessException(PASSWORD_MISMATCH); // 비밀번호 != 비밀번호 확인
+        if (accountRepository.existsByEmail(lowerCaseEmail)) throw new BusinessException(EMAIL_DUPLICATION);  // 이메일 중복
         if (accountRepository.existsByNickname(request.getNickname()))
-            throw new CustomException(NICKNAME_DUPLICATION); // 닉네임 중복
+            throw new BusinessException(NICKNAME_DUPLICATION); // 닉네임 중복
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
@@ -127,7 +127,7 @@ public class AccountServiceImpl implements AccountService {
                         accountRepository.deleteByEmail(emailFromOAuth);    // 해당 계정 완전 삭제
                         break;
                     case BLOCKED:
-                        throw new CustomException(ACCOUNT_BLOCKED);
+                        throw new BusinessException(ACCOUNT_BLOCKED);
                 }
             }
         }
@@ -153,15 +153,15 @@ public class AccountServiceImpl implements AccountService {
         String lowerCaseEmail = email.toLowerCase();
         String rateLimitKey   = VERIFICATION_RATE_LIMIT_KEY_PREFIX + lowerCaseEmail;
 
-        if (redisRepository.hasKey(rateLimitKey)) throw new CustomException(TOO_MANY_REQUESTS);
+        if (redisRepository.hasKey(rateLimitKey)) throw new BusinessException(TOO_MANY_REQUESTS);
 
         Account account = accountRepository.findByEmail(lowerCaseEmail)
-                                           .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                           .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
 
         switch (account.getStatus()) {
-            case ACTIVE -> throw new CustomException(ALREADY_VERIFIED_EMAIL);   // 이미 인증된 계정일 경우
-            case DELETED -> throw new CustomException(ACCOUNT_ALREADY_WITHDRAWN);   // 탈퇴한 계정일 경우
-            case BLOCKED -> throw new CustomException(ACCOUNT_BLOCKED); // 차단된 계정일 경우
+            case ACTIVE -> throw new BusinessException(ALREADY_VERIFIED_EMAIL);   // 이미 인증된 계정일 경우
+            case DELETED -> throw new BusinessException(ACCOUNT_ALREADY_WITHDRAWN);   // 탈퇴한 계정일 경우
+            case BLOCKED -> throw new BusinessException(ACCOUNT_BLOCKED); // 차단된 계정일 경우
         }
 
         sendVerificationEmailWithToken(account);
@@ -182,16 +182,16 @@ public class AccountServiceImpl implements AccountService {
 
         UUID accountId = UUID.fromString(
                 redisRepository.getValue(redisKey, String.class)
-                               .orElseThrow(() -> new CustomException(INVALID_VERIFICATION_TOKEN))
+                               .orElseThrow(() -> new BusinessException(INVALID_VERIFICATION_TOKEN))
         );
 
         Account account = accountRepository.findById(accountId)
-                                           .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                           .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
 
         switch (account.getStatus()) {
-            case ACTIVE -> throw new CustomException(ALREADY_VERIFIED_EMAIL);   // 이미 인증된 계정일 경우
-            case DELETED -> throw new CustomException(ACCOUNT_ALREADY_WITHDRAWN);   // 탈퇴한 계정일 경우
-            case BLOCKED -> throw new CustomException(ACCOUNT_BLOCKED); // 차단된 계정일 경우
+            case ACTIVE -> throw new BusinessException(ALREADY_VERIFIED_EMAIL);   // 이미 인증된 계정일 경우
+            case DELETED -> throw new BusinessException(ACCOUNT_ALREADY_WITHDRAWN);   // 탈퇴한 계정일 경우
+            case BLOCKED -> throw new BusinessException(ACCOUNT_BLOCKED); // 차단된 계정일 경우
         }
 
         account.completeEmailVerification();
@@ -213,7 +213,7 @@ public class AccountServiceImpl implements AccountService {
 //        accountStatusCheck(account);
 //        return AccountInfoResponse.from(account);
         return accountRepository.getAccountInfoResponseByIdAndStatus(accountId, ACTIVE)
-                                .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
     }
 
     /**
@@ -227,14 +227,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountInfoResponse updateAccountInfo(final UUID accountId, final AccountUpdateRequest request) {
         Account account = accountRepository.findById(accountId)
-                                           .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                           .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
         accountStatusCheck(account);
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), account.getPassword()))  // 비밀번호 일치 여부 확인
-            throw new CustomException(INVALID_PASSWORD);
+            throw new BusinessException(INVALID_PASSWORD);
         if (!account.getNickname().equals(request.getNewNickname())
             && accountRepository.existsByNickname(request.getNewNickname()))    // 신규 닉네임이 이미 사용 중인 경우
-            throw new CustomException(NICKNAME_DUPLICATION);
+            throw new BusinessException(NICKNAME_DUPLICATION);
 
         account.setNickname(request.getNewNickname());
 
@@ -252,11 +252,11 @@ public class AccountServiceImpl implements AccountService {
         String rateLimitKey   = PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX + lowerCaseEmail;
 
         Account account = accountRepository.findByEmail(lowerCaseEmail)
-                                           .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                           .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
         accountStatusCheck(account);
 
         if (account.getPassword() == null || account.getPassword().isBlank())   // OAuth 계정인 경우
-            throw new CustomException(OAUTH_USER_CANNOT_RESET_PASSWORD);
+            throw new BusinessException(OAUTH_USER_CANNOT_RESET_PASSWORD);
 
         sendPasswordResetEmailWithToken(account);
 
@@ -272,16 +272,16 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public void confirmPasswordReset(final String token, final PasswordResetConfirmRequest request) {
-        if (!request.isNewPasswordConfirmed()) throw new CustomException(PASSWORD_MISMATCH);    // 신규 비밀번호 != 신규 비밀번호 확인
+        if (!request.isNewPasswordConfirmed()) throw new BusinessException(PASSWORD_MISMATCH);    // 신규 비밀번호 != 신규 비밀번호 확인
 
         String redisKey = PASSWORD_RESET_KEY_PREFIX + token;
         UUID accountId = UUID.fromString(
                 redisRepository.getValue(redisKey, String.class)
-                               .orElseThrow(() -> new CustomException(INVALID_VERIFICATION_TOKEN))
+                               .orElseThrow(() -> new BusinessException(INVALID_VERIFICATION_TOKEN))
         );
 
         Account account = accountRepository.findById(accountId)
-                                           .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                           .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
         accountStatusCheck(account);
 
         account.setPassword(passwordEncoder.encode(request.getNewPassword()));
@@ -296,16 +296,16 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public void changePassword(final UUID accountId, final AccountPasswordUpdateRequest request) {
-        if (!request.isNewPasswordConfirmed()) throw new CustomException(PASSWORD_MISMATCH); // 신규 비밀번호 != 신규 비밀번호 확인
+        if (!request.isNewPasswordConfirmed()) throw new BusinessException(PASSWORD_MISMATCH); // 신규 비밀번호 != 신규 비밀번호 확인
 
         Account account = accountRepository.findById(accountId)
-                                           .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                           .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
         accountStatusCheck(account);
 
         if (account.getPassword() == null
             || !passwordEncoder.matches(request.getCurrentPassword(),
                                         account.getPassword()))   // OAuth 계정 or 기존 비밀번호 불일치인 경우
-            throw new CustomException(INVALID_PASSWORD);
+            throw new BusinessException(INVALID_PASSWORD);
 
         account.setPassword(passwordEncoder.encode(request.getNewPassword()));
     }
@@ -319,11 +319,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void withdrawAccount(final UUID accountId) {
         Account account = accountRepository.findById(accountId)
-                                           .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                           .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
         accountStatusCheck(account);
 
         if (account.getOAuthConnections().isEmpty())
-            throw new CustomException(OAUTH_PROVIDER_NOT_SUPPORTED);   // OAuth 연동 정보가 없을 경우
+            throw new BusinessException(OAUTH_PROVIDER_NOT_SUPPORTED);   // OAuth 연동 정보가 없을 경우
 
         account.withdraw();
         account.getOAuthConnections().forEach(OAuthConnection::delete);
@@ -339,9 +339,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void withdrawAccount(final UUID accountId, final AccountWithdrawRequest request) {
         Account account = accountRepository.findById(accountId)
-                                           .orElseThrow(() -> new CustomException(ACCOUNT_NOT_FOUND));
+                                           .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
         if (!passwordEncoder.matches(request.getCurrentPassword(), account.getPassword()))  // 비밀번호 확인 불일치의 경우
-            throw new CustomException(INVALID_PASSWORD);
+            throw new BusinessException(INVALID_PASSWORD);
 
         accountStatusCheck(account);
 
@@ -388,11 +388,11 @@ public class AccountServiceImpl implements AccountService {
     private void accountStatusCheck(final Account account) {
         switch (account.getStatus()) {
             case INACTIVE:
-                throw new CustomException(ACCOUNT_INACTIVE);
+                throw new BusinessException(ACCOUNT_INACTIVE);
             case DELETED:
-                throw new CustomException(ACCOUNT_ALREADY_WITHDRAWN);
+                throw new BusinessException(ACCOUNT_ALREADY_WITHDRAWN);
             case BLOCKED:
-                throw new CustomException(ACCOUNT_BLOCKED);
+                throw new BusinessException(ACCOUNT_BLOCKED);
             default:
                 break;
         }

@@ -4,7 +4,7 @@ import static com.example.demo.common.response.ErrorCode.INVALID_PERFORMANCE_DAT
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.example.demo.common.error.CustomException;
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
 import com.example.demo.domain.seat.model.Seat;
 import jakarta.persistence.CascadeType;
@@ -115,7 +115,7 @@ public class Performance extends BaseAuditingEntity {
      */
     private static void validatePerformanceTime(final LocalDateTime inputStartTime, final LocalDateTime inputEndTime) {
         if (inputStartTime.isAfter(inputEndTime) || inputStartTime.equals(inputEndTime))
-            throw new CustomException(INVALID_PERFORMANCE_DATE);
+            throw new BusinessException(INVALID_PERFORMANCE_DATE);
     }
 
 }

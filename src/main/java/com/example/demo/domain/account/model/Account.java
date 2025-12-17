@@ -17,7 +17,7 @@ import static com.example.demo.domain.account.model.AccountStatus.INACTIVE;
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.example.demo.common.error.CustomException;
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
 import com.example.demo.domain.reservation.model.Reservation;
 import jakarta.persistence.CascadeType;
@@ -202,7 +202,7 @@ public class Account extends BaseAuditingEntity {
      */
     private static void validateEmail(final String input) {
         if (input == null || !EMAIL_PATTERN.matcher(input).matches())
-            throw new CustomException(INVALID_EMAIL_FORMAT);
+            throw new BusinessException(INVALID_EMAIL_FORMAT);
     }
 
     /**
@@ -212,7 +212,7 @@ public class Account extends BaseAuditingEntity {
      */
     private static void validatePassword(final String input) {
         if (input == null || input.isBlank())
-            throw new CustomException(MISSING_INPUT_VALUE, "비밀번호는 필수입니다.");
+            throw new BusinessException(MISSING_INPUT_VALUE, "비밀번호는 필수입니다.");
     }
 
     /**
@@ -222,9 +222,9 @@ public class Account extends BaseAuditingEntity {
      */
     private static void validateNickname(final String input) {
         if (input == null || input.isBlank())
-            throw new CustomException(MISSING_INPUT_VALUE, "닉네임은 필수입니다.");
+            throw new BusinessException(MISSING_INPUT_VALUE, "닉네임은 필수입니다.");
         if (!NICKNAME_PATTERN.matcher(input).matches())
-            throw new CustomException(INVALID_NICKNAME_FORMAT);
+            throw new BusinessException(INVALID_NICKNAME_FORMAT);
     }
 
     // ========================= JPA 콜백 메서드 =========================
@@ -247,7 +247,7 @@ public class Account extends BaseAuditingEntity {
      */
     public void setPassword(final String input) {
         if (password == null || password.isBlank())
-            throw new CustomException(INVALID_PASSWORD_FORMAT);
+            throw new BusinessException(INVALID_PASSWORD_FORMAT);
         validatePassword(input);
         password = input;
     }
@@ -268,7 +268,7 @@ public class Account extends BaseAuditingEntity {
      * @param input - 입력값
      */
     public void setRole(final AccountRole input) {
-        if (input == null) throw new CustomException(MISSING_INPUT_VALUE, "계정 권한은 필수입니다.");
+        if (input == null) throw new BusinessException(MISSING_INPUT_VALUE, "계정 권한은 필수입니다.");
         role = input;
     }
 
@@ -278,7 +278,7 @@ public class Account extends BaseAuditingEntity {
      * @param input - 입력값
      */
     public void setStatus(final AccountStatus input) {
-        if (input == null) throw new CustomException(MISSING_INPUT_VALUE, "계정 상태는 필수입니다.");
+        if (input == null) throw new BusinessException(MISSING_INPUT_VALUE, "계정 상태는 필수입니다.");
         if (status == DELETED && input != DELETED) deletedAt = null;
         status = input;
     }
@@ -289,9 +289,9 @@ public class Account extends BaseAuditingEntity {
     public void completeEmailVerification() {
         switch (status) {
             case INACTIVE -> status = ACTIVE;
-            case ACTIVE -> throw new CustomException(ALREADY_VERIFIED_EMAIL);
-            case DELETED -> throw new CustomException(ACCOUNT_ALREADY_WITHDRAWN);
-            case BLOCKED -> throw new CustomException(ACCOUNT_BLOCKED);
+            case ACTIVE -> throw new BusinessException(ALREADY_VERIFIED_EMAIL);
+            case DELETED -> throw new BusinessException(ACCOUNT_ALREADY_WITHDRAWN);
+            case BLOCKED -> throw new BusinessException(ACCOUNT_BLOCKED);
         }
     }
 
@@ -306,7 +306,7 @@ public class Account extends BaseAuditingEntity {
      * 계정 상태를 탈퇴로 변경합니다. 계정의 탈퇴일을 현재 시간으로 설정합니다.
      */
     public void withdraw() {
-        if (deletedAt != null || status == DELETED) throw new CustomException(ACCOUNT_ALREADY_WITHDRAWN);
+        if (deletedAt != null || status == DELETED) throw new BusinessException(ACCOUNT_ALREADY_WITHDRAWN);
         status = DELETED;
         deletedAt = LocalDateTime.now();
     }

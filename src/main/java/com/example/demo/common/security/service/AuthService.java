@@ -6,7 +6,7 @@ import static com.example.demo.common.response.ErrorCode.TOKEN_MISMATCH;
 import static com.example.demo.infra.redis.constant.RedisConst.REDIS_ACCESS_TOKEN_BLACKLIST_PREFIX;
 import static com.example.demo.infra.redis.constant.RedisConst.REDIS_REFRESH_TOKEN_PREFIX;
 
-import com.example.demo.common.error.CustomException;
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.security.jwt.provider.JwtProvider;
 import com.example.demo.common.security.model.CustomUserDetails;
 import com.example.demo.infra.redis.dao.RedisRepository;
@@ -57,7 +57,7 @@ public class AuthService {
      */
     public void signout(final CustomUserDetails userDetails, final String accessToken) {
         if (!jwtProvider.validateAccessToken(accessToken))
-            throw new CustomException(INVALID_ACCESS_TOKEN);
+            throw new BusinessException(INVALID_ACCESS_TOKEN);
 
         String redisKey = REDIS_REFRESH_TOKEN_PREFIX + userDetails.getId().toString();
         redisRepository.deleteData(redisKey);
@@ -78,15 +78,15 @@ public class AuthService {
      */
     public String refresh(final String refreshToken) {
         if (!jwtProvider.validateRefreshToken(refreshToken))
-            throw new CustomException(INVALID_REFRESH_TOKEN);
+            throw new BusinessException(INVALID_REFRESH_TOKEN);
 
         UUID id = jwtProvider.getAccountIdFromRefreshToken(refreshToken);
 
         String refreshTokenFromRedis = redisRepository.getValue(REDIS_REFRESH_TOKEN_PREFIX + id.toString(),
                                                                 String.class)
-                                                      .orElseThrow(() -> new CustomException(INVALID_REFRESH_TOKEN));
+                                                      .orElseThrow(() -> new BusinessException(INVALID_REFRESH_TOKEN));
 
-        if (!refreshToken.equals(refreshTokenFromRedis)) throw new CustomException(TOKEN_MISMATCH);
+        if (!refreshToken.equals(refreshTokenFromRedis)) throw new BusinessException(TOKEN_MISMATCH);
 
         Authentication authentication = jwtProvider.getAuthenticationFromRefreshToken(refreshToken);
         return jwtProvider.generateAccessToken(authentication);

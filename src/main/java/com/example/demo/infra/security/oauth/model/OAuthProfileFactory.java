@@ -3,7 +3,7 @@ package com.example.demo.infra.security.oauth.model;
 import static com.example.demo.common.response.ErrorCode.OAUTH_PROVIDER_NOT_SUPPORTED;
 import static lombok.AccessLevel.PRIVATE;
 
-import com.example.demo.common.error.CustomException;
+import com.example.demo.common.error.BusinessException;
 import java.util.Map;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +25,7 @@ public abstract class OAuthProfileFactory {
         if ("google".equalsIgnoreCase(registrationId)) return new GoogleProfile(attributes);
         if ("naver".equalsIgnoreCase(registrationId)) return new NaverProfile(attributes);
         if ("kakao".equalsIgnoreCase(registrationId)) return new KakaoProfile(attributes);
-        throw new CustomException(OAUTH_PROVIDER_NOT_SUPPORTED);
+        throw new BusinessException(OAUTH_PROVIDER_NOT_SUPPORTED);
     }
 
 }
