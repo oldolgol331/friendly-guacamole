@@ -83,8 +83,8 @@ public class Reservation extends BaseAuditingEntity {
     /**
      * Reservation 객체 생성
      *
-     * @param account - Account 객체
-     * @param seat - Seat 객체
+     * @param account         - Account 객체
+     * @param seat            - Seat 객체
      * @param reservationTime - 예약 확정 시간
      * @return Reservation 객체
      */
@@ -107,6 +107,15 @@ public class Reservation extends BaseAuditingEntity {
     private void setRelationshipWithAccount(final Account account) {
         this.account = account;
         account.getReservations().add(this);
+    }
+
+    // ========================= 비즈니스 메서드 =========================
+
+    /**
+     * 예약을 취소합니다.
+     */
+    public void cancel() {
+        seat.cancel();
     }
 
 }

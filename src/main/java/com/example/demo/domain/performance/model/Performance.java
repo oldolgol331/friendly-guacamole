@@ -1,8 +1,10 @@
 package com.example.demo.domain.performance.model;
 
+import static com.example.demo.common.response.ErrorCode.INVALID_PERFORMANCE_DATE;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.example.demo.common.error.CustomException;
 import com.example.demo.common.model.BaseAuditingEntity;
 import com.example.demo.domain.seat.model.Seat;
 import jakarta.persistence.CascadeType;
@@ -99,7 +101,21 @@ public class Performance extends BaseAuditingEntity {
                                  final String info,
                                  final LocalDateTime startTime,
                                  final LocalDateTime endTime) {
+        validatePerformanceTime(startTime, endTime);
         return new Performance(name, venue, info, startTime, endTime);
+    }
+
+    // ========================= 검증 메서드 =========================
+
+    /**
+     * 공연 시간을 검증합니다.
+     *
+     * @param inputStartTime - 공연 시작 시간
+     * @param inputEndTime   - 공연 종료 시간
+     */
+    private static void validatePerformanceTime(final LocalDateTime inputStartTime, final LocalDateTime inputEndTime) {
+        if (inputStartTime.isAfter(inputEndTime) || inputStartTime.equals(inputEndTime))
+            throw new CustomException(INVALID_PERFORMANCE_DATE);
     }
 
 }

@@ -1,12 +1,18 @@
 package com.example.demo.domain.seat.model;
 
+import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_RESERVED;
+import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_SOLD;
+import static com.example.demo.common.response.ErrorCode.SEAT_NOT_AVAILABLE;
 import static com.example.demo.domain.seat.model.SeatStatus.AVAILABLE;
+import static com.example.demo.domain.seat.model.SeatStatus.RESERVED;
+import static com.example.demo.domain.seat.model.SeatStatus.SOLD;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.example.demo.common.error.CustomException;
 import com.example.demo.common.model.BaseAuditingEntity;
 import com.example.demo.domain.performance.model.Performance;
 import jakarta.persistence.Column;
@@ -115,7 +121,7 @@ public class Seat extends BaseAuditingEntity {
         return seat;
     }
 
-    // ========================= 연관관계 메서드 =========================
+    // ========================= 검증 메서드 =========================
 
     /**
      * 가격 유효성을 검사합니다.
@@ -126,7 +132,7 @@ public class Seat extends BaseAuditingEntity {
         if (input < 0) throw new IllegalArgumentException("가격은 0원 이상이어야 합니다");
     }
 
-    // ========================= 검증 메서드 =========================
+    // ========================= 연관관계 메서드 =========================
 
     /**
      * 공연과의 관계를 설정합니다.
@@ -148,6 +154,30 @@ public class Seat extends BaseAuditingEntity {
     public void setPrice(final int input) {
         validatePrice(input);
         price = input;
+    }
+
+    /**
+     * 좌석을 예약 처리합니다.
+     */
+    public void reserve() {
+        if (status != AVAILABLE) throw new CustomException(SEAT_ALREADY_RESERVED);
+        status = RESERVED;
+    }
+
+    /**
+     * 예약을 취소합니다.
+     */
+    public void cancel() {
+        if (status == SOLD) throw new CustomException(SEAT_ALREADY_SOLD);
+        status = AVAILABLE;
+    }
+
+    /**
+     * 결제 완료 처리합니다.
+     */
+    public void confirmSale() {
+        if (status != RESERVED) throw new CustomException(SEAT_NOT_AVAILABLE);
+        status = SOLD;
     }
 
 }
