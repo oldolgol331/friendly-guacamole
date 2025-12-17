@@ -118,8 +118,9 @@ dependencies {
     testImplementation "net.jqwik:jqwik-testing:$jqwikVersion"
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
+    systemProperty 'user.timezone', 'Asia/Seoul'
 }
 
 jar {
