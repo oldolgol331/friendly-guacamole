@@ -93,20 +93,21 @@ public class PerformanceRepositoryImpl implements PerformanceRepositoryCustom {
                                         .fetch();
         if (ids.isEmpty()) return Page.empty();
 
-        List<PerformanceListResponse> content = jpaQueryFactory.select(new QPerformanceResponse_PerformanceListResponse(
-                                                                       PERFORMANCE.id,
-                                                                       PERFORMANCE.name,
-                                                                       PERFORMANCE.venue,
-                                                                       PERFORMANCE.startTime,
-                                                                       PERFORMANCE.endTime,
-                                                                       new CaseBuilder().when(SEAT.status.eq(AVAILABLE))
-                                                                                        .then(1)
-                                                                                        .otherwise(0)
-                                                                                        .sum()
-                                                                                        .intValue(),
-                                                                       SEAT.id.count().intValue(),
-                                                                       PERFORMANCE.createdAt,
-                                                                       PERFORMANCE.updatedAt))
+        List<PerformanceListResponse> content = jpaQueryFactory.select(
+                                                                       new QPerformanceResponse_PerformanceListResponse(PERFORMANCE.id,
+                                                                                                                        PERFORMANCE.name,
+                                                                                                                        PERFORMANCE.venue,
+                                                                                                                        PERFORMANCE.startTime,
+                                                                                                                        PERFORMANCE.endTime,
+                                                                                                                        new CaseBuilder().when(SEAT.status.eq(AVAILABLE))
+                                                                                                                                         .then(1)
+                                                                                                                                         .otherwise(0)
+                                                                                                                                         .sum()
+                                                                                                                                         .intValue(),
+                                                                                                                        SEAT.id.count().intValue(),
+                                                                                                                        PERFORMANCE.createdAt,
+                                                                                                                        PERFORMANCE.updatedAt)
+                                                               )
                                                                .from(PERFORMANCE)
                                                                .leftJoin(PERFORMANCE.seats, SEAT)
                                                                .where(PERFORMANCE.id.in(ids))
