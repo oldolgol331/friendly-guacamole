@@ -35,12 +35,12 @@ public class ReservationResponse {
         @Schema(name = "공연 ID")
         private final Long          performanceId;
         @Schema(name = "좌석 ID")
-        private final Long          seatId;
+        private final Long   seatId;
         @JsonProperty("reservation_account_id")
         @Schema(name = "예약자 ID")
-        private final UUID          reservationAccountId;
+        private final UUID   accountId;
         @Schema(name = "예약자 닉네임")
-        private final String        nickname;
+        private final String nickname;
         @JsonProperty("performance_name")
         @Schema(name = "공연 이름")
         private final String        performanceName;
@@ -63,7 +63,7 @@ public class ReservationResponse {
         @JsonCreator
         public ReservationInfoResponse(@JsonProperty("performance_id") final Long performanceId,
                                        @JsonProperty("seat_id") final Long seatId,
-                                       @JsonProperty("reservation_account_id") final UUID reservationAccountId,
+                                       @JsonProperty("account_id") final UUID accountId,
                                        @JsonProperty("nickname") final String nickname,
                                        @JsonProperty("performance_name") final String performanceName,
                                        @JsonProperty("start_time") final LocalDateTime startTime,
@@ -73,7 +73,7 @@ public class ReservationResponse {
                                        @JsonProperty("reservation_time") final LocalDateTime reservationTime) {
             this.performanceId = performanceId;
             this.seatId = seatId;
-            this.reservationAccountId = reservationAccountId;
+            this.accountId = accountId;
             this.nickname = nickname;
             this.performanceName = performanceName;
             this.startTime = startTime;
