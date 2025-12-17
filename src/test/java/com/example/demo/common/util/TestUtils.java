@@ -14,6 +14,7 @@ import com.example.demo.domain.account.model.Account;
 import com.example.demo.domain.account.model.AccountRole;
 import com.example.demo.domain.account.model.AccountStatus;
 import com.example.demo.domain.account.model.OAuthConnection;
+import com.example.demo.domain.performance.model.Performance;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
@@ -184,11 +185,36 @@ public abstract class TestUtils {
     public static AccountWithdrawRequest createAccountWithdrawRequest(final String currentPassword) {
         return new AccountWithdrawRequest(currentPassword);
     }
+
     public static String createPassword() {
         while (true) {
             String password = FAKER.credentials().password(8, 13, true, true, true);
             if (PASSWORD_PATTERN.matcher(password).matches()) return password;
         }
+    }
+
+    public static List<Performance> createPerformances(final int size) {
+        LocalDateTime startTime = FAKER.timeAndDate()
+                                       .future()
+                                       .atZone(ZoneId.systemDefault())
+                                       .toLocalDateTime();
+        return FIXTURE_MONKEY.giveMeBuilder(Performance.class)
+                             .instantiate(Instantiator.factoryMethod("of")
+                                                      .parameter(String.class, "name")
+                                                      .parameter(String.class, "venue")
+                                                      .parameter(String.class, "info")
+                                                      .parameter(LocalDateTime.class, "startTime")
+                                                      .parameter(LocalDateTime.class, "endTime"))
+                             .setLazy("name", () -> FAKER.hobby().activity())
+                             .setLazy("venue", () -> FAKER.address().fullAddress())
+                             .setLazy("info", () -> FAKER.lorem().characters(1, 65535, true, true, true))
+                             .setLazy("startTime", () -> startTime)
+                             .setLazy("endTime", () -> startTime.plusHours(3))
+                             .sampleList(size);
+    }
+
+    public static Performance createPerformance() {
+        return createPerformances(1).getFirst();
     }
 
 }
