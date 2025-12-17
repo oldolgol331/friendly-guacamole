@@ -1,9 +1,11 @@
 package com.example.demo.domain.reservation.model;
 
+import static com.example.demo.common.response.ErrorCode.INVALID_RESERVATION_TIME;
 import static com.example.demo.domain.seat.model.SeatStatus.RESERVED;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
 import com.example.demo.domain.account.model.Account;
 import com.example.demo.domain.seat.model.Seat;
@@ -70,12 +72,10 @@ public class Reservation extends BaseAuditingEntity {
                 foreignKey = @ForeignKey(name = "FK_reservations_seats"))
     private Seat seat;
 
-    @Column(nullable = false)
     private LocalDateTime reservationTime;  // 예약 확정 시간
 
-    private Reservation(final Seat seat, final LocalDateTime reservationTime) {
+    private Reservation(final Seat seat) {
         this.seat = seat;
-        this.reservationTime = reservationTime;
     }
 
     // ========================= 생성자 메서드 =========================
@@ -83,21 +83,29 @@ public class Reservation extends BaseAuditingEntity {
     /**
      * Reservation 객체 생성
      *
-     * @param account         - Account 객체
-     * @param seat            - Seat 객체
-     * @param reservationTime - 예약 확정 시간
+     * @param account - Account 객체
+     * @param seat    - Seat 객체
      * @return Reservation 객체
      */
-    public static Reservation of(final Account account, final Seat seat, final LocalDateTime reservationTime) {
-        if (reservationTime.isBefore(LocalDateTime.now()))
-            throw new IllegalArgumentException("예약 확정 시간은 현재 시간보다 과거일 수 없습니다.");
-        Reservation reservation = new Reservation(seat, reservationTime);
+    public static Reservation of(final Account account, final Seat seat) {
+        Reservation reservation = new Reservation(seat);
         seat.setStatus(RESERVED);
         reservation.setRelationshipWithAccount(account);
         return reservation;
     }
 
     // ========================= 연관관계 메서드 =========================
+
+    /**
+     * 예약 확정 시간을 검증합니다.
+     *
+     * @param input - 예약 확정 시간
+     */
+    private static void validateReservationTime(final LocalDateTime input) {
+        if (input == null || input.isBefore(LocalDateTime.now())) throw new BusinessException(INVALID_RESERVATION_TIME);
+    }
+
+    // ========================= 검증 메서드 =========================
 
     /**
      * 계정과의 관계를 설정합니다.
@@ -110,6 +118,16 @@ public class Reservation extends BaseAuditingEntity {
     }
 
     // ========================= 비즈니스 메서드 =========================
+
+    /**
+     * 예약을 확정합니다.
+     *
+     * @param reservationTime - 예약 확정 시간
+     */
+    public void complete(final LocalDateTime reservationTime) {
+        validateReservationTime(reservationTime);
+        this.reservationTime = reservationTime;
+    }
 
     /**
      * 예약을 취소합니다.
