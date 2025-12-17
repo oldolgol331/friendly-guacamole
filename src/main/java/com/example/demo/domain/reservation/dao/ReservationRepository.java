@@ -15,5 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 12. 15.   oldolgol331          Initial creation
  */
-public interface ReservationRepository extends JpaRepository<Reservation, ReservationId> {
+public interface ReservationRepository extends JpaRepository<Reservation, ReservationId>, ReservationRepositoryCustom {
 }

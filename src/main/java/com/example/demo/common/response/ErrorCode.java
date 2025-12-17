@@ -63,15 +63,20 @@ public enum ErrorCode {
     INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "AC022", "닉네임 형식이 올바르지 않습니다. (2~15자, 특수문자 제외"),
     OAUTH_PASSWORD_CHANGE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "AC023", "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다."),
 
-    // 공연(Performance) & 좌석(Seat) & 예매(Reservation)
+    // 공연(Performance)
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PM001", "해당 공연을 찾을 수 없습니다."),
     INVALID_PERFORMANCE_DATE(HttpStatus.BAD_REQUEST, "PM002", "공연 날짜가 유효하지 않습니다."),
     DELETE_NOT_ALLOWED_HAS_RESERVATION(HttpStatus.BAD_REQUEST, "PM003", "예매 내역이 존재하여 삭제할 수 없습니다."),
+
+    // 좌석(Seat)
     SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "ST001", "해당 좌석을 찾을 수 없습니다."),
     SEAT_ALREADY_RESERVED(HttpStatus.CONFLICT, "ST002", "이미 예약된 좌석입니다."),
     SEAT_ALREADY_SOLD(HttpStatus.CONFLICT, "ST003", "이미 판매된 좌석입니다."),
     SEAT_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "ST004", "예약 가능한 상태가 아닙니다."),
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RS001", "해당 예매 정보를 찾을 수 없습니다.");
+
+    // 예매(Reservation)
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RS001", "해당 예약 정보를 찾을 수 없습니다."),
+    INVALID_RESERVATION_TIME(HttpStatus.BAD_REQUEST, "RS002", "예약 확정 시간이 유효하지 않습니다.");
 
     private final HttpStatus status;
     private final String     code;
