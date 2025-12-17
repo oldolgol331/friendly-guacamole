@@ -1,6 +1,7 @@
 package com.example.demo.domain.performance.controller;
 
 import static com.example.demo.common.response.SuccessCode.DELETE_PERFORMANCE_SUCCESS;
+import static com.example.demo.common.response.SuccessCode.PERFORMANCE_CREATE_SUCCESS;
 import static com.example.demo.common.response.SuccessCode.PERFORMANCE_LIST_SEARCH_SUCCESS;
 import static com.example.demo.common.response.SuccessCode.PERFORMANCE_READ_SUCCESS;
 import static com.example.demo.common.response.SuccessCode.UPDATE_PERFORMANCE_INFO_SUCCESS;
@@ -56,9 +57,10 @@ public class PerformanceController {
     @PostMapping
     @Operation(summary = "공연 생성", description = "공연 정보를 등록하고 좌석을 생성합니다.")
     public ResponseEntity<ApiResponse<Void>> createPerformance(
-            @Valid @RequestBody final PerformanceCreateRequest request) {
+            @Valid @RequestBody final PerformanceCreateRequest request
+    ) {
         performanceService.createPerformance(request);
-        final SuccessCode successCode = SuccessCode.PERFORMANCE_CREATE_SUCCESS;
+        final SuccessCode successCode = PERFORMANCE_CREATE_SUCCESS;
         return ResponseEntity.status(successCode.getStatus()).body(ApiResponse.success(successCode));
     }
 
