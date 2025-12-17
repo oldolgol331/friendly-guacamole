@@ -14,6 +14,10 @@ import com.example.demo.domain.account.model.Account;
 import com.example.demo.domain.account.model.AccountRole;
 import com.example.demo.domain.account.model.AccountStatus;
 import com.example.demo.domain.account.model.OAuthConnection;
+import com.example.demo.domain.performance.dto.PerformanceRequest.PerformanceCreateRequest;
+import com.example.demo.domain.performance.dto.PerformanceRequest.PerformanceUpdateRequest;
+import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceDetailResponse;
+import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceListResponse;
 import com.example.demo.domain.performance.model.Performance;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
@@ -215,6 +219,106 @@ public abstract class TestUtils {
 
     public static Performance createPerformance() {
         return createPerformances(1).getFirst();
+    }
+
+    public static PerformanceCreateRequest createPerformanceCreateRequest() {
+        LocalDateTime startTime = FAKER.timeAndDate()
+                                       .future()
+                                       .atZone(ZoneId.systemDefault())
+                                       .toLocalDateTime();
+        return FIXTURE_MONKEY.giveMeBuilder(PerformanceCreateRequest.class)
+                             .instantiate(Instantiator.constructor()
+                                                      .parameter(String.class, "name")
+                                                      .parameter(String.class, "venue")
+                                                      .parameter(String.class, "info")
+                                                      .parameter(LocalDateTime.class, "startTime")
+                                                      .parameter(LocalDateTime.class, "endTime")
+                                                      .parameter(int.class, "totalSeats")
+                                                      .parameter(int.class, "price"))
+                             .setLazy("name", () -> FAKER.hobby().activity())
+                             .setLazy("venue", () -> FAKER.address().fullAddress())
+                             .setLazy("info", () -> FAKER.lorem().characters(1, 65535, true, true, true))
+                             .setLazy("startTime", () -> startTime)
+                             .setLazy("endTime", () -> startTime.plusHours(3))
+                             .setLazy("totalSeats", () -> FAKER.number().numberBetween(1, 500))
+                             .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .sample();
+    }
+
+    public static PerformanceUpdateRequest createPerformanceUpdateRequest() {
+        LocalDateTime startTime = FAKER.timeAndDate()
+                                       .future()
+                                       .atZone(ZoneId.systemDefault())
+                                       .toLocalDateTime();
+        return FIXTURE_MONKEY.giveMeBuilder(PerformanceUpdateRequest.class)
+                             .instantiate(Instantiator.constructor()
+                                                      .parameter(String.class, "name")
+                                                      .parameter(String.class, "venue")
+                                                      .parameter(String.class, "info")
+                                                      .parameter(LocalDateTime.class, "startTime")
+                                                      .parameter(LocalDateTime.class, "endTime"))
+                             .setLazy("name", () -> FAKER.hobby().activity())
+                             .setLazy("venue", () -> FAKER.address().fullAddress())
+                             .setLazy("info", () -> FAKER.lorem().characters(1, 65535, true, true, true))
+                             .setLazy("startTime", () -> startTime)
+                             .setLazy("endTime", () -> startTime.plusHours(3))
+                             .sample();
+    }
+
+    public static List<PerformanceListResponse> createPerformanceListResponses(final int size) {
+        LocalDateTime startTime = FAKER.timeAndDate()
+                                       .future()
+                                       .atZone(ZoneId.systemDefault())
+                                       .toLocalDateTime();
+        return FIXTURE_MONKEY.giveMeBuilder(PerformanceListResponse.class)
+                             .instantiate(Instantiator.constructor()
+                                                      .parameter(Long.class, "id")
+                                                      .parameter(String.class, "name")
+                                                      .parameter(String.class, "venue")
+                                                      .parameter(LocalDateTime.class, "startTime")
+                                                      .parameter(LocalDateTime.class, "endTime")
+                                                      .parameter(int.class, "remainingSeats")
+                                                      .parameter(int.class, "totalSeats")
+                                                      .parameter(LocalDateTime.class, "createdAt")
+                                                      .parameter(LocalDateTime.class, "updatedAt"))
+                             .setLazy("name", () -> FAKER.hobby().activity())
+                             .setLazy("venue", () -> FAKER.address().fullAddress())
+                             .setLazy("startTime", () -> startTime)
+                             .setLazy("endTime", () -> startTime.plusHours(3))
+                             .setLazy("totalSeats", () -> FAKER.number().numberBetween(1, Integer.MAX_VALUE))
+                             .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .setLazy("createdAt", () -> startTime.minusWeeks(2))
+                             .setLazy("updatedAt", () -> startTime.minusWeeks(2))
+                             .sampleList(size);
+    }
+
+    public static PerformanceDetailResponse createPerformanceDetailResponse() {
+        LocalDateTime startTime = FAKER.timeAndDate()
+                                       .future()
+                                       .atZone(ZoneId.systemDefault())
+                                       .toLocalDateTime();
+        return FIXTURE_MONKEY.giveMeBuilder(PerformanceDetailResponse.class)
+                             .instantiate(Instantiator.constructor()
+                                                      .parameter(Long.class, "id")
+                                                      .parameter(String.class, "name")
+                                                      .parameter(String.class, "venue")
+                                                      .parameter(String.class, "info")
+                                                      .parameter(LocalDateTime.class, "startTime")
+                                                      .parameter(LocalDateTime.class, "endTime")
+                                                      .parameter(int.class, "remainingSeats")
+                                                      .parameter(int.class, "totalSeats")
+                                                      .parameter(LocalDateTime.class, "createdAt")
+                                                      .parameter(LocalDateTime.class, "updatedAt"))
+                             .setLazy("name", () -> FAKER.hobby().activity())
+                             .setLazy("venue", () -> FAKER.address().fullAddress())
+                             .setLazy("info", () -> FAKER.lorem().characters(1, 65535, true, true, true))
+                             .setLazy("startTime", () -> startTime)
+                             .setLazy("endTime", () -> startTime.plusHours(3))
+                             .setLazy("totalSeats", () -> FAKER.number().numberBetween(1, Integer.MAX_VALUE))
+                             .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .setLazy("createdAt", () -> startTime.minusWeeks(2))
+                             .setLazy("updatedAt", () -> startTime.minusWeeks(2))
+                             .sample();
     }
 
 }
