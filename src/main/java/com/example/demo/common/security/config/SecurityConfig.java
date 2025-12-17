@@ -95,6 +95,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts").authenticated()
 
+                        // Performance
+                        .requestMatchers(HttpMethod.POST, "/api/v1/performances").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET,
+                                         "/api/v1/performances",
+                                         "/api/v1/performances/{performanceId}").permitAll()
+                        .requestMatchers(HttpMethod.PUT,
+                                         "/api/v1/performances/{performanceId}").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE,
+                                         "/api/v1/performances/{performanceId}").hasAuthority("ROLE_ADMIN")
+
                         // ETC
                         .anyRequest().authenticated())
 

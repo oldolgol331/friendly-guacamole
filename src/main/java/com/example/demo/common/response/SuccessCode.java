@@ -26,7 +26,7 @@ public enum SuccessCode {
     CREATE_SUCCESS(HttpStatus.CREATED, "성공적으로 생성되었습니다."),
     UPDATE_SUCCESS(HttpStatus.OK, "성공적으로 업데이트되었습니다."),
     DELETE_SUCCESS(HttpStatus.OK, "성공적으로 삭제되었습니다."),
-    
+
     // 계정(Account) & 인증(Auth)
     ACCOUNT_REGISTER_SUCCESS(HttpStatus.CREATED, "회원가입이 성공적으로 완료되었습니다."),
     ACCOUNT_LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공했습니다."),
@@ -37,7 +37,14 @@ public enum SuccessCode {
     EMAIL_SENT(HttpStatus.OK, "이메일이 발송되었습니다."),
     UPDATE_ACCOUNT_INFO_SUCCESS(HttpStatus.OK, "계정 정보를 성공적으로 수정했습니다."),
     PASSWORD_CHANGED_SUCCESS(HttpStatus.OK, "비밀번호가 성공적으로 변경되었습니다."),
-    ACCOUNT_WITHDRAWN_SUCCESS(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다.");
+    ACCOUNT_WITHDRAWN_SUCCESS(HttpStatus.OK, "회원 탈퇴가 성공적으로 처리되었습니다."),
+
+    // 공연(Performance) & 좌석(Seat)
+    PERFORMANCE_CREATE_SUCCESS(HttpStatus.CREATED, "공연 생성이 성공적으로 완료되었습니다."),
+    PERFORMANCE_LIST_SEARCH_SUCCESS(HttpStatus.OK, "공연 목록 조회가 성공적으로 완료되었습니다."),
+    PERFORMANCE_READ_SUCCESS(HttpStatus.OK, "공연 상세 조회가 성공적으로 완료되었습니다."),
+    UPDATE_PERFORMANCE_INFO_SUCCESS(HttpStatus.OK, "공연 정보를 성공적으로 수정했습니다."),
+    DELETE_PERFORMANCE_SUCCESS(HttpStatus.OK, "공연 삭제가 성공적으로 완료되었습니다.");
 
     private final HttpStatus status;
     private final String     message;
