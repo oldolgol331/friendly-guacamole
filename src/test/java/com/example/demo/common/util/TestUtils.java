@@ -19,6 +19,9 @@ import com.example.demo.domain.performance.dto.PerformanceRequest.PerformanceUpd
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceDetailResponse;
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceListResponse;
 import com.example.demo.domain.performance.model.Performance;
+import com.example.demo.domain.performance.model.Seat;
+import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
+import com.example.demo.domain.reservation.model.Reservation;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
@@ -319,6 +322,65 @@ public abstract class TestUtils {
                              .setLazy("createdAt", () -> startTime.minusWeeks(2))
                              .setLazy("updatedAt", () -> startTime.minusWeeks(2))
                              .sample();
+    }
+
+    public static List<Seat> createSeats(final Performance performance, final int size) {
+        return IntStream.range(0, size)
+                        .mapToObj(
+                                i -> Seat.of(
+                                        FAKER.word().noun() + FAKER.number().numberBetween(1, Integer.MAX_VALUE),
+                                        FAKER.number().numberBetween(1, Integer.MAX_VALUE),
+                                        performance
+                                )
+                        )
+                        .toList();
+    }
+
+    public static Seat createSeat(final Performance performance) {
+        return createSeats(performance, 1).getFirst();
+    }
+
+    public static List<Reservation> createReservations(final Account account, final List<Seat> seats) {
+        return seats.stream().map(s -> {
+            Reservation reservation = Reservation.of(account, s);
+            if (FAKER.bool().bool())
+                reservation.complete(FAKER.timeAndDate().future().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            return reservation;
+        }).toList();
+    }
+
+    public static Reservation createReservation(final Account account, final Seat seat) {
+        return createReservations(account, List.of(seat)).getFirst();
+    }
+
+    public static List<ReservationInfoResponse> createReservationInfoResponses(final int size) {
+        LocalDateTime startTime = FAKER.timeAndDate()
+                                       .future()
+                                       .atZone(ZoneId.systemDefault())
+                                       .toLocalDateTime();
+        return FIXTURE_MONKEY.giveMeBuilder(ReservationInfoResponse.class)
+                             .instantiate(Instantiator.constructor()
+                                                      .parameter(Long.class, "performanceId")
+                                                      .parameter(Long.class, "seatId")
+                                                      .parameter(UUID.class, "accountId")
+                                                      .parameter(String.class, "nickname")
+                                                      .parameter(String.class, "performanceName")
+                                                      .parameter(LocalDateTime.class, "startTime")
+                                                      .parameter(LocalDateTime.class, "endTime")
+                                                      .parameter(String.class, "seatCode")
+                                                      .parameter(int.class, "price")
+                                                      .parameter(LocalDateTime.class, "reservationTime"))
+                             .setLazy("performanceId", () -> FAKER.number().numberBetween(1L, Long.MAX_VALUE))
+                             .setLazy("seatId", () -> FAKER.number().numberBetween(1L, Long.MAX_VALUE))
+                             .setLazy("accountId", () -> UUID.fromString(FAKER.internet().uuid()))
+                             .setLazy("nickname", () -> FAKER.credentials().username().replace(".", "").substring(0, 5))
+                             .setLazy("performanceName", () -> FAKER.hobby().activity())
+                             .setLazy("startTime", () -> startTime)
+                             .setLazy("endTime", () -> startTime.plusHours(3))
+                             .setLazy("seatCode",
+                                      () -> FAKER.word().noun() + FAKER.number().numberBetween(1, Integer.MAX_VALUE))
+                             .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .sampleList(size);
     }
 
 }
