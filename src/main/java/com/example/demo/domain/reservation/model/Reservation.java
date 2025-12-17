@@ -1,14 +1,14 @@
 package com.example.demo.domain.reservation.model;
 
 import static com.example.demo.common.response.ErrorCode.INVALID_RESERVATION_TIME;
-import static com.example.demo.domain.seat.model.SeatStatus.RESERVED;
+import static com.example.demo.domain.performance.model.SeatStatus.RESERVED;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
 import com.example.demo.domain.account.model.Account;
-import com.example.demo.domain.seat.model.Seat;
+import com.example.demo.domain.performance.model.Seat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;

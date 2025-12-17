@@ -6,7 +6,7 @@ import static com.example.demo.common.util.TestUtils.createPerformanceCreateRequ
 import static com.example.demo.common.util.TestUtils.createPerformanceDetailResponse;
 import static com.example.demo.common.util.TestUtils.createPerformanceListResponses;
 import static com.example.demo.common.util.TestUtils.createPerformanceUpdateRequest;
-import static com.example.demo.domain.seat.model.SeatStatus.AVAILABLE;
+import static com.example.demo.domain.performance.model.SeatStatus.AVAILABLE;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,7 +26,7 @@ import com.example.demo.domain.performance.dto.PerformanceRequest.PerformanceUpd
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceDetailResponse;
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceListResponse;
 import com.example.demo.domain.performance.model.Performance;
-import com.example.demo.domain.seat.dao.SeatRepository;
+import com.example.demo.domain.performance.dao.SeatRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;

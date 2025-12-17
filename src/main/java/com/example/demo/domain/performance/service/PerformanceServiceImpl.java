@@ -2,7 +2,7 @@ package com.example.demo.domain.performance.service;
 
 import static com.example.demo.common.response.ErrorCode.DELETE_NOT_ALLOWED_HAS_RESERVATION;
 import static com.example.demo.common.response.ErrorCode.PERFORMANCE_NOT_FOUND;
-import static com.example.demo.domain.seat.model.SeatStatus.AVAILABLE;
+import static com.example.demo.domain.performance.model.SeatStatus.AVAILABLE;
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.domain.performance.dao.PerformanceRepository;
@@ -11,8 +11,8 @@ import com.example.demo.domain.performance.dto.PerformanceRequest.PerformanceUpd
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceDetailResponse;
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceListResponse;
 import com.example.demo.domain.performance.model.Performance;
-import com.example.demo.domain.seat.dao.SeatRepository;
-import com.example.demo.domain.seat.model.Seat;
+import com.example.demo.domain.performance.dao.SeatRepository;
+import com.example.demo.domain.performance.model.Seat;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;

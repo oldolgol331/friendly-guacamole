@@ -2,10 +2,10 @@ package com.example.demo.domain.reservation.dao;
 
 import com.example.demo.domain.account.model.QAccount;
 import com.example.demo.domain.performance.model.QPerformance;
+import com.example.demo.domain.performance.model.QSeat;
 import com.example.demo.domain.reservation.dto.QReservationResponse_ReservationInfoResponse;
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
 import com.example.demo.domain.reservation.model.QReservation;
-import com.example.demo.domain.seat.model.QSeat;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQuery;

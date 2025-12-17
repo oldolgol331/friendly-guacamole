@@ -1,7 +1,7 @@
-package com.example.demo.domain.seat.model;
+package com.example.demo.domain.performance.model;
 
 /**
- * PackageName : com.example.demo.domain.seat.model
+ * PackageName : com.example.demo.domain.performance.model
  * FileName    : SeatStatus
  * Author      : oldolgol331
  * Date        : 25. 12. 15.

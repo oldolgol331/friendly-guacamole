@@ -13,8 +13,8 @@ import com.example.demo.domain.reservation.dto.ReservationRequest.ReservationCre
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
 import com.example.demo.domain.reservation.model.Reservation;
 import com.example.demo.domain.reservation.model.ReservationId;
-import com.example.demo.domain.seat.dao.SeatRepository;
-import com.example.demo.domain.seat.model.Seat;
+import com.example.demo.domain.performance.dao.SeatRepository;
+import com.example.demo.domain.performance.model.Seat;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

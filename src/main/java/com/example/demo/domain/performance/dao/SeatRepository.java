@@ -1,11 +1,11 @@
-package com.example.demo.domain.seat.dao;
+package com.example.demo.domain.performance.dao;
 
-import com.example.demo.domain.seat.model.Seat;
-import com.example.demo.domain.seat.model.SeatStatus;
+import com.example.demo.domain.performance.model.Seat;
+import com.example.demo.domain.performance.model.SeatStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * PackageName : com.example.demo.domain.seat.dao
+ * PackageName : com.example.demo.domain.performance.dao
  * FileName    : SeatRepository
  * Author      : oldolgol331
  * Date        : 25. 12. 15.

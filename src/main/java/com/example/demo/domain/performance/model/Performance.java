@@ -6,7 +6,6 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
-import com.example.demo.domain.seat.model.Seat;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

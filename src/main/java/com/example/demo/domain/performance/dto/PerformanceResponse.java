@@ -1,6 +1,6 @@
 package com.example.demo.domain.performance.dto;
 
-import static com.example.demo.domain.seat.model.SeatStatus.AVAILABLE;
+import static com.example.demo.domain.performance.model.SeatStatus.AVAILABLE;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.example.demo.domain.performance.model.Performance;

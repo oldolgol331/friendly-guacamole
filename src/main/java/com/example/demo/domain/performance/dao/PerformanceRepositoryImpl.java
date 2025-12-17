@@ -1,13 +1,13 @@
 package com.example.demo.domain.performance.dao;
 
-import static com.example.demo.domain.seat.model.SeatStatus.AVAILABLE;
+import static com.example.demo.domain.performance.model.SeatStatus.AVAILABLE;
 
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceDetailResponse;
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceListResponse;
 import com.example.demo.domain.performance.dto.QPerformanceResponse_PerformanceDetailResponse;
 import com.example.demo.domain.performance.dto.QPerformanceResponse_PerformanceListResponse;
 import com.example.demo.domain.performance.model.QPerformance;
-import com.example.demo.domain.seat.model.QSeat;
+import com.example.demo.domain.performance.model.QSeat;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;

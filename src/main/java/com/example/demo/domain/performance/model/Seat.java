@@ -1,11 +1,11 @@
-package com.example.demo.domain.seat.model;
+package com.example.demo.domain.performance.model;
 
 import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_RESERVED;
 import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_SOLD;
 import static com.example.demo.common.response.ErrorCode.SEAT_NOT_AVAILABLE;
-import static com.example.demo.domain.seat.model.SeatStatus.AVAILABLE;
-import static com.example.demo.domain.seat.model.SeatStatus.RESERVED;
-import static com.example.demo.domain.seat.model.SeatStatus.SOLD;
+import static com.example.demo.domain.performance.model.SeatStatus.AVAILABLE;
+import static com.example.demo.domain.performance.model.SeatStatus.RESERVED;
+import static com.example.demo.domain.performance.model.SeatStatus.SOLD;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -14,7 +14,6 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
-import com.example.demo.domain.performance.model.Performance;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -32,7 +31,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * PackageName : com.example.demo.domain.seat.model
+ * PackageName : com.example.demo.domain.performance.model
  * FileName    : Seat
  * Author      : oldolgol331
  * Date        : 25. 12. 15.
