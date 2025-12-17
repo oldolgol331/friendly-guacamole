@@ -60,12 +60,10 @@ public class Performance extends BaseAuditingEntity {
     private String info;                            // 공연 정보
 
     @Column(nullable = false)
-    @Setter
     @NotNull
     private LocalDateTime startTime;                // 공연 시작 시간
 
     @Column(nullable = false)
-    @Setter
     @NotNull
     private LocalDateTime endTime;                  // 공연 종료 시간
 
@@ -116,6 +114,20 @@ public class Performance extends BaseAuditingEntity {
     private static void validatePerformanceTime(final LocalDateTime inputStartTime, final LocalDateTime inputEndTime) {
         if (inputStartTime.isAfter(inputEndTime) || inputStartTime.equals(inputEndTime))
             throw new BusinessException(INVALID_PERFORMANCE_DATE);
+    }
+
+    // ========================= 비즈니스 메서드 =========================
+
+    /**
+     * 공연 시간을 변경합니다.
+     *
+     * @param newStartTime - 변경할 공연 시작 시간
+     * @param newEndTime   - 변경할 공연 종료 시간
+     */
+    public void setPerformanceTime(final LocalDateTime newStartTime, final LocalDateTime newEndTime) {
+        validatePerformanceTime(newStartTime, newEndTime);
+        startTime = newStartTime;
+        endTime = newEndTime;
     }
 
 }

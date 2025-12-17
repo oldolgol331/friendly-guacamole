@@ -1,6 +1,7 @@
 package com.example.demo.domain.seat.dao;
 
 import com.example.demo.domain.seat.model.Seat;
+import com.example.demo.domain.seat.model.SeatStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -15,4 +16,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * 25. 12. 15.   oldolgol331          Initial creation
  */
 public interface SeatRepository extends JpaRepository<Seat, Long> {
+
+    boolean existsByPerformanceIdAndStatusNot(Long performanceId, SeatStatus status);
+
 }

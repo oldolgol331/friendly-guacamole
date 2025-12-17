@@ -14,5 +14,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * ---------------------------------------------------------------------------------------------------------------------
  * 25. 12. 15.   oldolgol331          Initial creation
  */
-public interface PerformanceRepository extends JpaRepository<Performance, Long> {
+public interface PerformanceRepository extends JpaRepository<Performance, Long>, PerformanceRepositoryCustom {
 }
