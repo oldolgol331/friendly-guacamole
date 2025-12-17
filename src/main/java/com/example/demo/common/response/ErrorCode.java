@@ -66,6 +66,7 @@ public enum ErrorCode {
     // 공연(Performance) & 좌석(Seat) & 예매(Reservation)
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PM001", "해당 공연을 찾을 수 없습니다."),
     INVALID_PERFORMANCE_DATE(HttpStatus.BAD_REQUEST, "PM002", "공연 날짜가 유효하지 않습니다."),
+    DELETE_NOT_ALLOWED_HAS_RESERVATION(HttpStatus.BAD_REQUEST, "PM003", "예매 내역이 존재하여 삭제할 수 없습니다."),
     SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "ST001", "해당 좌석을 찾을 수 없습니다."),
     SEAT_ALREADY_RESERVED(HttpStatus.CONFLICT, "ST002", "이미 예약된 좌석입니다."),
     SEAT_ALREADY_SOLD(HttpStatus.CONFLICT, "ST003", "이미 판매된 좌석입니다."),
