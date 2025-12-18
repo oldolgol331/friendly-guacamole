@@ -17,6 +17,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -74,6 +75,9 @@ public class Reservation extends BaseAuditingEntity {
 
     private LocalDateTime reservationTime;  // 예약 확정 시간
 
+    @OneToOne(mappedBy = "reservation")
+    private Payment payment;                // 결제 정보
+
     private Reservation(final Seat seat) {
         this.seat = seat;
     }
@@ -94,7 +98,7 @@ public class Reservation extends BaseAuditingEntity {
         return reservation;
     }
 
-    // ========================= 연관관계 메서드 =========================
+    // ========================= 검증 메서드 =========================
 
     /**
      * 예약 확정 시간을 검증합니다.
@@ -105,7 +109,7 @@ public class Reservation extends BaseAuditingEntity {
         if (input == null) throw new BusinessException(INVALID_RESERVATION_TIME);
     }
 
-    // ========================= 검증 메서드 =========================
+    // ========================= 연관관계 메서드 =========================
 
     /**
      * 계정과의 관계를 설정합니다.

@@ -76,7 +76,24 @@ public enum ErrorCode {
 
     // 예매(Reservation)
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RS001", "해당 예약 정보를 찾을 수 없습니다."),
-    INVALID_RESERVATION_TIME(HttpStatus.BAD_REQUEST, "RS002", "예약 확정 시간이 유효하지 않습니다.");
+    INVALID_RESERVATION_TIME(HttpStatus.BAD_REQUEST, "RS002", "예약 확정 시간이 유효하지 않습니다."),
+
+    // 결제(Payment)
+    PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "PY001", "해당 결제 정보를 찾을 수 없습니다."),
+    PAYMENT_ALREADY_COMPLETED(HttpStatus.CONFLICT, "PY002", "이미 결제가 완료되었습니다."),
+    PAYMENT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY003", "결제 처리 중 오류가 발생했습니다."),
+    PAYMENT_AMOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "PY004", "결제 금액이 일치하지 않습니다."),
+    PAYMENT_ALREADY_CANCELED(HttpStatus.CONFLICT, "PY005", "이미 취소된 결제입니다."),
+    PAYMENT_CANCEL_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY006", "결제 취소 중 오류가 발생했습니다."),
+    PAYMENT_REFUND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY007", "결제 환불 중 오류가 발생했습니다."),
+    PAYMENT_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "PY008", "결제가 완료되지 않았습니다."),
+    PAYMENT_ALREADY_REFUNDED(HttpStatus.CONFLICT, "PY009", "이미 환불된 결제입니다."),
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "PY010", "결제 금액이 유효하지 않습니다."),
+    PAYMENT_METHOD_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "PY011", "지원하지 않는 결제 수단입니다."),
+    PAYMENT_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "PY012", "결제 처리 시간이 초과되었습니다."),
+    PAYMENT_VERIFICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY013", "결제 검증에 실패했습니다."),
+    INVALID_PAYMENT_APPROVAL_TIME(HttpStatus.BAD_REQUEST, "PY014", "결제 승인 시간이 유효하지 않습니다."),
+    INVALID_PAYMENT_STATUS(HttpStatus.BAD_REQUEST, "PY015", "결제 상태가 유효하지 않습니다.");
 
     private final HttpStatus status;
     private final String     code;

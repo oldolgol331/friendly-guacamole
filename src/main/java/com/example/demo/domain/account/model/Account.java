@@ -14,13 +14,14 @@ import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
 import static com.example.demo.domain.account.model.AccountStatus.BLOCKED;
 import static com.example.demo.domain.account.model.AccountStatus.DELETED;
 import static com.example.demo.domain.account.model.AccountStatus.INACTIVE;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.EnumType.STRING;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
+import com.example.demo.domain.reservation.model.Payment;
 import com.example.demo.domain.reservation.model.Reservation;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -90,11 +91,14 @@ public class Account extends BaseAuditingEntity {
 
     private LocalDateTime deletedAt = null;                             // 탈퇴 일시
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = REMOVE, orphanRemoval = true)
     private List<OAuthConnection> oAuthConnections = new ArrayList<>(); // OAuth 연동 정보 목록
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = REMOVE, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();         // 예약 정보 목록
+
+    @OneToMany(mappedBy = "account", cascade = REMOVE, orphanRemoval = true)
+    private List<Payment> payments = new ArrayList<>();                 // 결제 정보 목록
 
     private Account(final String email,
                     final String nickname,

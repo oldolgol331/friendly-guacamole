@@ -1,0 +1,211 @@
+package com.example.demo.domain.reservation.model;
+
+import static com.example.demo.common.response.ErrorCode.INVALID_PAYMENT_AMOUNT;
+import static com.example.demo.common.response.ErrorCode.INVALID_PAYMENT_APPROVAL_TIME;
+import static com.example.demo.common.response.ErrorCode.INVALID_PAYMENT_STATUS;
+import static com.example.demo.common.response.ErrorCode.PAYMENT_ALREADY_CANCELED;
+import static com.example.demo.common.response.ErrorCode.PAYMENT_METHOD_NOT_SUPPORTED;
+import static com.example.demo.domain.reservation.model.PaymentStatus.CANCELLED;
+import static com.example.demo.domain.reservation.model.PaymentStatus.PAID;
+import static com.example.demo.domain.reservation.model.PaymentStatus.PENDING;
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+import com.example.demo.common.error.BusinessException;
+import com.example.demo.common.model.BaseAuditingEntity;
+import com.example.demo.domain.account.model.Account;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+/**
+ * PackageName : com.example.demo.domain.reservation.model
+ * FileName    : Payment
+ * Author      : oldolgol331
+ * Date        : 25. 12. 18.
+ * Description : 결제 정보 엔티티
+ * =====================================================================================================================
+ * DATE          AUTHOR               DESCRIPTION
+ * ---------------------------------------------------------------------------------------------------------------------
+ * 25. 12. 18.   oldolgol331          Initial creation
+ */
+@Entity
+@Table(name = "payments",
+       uniqueConstraints = @UniqueConstraint(name = "UK_payments_payment_key", columnNames = "payment_key"))
+@Getter
+@NoArgsConstructor(access = PROTECTED)
+public class Payment extends BaseAuditingEntity {
+
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "payment_id", nullable = false, updatable = false)
+    private Long id;                    // ID
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "account_id",
+                nullable = false,
+                updatable = false,
+                foreignKey = @ForeignKey(name = "FK_payments_accounts",
+                                         foreignKeyDefinition = "BINARY(16)"))
+    private Account account;            // 결제 계정
+
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "reservation_id",
+                nullable = false,
+                updatable = false,
+                foreignKey = @ForeignKey(name = "FK_payments_reservations"))
+    private Reservation reservation;    // 예약 정보
+
+    @Column(nullable = false, updatable = false)
+    @NotBlank
+    private String paymentKey;          // PG사 결제 ID
+
+    @Column(nullable = false)
+    @NotBlank
+    private String paymentMethod;       // 결제 방법
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    @NotNull
+    private BigDecimal amount;          // 결제 금액
+
+    @Enumerated(STRING)
+    @Column(nullable = false)
+    @NotNull
+    private PaymentStatus status;       // 결제 상태
+
+    private LocalDateTime approvedAt;   // 결제 승인 일시
+
+    private String receiptUrl;          // 영수증 URL
+
+    private LocalDateTime canceledAt;   // 결제 취소 일시
+
+    private String cancelReason;        // 결제 취소 사유
+
+    private Payment(final Reservation reservation,
+                    final String paymentKey,
+                    final String paymentMethod,
+                    final BigDecimal amount) {
+        this.reservation = reservation;
+        this.paymentKey = paymentKey;
+        this.paymentMethod = paymentMethod;
+        this.amount = amount;
+        this.status = PENDING;
+    }
+
+    // ========================= 생성자 메서드 =========================
+
+    /**
+     * Payment 객체 생성
+     *
+     * @param account     - Account 객체
+     * @param reservation - Reservation 객체
+     * @param paymentKey  - PG사 결제 ID
+     * @param amount      - 결제 금액
+     * @return Payment 객체
+     */
+    public static Payment of(final Account account,
+                             final Reservation reservation,
+                             final String paymentKey,
+                             final BigDecimal amount) {
+        validateAmount(amount);
+        Payment payment = new Payment(reservation, paymentKey, "UNKNOWN", amount);
+        payment.setRelationshipWithAccount(account);
+        return payment;
+    }
+
+    /**
+     * Payment 객체 생성
+     *
+     * @param account       - Account 객체
+     * @param reservation   - Reservation 객체
+     * @param paymentKey    - PG사 결제 ID
+     * @param paymentMethod - 결제 방법
+     * @param amount        - 결제 금액
+     * @return Payment 객체
+     */
+    public static Payment of(final Account account,
+                             final Reservation reservation,
+                             final String paymentKey,
+                             final String paymentMethod,
+                             final BigDecimal amount) {
+        validateAmount(amount);
+        Payment payment = new Payment(reservation, paymentKey, paymentMethod, amount);
+        payment.setRelationshipWithAccount(account);
+        return payment;
+    }
+
+    // ========================= 검증 메서드 =========================
+
+    /**
+     * 결제 금액을 검증합니다.
+     *
+     * @param input - 입력값
+     */
+    private static void validateAmount(final BigDecimal input) {
+        if (input == null || input.compareTo(BigDecimal.ZERO) <= 0)
+            throw new BusinessException(INVALID_PAYMENT_AMOUNT);
+    }
+
+    // ========================= 연관관계 메서드 =========================
+
+    /**
+     * 계정과의 관계를 설정합니다.
+     *
+     * @param account - 계정
+     */
+    private void setRelationshipWithAccount(final Account account) {
+        this.account = account;
+        account.getPayments().add(this);
+    }
+
+    // ========================= 비즈니스 메서드 =========================
+
+    /**
+     * 결제 승인 처리합니다.
+     *
+     * @param paymentMethod - 결제 방법
+     * @param approvedAt    - 결제 승인 시간
+     */
+    public void approve(final String paymentMethod, final LocalDateTime approvedAt, final String receiptUrl) {
+        if (paymentMethod == null || paymentMethod.isBlank()) throw new BusinessException(PAYMENT_METHOD_NOT_SUPPORTED);
+        if (approvedAt == null) throw new BusinessException(INVALID_PAYMENT_APPROVAL_TIME);
+        if (status != PENDING) throw new BusinessException(INVALID_PAYMENT_STATUS);
+
+        this.paymentMethod = paymentMethod;
+        status = PAID;
+        this.approvedAt = approvedAt;
+        this.receiptUrl = receiptUrl;
+    }
+
+    /**
+     * 결제를 취소합니다.
+     *
+     * @param cancelReason - 결제 취소 사유
+     */
+    public void cancel(final String cancelReason) {
+        switch (status) {
+            case CANCELLED -> throw new BusinessException(PAYMENT_ALREADY_CANCELED);
+            case FAILED, PENDING -> throw new BusinessException(INVALID_PAYMENT_STATUS);
+        }
+        status = CANCELLED;
+        this.cancelReason = cancelReason;
+        canceledAt = LocalDateTime.now();
+    }
+
+}
