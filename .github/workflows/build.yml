@@ -83,4 +83,4 @@ jobs:
 
       - name: Build with Gradle
         working-directory: ./
-        run: ./gradlew build --no-daemon
+        run: ./gradlew build --no-daemon --info
