@@ -102,7 +102,7 @@ public class Reservation extends BaseAuditingEntity {
      * @param input - 예약 확정 시간
      */
     private static void validateReservationTime(final LocalDateTime input) {
-        if (input == null || input.isBefore(LocalDateTime.now())) throw new BusinessException(INVALID_RESERVATION_TIME);
+        if (input == null) throw new BusinessException(INVALID_RESERVATION_TIME);
     }
 
     // ========================= 검증 메서드 =========================
