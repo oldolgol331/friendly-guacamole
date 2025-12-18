@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS oauth_connections CASCADE;
 DROP TABLE IF EXISTS performances CASCADE;
 DROP TABLE IF EXISTS seats CASCADE;
 DROP TABLE IF EXISTS reservations CASCADE;
+DROP TABLE IF EXISTS payments CASCADE;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -78,3 +79,24 @@ CREATE TABLE reservations
     CONSTRAINT FK_reservations_accounts FOREIGN KEY (account_id) REFERENCES accounts (account_id),
     CONSTRAINT FK_reservations_seats FOREIGN KEY (seat_id) REFERENCES seats (seat_id)
 ) COMMENT '예약 테이블';
+
+CREATE TABLE payments
+(
+    payment_id     BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '결제 고유 식별자',
+    account_id     BINARY(16)      NOT NULL COMMENT '결제한 계정 식별자',
+    seat_id        BIGINT UNSIGNED NOT NULL COMMENT '결제한 좌석 식별자',
+    payment_key    VARCHAR(255)    NOT NULL COMMENT 'PG사 결제 ID',
+    payment_method VARCHAR(255)    NOT NULL COMMENT '결제 수단',
+    amount         DECIMAL(19, 4)  NOT NULL DEFAULT 0.0000 COMMENT '결제 금액',
+    status         VARCHAR(255)    NOT NULL DEFAULT 'PENDING' COMMENT '결제 상태',
+    approve_at     DATETIME                 DEFAULT NULL COMMENT '결제 승인 일시',
+    receipt_url    VARCHAR(255)             DEFAULT NULL COMMENT '영수증 URL',
+    canceled_at    DATETIME                 DEFAULT NULL COMMENT '결제 취소 일시',
+    cancel_reason  VARCHAR(255)             DEFAULT NULL COMMENT '결제 취소 사유',
+    created_at     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
+    updated_at     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
+    CONSTRAINT PK_payments PRIMARY KEY (payment_id),
+    CONSTRAINT FK_payments_accounts FOREIGN KEY (account_id) REFERENCES accounts (account_id),
+    CONSTRAINT FK_payments_reservations FOREIGN KEY (account_id, seat_id) REFERENCES reservations (account_id, seat_id),
+    CONSTRAINT UK_payments_payment_key UNIQUE (payment_key)
+);
