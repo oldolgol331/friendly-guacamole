@@ -62,11 +62,11 @@ class ReservationServiceTest {
     @InjectMocks
     ReservationServiceImpl reservationService;
     @Mock
-    ReservationRepository reservationRepository;
+    ReservationRepository  reservationRepository;
     @Mock
-    AccountRepository accountRepository;
+    AccountRepository      accountRepository;
     @Mock
-    SeatRepository seatRepository;
+    SeatRepository         seatRepository;
 
     @Nested
     @DisplayName("reserveSeat() 테스트")
@@ -82,15 +82,13 @@ class ReservationServiceTest {
             ReflectionTestUtils.setField(performance, "id", 1L);
             Seat seat = createSeat(performance);
             ReflectionTestUtils.setField(seat, "id", 1L);
+            Reservation reservation = createReservation(account, seat);
+            ReflectionTestUtils.setField(reservation, "reservationTime", null);
             ReservationCreateRequest request = new ReservationCreateRequest(seat.getId());
 
             when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
             when(seatRepository.findById(eq(seat.getId()))).thenReturn(Optional.of(seat));
-            when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> {
-                Reservation reservation = invocation.getArgument(0);
-                ReflectionTestUtils.setField(reservation, "reservationTime", java.time.LocalDateTime.now());
-                return reservation;
-            });
+            when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
             // when
             reservationService.reserveSeat(account.getId(), request);
@@ -105,20 +103,20 @@ class ReservationServiceTest {
         @DisplayName("좌석 예약 시도, 계정이 존재하지 않음")
         void reserveSeat_accountNotFound() {
             // given
-            UUID accountId = UUID.randomUUID();
-            ReservationCreateRequest request = new ReservationCreateRequest(1L);
+            UUID                     accountId = UUID.randomUUID();
+            ReservationCreateRequest request   = new ReservationCreateRequest(1L);
 
             when(accountRepository.findByIdAndStatus(eq(accountId), any())).thenReturn(Optional.empty());
 
             // when
             BusinessException exception = assertThrows(BusinessException.class,
-                    () -> reservationService.reserveSeat(accountId, request),
-                    "BusinessException이 발생해야 합니다.");
+                                                       () -> reservationService.reserveSeat(accountId, request),
+                                                       "BusinessException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
-                    () -> assertEquals(ACCOUNT_NOT_FOUND, exception.getErrorCode(),
-                            "errorCode는 ACCOUNT_NOT_FOUND여야 합니다."));
+                      () -> assertEquals(ACCOUNT_NOT_FOUND, exception.getErrorCode(),
+                                         "errorCode는 ACCOUNT_NOT_FOUND여야 합니다."));
 
             verify(accountRepository, times(1)).findByIdAndStatus(eq(accountId), any());
             verify(seatRepository, never()).findById(any());
@@ -138,13 +136,13 @@ class ReservationServiceTest {
 
             // when
             BusinessException exception = assertThrows(BusinessException.class,
-                    () -> reservationService.reserveSeat(account.getId(), request),
-                    "BusinessException이 발생해야 합니다.");
+                                                       () -> reservationService.reserveSeat(account.getId(), request),
+                                                       "BusinessException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
-                    () -> assertEquals(SEAT_NOT_FOUND, exception.getErrorCode(),
-                            "errorCode는 SEAT_NOT_FOUND여야 합니다."));
+                      () -> assertEquals(SEAT_NOT_FOUND, exception.getErrorCode(),
+                                         "errorCode는 SEAT_NOT_FOUND여야 합니다."));
 
             verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
             verify(seatRepository, times(1)).findById(eq(request.getSeatId()));
@@ -167,9 +165,9 @@ class ReservationServiceTest {
             ReflectionTestUtils.setField(performance, "id", 1L);
             Seat seat = createSeat(performance);
             ReflectionTestUtils.setField(seat, "id", 1L);
-            Reservation reservation = createReservation(account, seat);
-            UUID accountId = account.getId();
-            Long seatId = seat.getId();
+            Reservation   reservation   = createReservation(account, seat);
+            UUID          accountId     = account.getId();
+            Long          seatId        = seat.getId();
             ReservationId reservationId = new ReservationId(accountId, seatId);
 
             when(reservationRepository.findById(eq(reservationId))).thenReturn(Optional.of(reservation));
@@ -186,21 +184,21 @@ class ReservationServiceTest {
         @DisplayName("예약 취소 시도, 예약이 존재하지 않음")
         void cancelReservation_reservationNotFound() {
             // given
-            UUID accountId = UUID.randomUUID();
-            Long seatId = 1L;
+            UUID          accountId     = UUID.randomUUID();
+            Long          seatId        = 1L;
             ReservationId reservationId = new ReservationId(accountId, seatId);
 
             when(reservationRepository.findById(eq(reservationId))).thenReturn(Optional.empty());
 
             // when
             BusinessException exception = assertThrows(BusinessException.class,
-                    () -> reservationService.cancelReservation(accountId, seatId),
-                    "BusinessException이 발생해야 합니다.");
+                                                       () -> reservationService.cancelReservation(accountId, seatId),
+                                                       "BusinessException이 발생해야 합니다.");
 
             // then
             assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
-                    () -> assertEquals(RESERVATION_NOT_FOUND, exception.getErrorCode(),
-                            "errorCode는 RESERVATION_NOT_FOUND여야 합니다."));
+                      () -> assertEquals(RESERVATION_NOT_FOUND, exception.getErrorCode(),
+                                         "errorCode는 RESERVATION_NOT_FOUND여야 합니다."));
 
             verify(reservationRepository, times(1)).findById(eq(reservationId));
             verify(reservationRepository, never()).delete(any(Reservation.class));
@@ -216,10 +214,12 @@ class ReservationServiceTest {
         @DisplayName("내 예약 목록 조회")
         void getMyReservations() {
             // given
-            UUID accountId = UUID.randomUUID();
-            PageRequest pageable = PageRequest.of(0, 10);
-            List<ReservationInfoResponse> reservationList = createReservationInfoResponses(3);
-            Page<ReservationInfoResponse> reservationPage = new PageImpl<>(reservationList, pageable, reservationList.size());
+            UUID                          accountId       = UUID.randomUUID();
+            PageRequest                   pageable        = PageRequest.of(0, 10);
+            List<ReservationInfoResponse> reservationList = createReservationInfoResponses(10);
+            Page<ReservationInfoResponse> reservationPage = new PageImpl<>(
+                    reservationList, pageable, reservationList.size()
+            );
 
             when(reservationRepository.getMyReservations(eq(accountId), eq(pageable))).thenReturn(reservationPage);
 
@@ -227,8 +227,8 @@ class ReservationServiceTest {
             Page<ReservationInfoResponse> result = reservationService.getMyReservations(accountId, pageable);
 
             // then
-            assertEquals(3, result.getTotalElements(), "총 예약 수는 3이어야 합니다.");
-            assertEquals(reservationList.size(), result.getContent().size(), "페이지 내 예약 수는 3이어야 합니다.");
+            assertEquals(10, result.getTotalElements(), "총 예약 수는 10이어야 합니다.");
+            assertEquals(reservationList.size(), result.getContent().size(), "페이지 내 예약 수는 10이어야 합니다.");
             verify(reservationRepository, times(1)).getMyReservations(eq(accountId), eq(pageable));
         }
 
@@ -236,8 +236,8 @@ class ReservationServiceTest {
         @DisplayName("내 예약 목록 조회, 예약이 없음")
         void getMyReservations_empty() {
             // given
-            UUID accountId = UUID.randomUUID();
-            PageRequest pageable = PageRequest.of(0, 10);
+            UUID                          accountId = UUID.randomUUID();
+            PageRequest                   pageable  = PageRequest.of(0, 10);
             Page<ReservationInfoResponse> emptyPage = new PageImpl<>(List.of(), pageable, 0);
 
             when(reservationRepository.getMyReservations(eq(accountId), eq(pageable))).thenReturn(emptyPage);
