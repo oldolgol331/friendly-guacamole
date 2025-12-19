@@ -32,31 +32,31 @@ public abstract class ReservationResponse {
     public static class ReservationInfoResponse {
 
         @JsonProperty("performance_id")
-        @Schema(name = "공연 ID")
+        @Schema(description = "공연 ID")
         private final Long          performanceId;
-        @Schema(name = "좌석 ID")
+        @Schema(description = "좌석 ID")
         private final Long   seatId;
         @JsonProperty("reservation_account_id")
-        @Schema(name = "예약자 ID")
+        @Schema(description = "예약자 ID")
         private final UUID   accountId;
-        @Schema(name = "예약자 닉네임")
+        @Schema(description = "예약자 닉네임")
         private final String nickname;
         @JsonProperty("performance_name")
-        @Schema(name = "공연 이름")
+        @Schema(description = "공연 이름")
         private final String        performanceName;
         @JsonProperty("start_time")
-        @Schema(name = "공연 시작 시간")
+        @Schema(description = "공연 시작 시간")
         private final LocalDateTime startTime;
         @JsonProperty("end_time")
-        @Schema(name = "공연 종료 시간")
+        @Schema(description = "공연 종료 시간")
         private final LocalDateTime endTime;
         @JsonProperty("seat_code")
-        @Schema(name = "좌석 번호")
+        @Schema(description = "좌석 번호")
         private final String        seatCode;
-        @Schema(name = "가격")
+        @Schema(description = "가격")
         private final int           price;
         @JsonProperty("reservation_time")
-        @Schema(name = "예약 확정 시간")
+        @Schema(description = "예약 확정 시간")
         private final LocalDateTime reservationTime;
 
         @QueryProjection

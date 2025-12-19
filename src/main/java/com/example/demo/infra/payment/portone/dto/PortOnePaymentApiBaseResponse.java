@@ -28,19 +28,19 @@ import lombok.NoArgsConstructor;
 @Schema(name = "포트원(PortOne) 결제 응답 DTO")
 public class PortOnePaymentApiBaseResponse extends PGPaymentApiBaseResponse {
 
-    @Schema(name = "포트원(PortOne) 결제 ID")
+    @Schema(description = "포트원(PortOne) 결제 ID")
     private String id;
-    @Schema(name = "결제 상태")
+    @Schema(description = "결제 상태")
     private String status;
-    @Schema(name = "결제 금액 정보")
+    @Schema(description = "결제 금액 정보")
     private Amount amount;
-    @Schema(name = "결제 수단")
+    @Schema(description = "결제 수단")
     private String method;
-    @Schema(name = "영수증 URL")
+    @Schema(description = "영수증 URL")
     private String receiptUrl;
-    @Schema(name = "결제 요청 일시")
+    @Schema(description = "결제 요청 일시")
     private String requestedAt;
-    @Schema(name = "결제 완료 일시")
+    @Schema(description = "결제 완료 일시")
     private String paidAt;
 
     @Data
@@ -48,8 +48,10 @@ public class PortOnePaymentApiBaseResponse extends PGPaymentApiBaseResponse {
     @AllArgsConstructor
     @Schema(name = "포트원(PortOne) 결제 금액")
     public static class Amount {
-        @Schema(name = "총 결제 금액")
+
+        @Schema(description = "총 결제 금액")
         private BigDecimal total;
+
     }
 
 }

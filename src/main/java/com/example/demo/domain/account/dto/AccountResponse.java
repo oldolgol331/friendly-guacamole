@@ -34,23 +34,23 @@ public abstract class AccountResponse {
     @Schema(name = "계정 정보 응답 DTO")
     public static class AccountInfoResponse {
 
-        @Schema(name = "계정 ID")
+        @Schema(description = "계정 ID")
         private final UUID          id;
-        @Schema(name = "이메일 주소(아이디)")
+        @Schema(description = "이메일 주소(아이디)")
         private final String        email;
-        @Schema(name = "닉네임")
+        @Schema(description = "닉네임")
         private final String        nickname;
-        @Schema(name = "계정 역할: [USER, ADMIN]")
+        @Schema(description = "계정 역할: [USER, ADMIN]")
         private final AccountRole   role;
-        @Schema(name = "계정 상태: [ACTIVE, INACTIVE, DELETED, BLOCKED]")
+        @Schema(description = "계정 상태: [ACTIVE, INACTIVE, DELETED, BLOCKED]")
         private final AccountStatus status;
-        @Schema(name = "OAuth 인증 제공자 목록")
+        @Schema(description = "OAuth 인증 제공자 목록")
         private final List<String>  providers;
         @JsonProperty("created_at")
-        @Schema(name = "생성 일시")
+        @Schema(description = "생성 일시")
         private final LocalDateTime createdAt;
         @JsonProperty("updated_at")
-        @Schema(name = "수정 일시")
+        @Schema(description = "수정 일시")
         private final LocalDateTime updatedAt;
 
         @QueryProjection

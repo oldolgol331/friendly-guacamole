@@ -31,29 +31,29 @@ public abstract class PerformanceResponse {
     @Schema(name = "공연 목록 정보 응답 DTO")
     public static class PerformanceListResponse {
 
-        @Schema(name = "공연 ID")
+        @Schema(description = "공연 ID")
         private final Long          id;
-        @Schema(name = "공연 이름")
+        @Schema(description = "공연 이름")
         private final String        name;
-        @Schema(name = "공연 장소")
+        @Schema(description = "공연 장소")
         private final String        venue;
         @JsonProperty("start_time")
-        @Schema(name = "공연 시작 시간")
+        @Schema(description = "공연 시작 시간")
         private final LocalDateTime startTime;
         @JsonProperty("end_time")
-        @Schema(name = "공연 종료 시간")
+        @Schema(description = "공연 종료 시간")
         private final LocalDateTime endTime;
         @JsonProperty("remaining_seats")
-        @Schema(name = "잔여 좌석 수")
+        @Schema(description = "잔여 좌석 수")
         private final int           remainingSeats;
         @JsonProperty("total_seats")
-        @Schema(name = "전체 좌석 수")
+        @Schema(description = "전체 좌석 수")
         private final int           totalSeats;
         @JsonProperty("created_at")
-        @Schema(name = "생성 일시")
+        @Schema(description = "생성 일시")
         private final LocalDateTime createdAt;
         @JsonProperty("updated_at")
-        @Schema(name = "수정 일시")
+        @Schema(description = "수정 일시")
         private final LocalDateTime updatedAt;
 
         @QueryProjection
@@ -99,31 +99,31 @@ public abstract class PerformanceResponse {
     @Schema(name = "공연 상세 정보 응답 DTO")
     public static class PerformanceDetailResponse {
 
-        @Schema(name = "공연 ID")
+        @Schema(description = "공연 ID")
         private final Long          id;
-        @Schema(name = "공연 이름")
+        @Schema(description = "공연 이름")
         private final String        name;
-        @Schema(name = "공연 장소")
+        @Schema(description = "공연 장소")
         private final String        venue;
-        @Schema(name = "공연 정보")
+        @Schema(description = "공연 정보")
         private final String        info;
         @JsonProperty("start_time")
-        @Schema(name = "공연 시작 시간")
+        @Schema(description = "공연 시작 시간")
         private final LocalDateTime startTime;
         @JsonProperty("end_time")
-        @Schema(name = "공연 종료 시간")
+        @Schema(description = "공연 종료 시간")
         private final LocalDateTime endTime;
         @JsonProperty("remaining_seats")
-        @Schema(name = "잔여 좌석 수")
+        @Schema(description = "잔여 좌석 수")
         private final int           remainingSeats;
         @JsonProperty("total_seats")
-        @Schema(name = "전체 좌석 수")
+        @Schema(description = "전체 좌석 수")
         private final int           totalSeats;
         @JsonProperty("created_at")
-        @Schema(name = "생성 일시")
+        @Schema(description = "생성 일시")
         private final LocalDateTime createdAt;
         @JsonProperty("updated_at")
-        @Schema(name = "수정 일시")
+        @Schema(description = "수정 일시")
         private final LocalDateTime updatedAt;
 
         @QueryProjection

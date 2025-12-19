@@ -38,11 +38,11 @@ public abstract class AccountRequest {
 
         @NotBlank(message = "이메일은 필수입니다.")
         @Email(message = "유효하지 않은 이메일 형식입니다.")
-        @Schema(name = "이메일(아이디)")
+        @Schema(description = "이메일(아이디)")
         private String email;
 
         @NotBlank(message = "비밀번호는 필수입니다.")
-        @Schema(name = "비밀번호")
+        @Schema(description = "비밀번호")
         private String password;
 
     }
@@ -56,21 +56,21 @@ public abstract class AccountRequest {
         @NotBlank(message = "이메일은 필수입니다.")
         @Pattern(regexp = EMAIL_REGEX, message = "유효하지 않은 이메일 형식입니다.")
         //@Email(message = "유효하지 않은 이메일 형식입니다.")
-        @Schema(name = "이메일 주소(아이디)")
+        @Schema(description = "이메일 주소(아이디)")
         private String email;
 
         @NotBlank(message = "비밀번호는 필수입니다.")
         @Pattern(regexp = PASSWORD_REGEX, message = "비밀번호는 8~20자 영문 대/소문자, 숫자, 특수문자를 반드시 1개씩 포함해서 사용하세요.")
-        @Schema(name = "비밀번호")
+        @Schema(description = "비밀번호")
         private String password;
 
         @NotBlank(message = "비밀번호 확인은 필수입니다.")
-        @Schema(name = "비밀번호 확인")
+        @Schema(description = "비밀번호 확인")
         private String confirmPassword;
 
         @NotBlank(message = "닉네임은 필수입니다.")
         @Pattern(regexp = NICKNAME_REGEX, message = "닉네임은 2~15자 영문, 한글, 숫자, '-', '_'만 사용 가능합니다.")
-        @Schema(name = "닉네임")
+        @Schema(description = "닉네임")
         private String nickname;
 
         @AssertTrue(message = "비밀번호와 비밀번호 확인이 일치하지 않습니다.")
@@ -89,11 +89,11 @@ public abstract class AccountRequest {
 
         @NotBlank(message = "새 닉네임은 필수입니다.")
         @Pattern(regexp = NICKNAME_REGEX, message = "닉네임은 2~15자 영문, 한글, 숫자, '-', '_'만 사용 가능합니다.")
-        @Schema(name = "수정할 닉네임")
+        @Schema(description = "수정할 닉네임")
         private String newNickname;
 
         @NotBlank(message = "현재 비밀번호는 필수입니다.")
-        @Schema(name = "현재 비밀번호")
+        @Schema(description = "현재 비밀번호")
         private String currentPassword;
 
     }
@@ -106,15 +106,15 @@ public abstract class AccountRequest {
 
         @NotBlank(message = "새 비밀번호는 필수입니다.")
         @Pattern(regexp = PASSWORD_REGEX, message = "비밀번호는 8~20자 영문 대/소문자, 숫자, 특수문자를 반드시 1개씩 포함해서 사용하세요.")
-        @Schema(name = "새 비밀번호")
+        @Schema(description = "새 비밀번호")
         private String newPassword;
 
         @NotBlank(message = "새 비밀번호 확인은 필수입니다.")
-        @Schema(name = "새 비밀번호 확인")
+        @Schema(description = "새 비밀번호 확인")
         private String confirmNewPassword;
 
         @NotBlank(message = "현재 비밀번호는 필수입니다.")
-        @Schema(name = "현재 비밀번호")
+        @Schema(description = "현재 비밀번호")
         private String currentPassword;
 
         @AssertTrue(message = "새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.")
@@ -132,7 +132,7 @@ public abstract class AccountRequest {
 
         @NotBlank(message = "이메일은 필수입니다.")
         @Pattern(regexp = EMAIL_REGEX, message = "유효하지 않은 이메일 형식입니다.")
-        @Schema(name = "이메일 주소")
+        @Schema(description = "이메일 주소")
         private String email;
 
     }
@@ -145,7 +145,7 @@ public abstract class AccountRequest {
 
         @NotBlank(message = "이메일은 필수입니다.")
         @Pattern(regexp = EMAIL_REGEX, message = "유효하지 않은 이메일 형식입니다.")
-        @Schema(name = "이메일 주소")
+        @Schema(description = "이메일 주소")
         private String email;
 
     }
@@ -158,11 +158,11 @@ public abstract class AccountRequest {
 
         @NotBlank(message = "새 비밀번호는 필수입니다.")
         @Pattern(regexp = PASSWORD_REGEX, message = "비밀번호는 8~20자 영문 대/소문자, 숫자, 특수문자를 반드시 1개씩 포함해서 사용하세요.")
-        @Schema(name = "새 비밀번호")
+        @Schema(description = "새 비밀번호")
         private String newPassword;
 
         @NotBlank(message = "새 비밀번호 확인은 필수입니다.")
-        @Schema(name = "새 비밀번호 확인")
+        @Schema(description = "새 비밀번호 확인")
         private String confirmNewPassword;
 
         @AssertTrue(message = "새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.")
@@ -179,7 +179,7 @@ public abstract class AccountRequest {
     public static class AccountWithdrawRequest {
 
         @NotBlank(message = "현재 비밀번호는 필수입니다.")
-        @Schema(name = "현재 비밀번호")
+        @Schema(description = "현재 비밀번호")
         private String currentPassword;
 
     }

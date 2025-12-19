@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 public class PortOnePaymentApiBaseRequest extends PGPaymentApiBaseRequest {
 
     @NotBlank(message = "결제 ID는 필수 입력 값입니다.")
-    @Schema(name = "포트원(PortOne) 결제 ID")
+    @Schema(description = "포트원(PortOne) 결제 ID")
     private String paymentKey;
 
 }

@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Schema(name = "포트원(PortOne) 결제 취소 요청 DTO")
 public class PortOneCancelPaymentApiBaseRequest extends PGCancelPaymentApiBaseRequest {
 
-    @Schema(name = "취소 사유")
+    @Schema(description = "취소 사유")
     private String reason;
 
 }

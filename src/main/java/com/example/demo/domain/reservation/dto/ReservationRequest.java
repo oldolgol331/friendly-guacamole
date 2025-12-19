@@ -30,7 +30,7 @@ public abstract class ReservationRequest {
     public static class ReservationCreateRequest {
 
         @Min(value = 1, message = "좌석 ID는 1 이상이어야 합니다.")
-        @Schema(name = "좌석 ID")
+        @Schema(description = "좌석 ID")
         private long seatId;
 
     }
