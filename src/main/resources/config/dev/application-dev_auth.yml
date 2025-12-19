@@ -63,3 +63,8 @@ email:
   verification-base-url: ${EMAIL_VERIFICATION_BASE_URL:http://localhost:8080/api/v1/accounts/verify-email?token=}
   password-reset-token-expiry-minutes: 10
   password-reset-base-url: ${EMAIL_PASSWORD_RESET_BASE_URL:http://localhost:8080/api/v1/accounts/password-reset-confirm?token=}
+payment:
+  portone:
+    api:
+      url: ${PG_PAYMENT_PORTONE_BASE_URL}
+      secret-key: ${PG_PAYMENT_PORTONE_SECRET_KEY}

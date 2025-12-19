@@ -93,7 +93,10 @@ public enum ErrorCode {
     PAYMENT_TIMEOUT(HttpStatus.REQUEST_TIMEOUT, "PY012", "결제 처리 시간이 초과되었습니다."),
     PAYMENT_VERIFICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY013", "결제 검증에 실패했습니다."),
     INVALID_PAYMENT_APPROVAL_TIME(HttpStatus.BAD_REQUEST, "PY014", "결제 승인 시간이 유효하지 않습니다."),
-    INVALID_PAYMENT_STATUS(HttpStatus.BAD_REQUEST, "PY015", "결제 상태가 유효하지 않습니다.");
+    INVALID_PAYMENT_STATUS(HttpStatus.BAD_REQUEST, "PY015", "결제 상태가 유효하지 않습니다."),
+    PAYMENT_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY016", "결제 처리 중 오류가 발생했습니다."),
+    PAYMENT_NOT_FOUND_IN_PG(HttpStatus.NOT_FOUND, "PY017", "PG사에서 해당 결제를 찾을 수 없습니다."),
+    PAYMENT_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PY018", "PG사 결제 API 호출 중 오류가 발생했습니다.");
 
     private final HttpStatus status;
     private final String     code;
