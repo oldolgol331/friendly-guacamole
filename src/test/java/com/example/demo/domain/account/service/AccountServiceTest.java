@@ -13,9 +13,9 @@ import static com.example.demo.common.response.ErrorCode.OAUTH_PROVIDER_NOT_SUPP
 import static com.example.demo.common.response.ErrorCode.OAUTH_USER_CANNOT_RESET_PASSWORD;
 import static com.example.demo.common.response.ErrorCode.PASSWORD_MISMATCH;
 import static com.example.demo.common.response.ErrorCode.TOO_MANY_REQUESTS;
-import static com.example.demo.infra.redis.constant.RedisConst.PASSWORD_RESET_KEY_PREFIX;
-import static com.example.demo.infra.redis.constant.RedisConst.VERIFICATION_KEY_PREFIX;
-import static com.example.demo.infra.redis.constant.RedisConst.VERIFICATION_RATE_LIMIT_KEY_PREFIX;
+import static com.example.demo.infra.redis.constant.RedisConst.REDIS_PASSWORD_RESET_KEY_PREFIX;
+import static com.example.demo.infra.redis.constant.RedisConst.REDIS_VERIFICATION_KEY_PREFIX;
+import static com.example.demo.infra.redis.constant.RedisConst.REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -320,7 +320,7 @@ class AccountServiceTest {
                                          TestUtils.FAKER.credentials().username().replace(".", "").substring(0, 5));
             ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
 
-            when(redisRepository.hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
+            when(redisRepository.hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
             doNothing().when(emailService).sendVerificationEmail(eq(email), anyString());
             doNothing().when(redisRepository).setValue(anyString(), anyString(), any(Duration.class));
@@ -329,7 +329,7 @@ class AccountServiceTest {
             accountService.resendVerificationEmail(email);
 
             // then
-            verify(redisRepository, times(1)).hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
+            verify(redisRepository, times(1)).hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
             verify(accountRepository, times(1)).findByEmail(eq(email));
             verify(emailService, times(1)).sendVerificationEmail(eq(email), anyString());
             verify(redisRepository, times(2)).setValue(anyString(), anyString(), any(Duration.class));
@@ -341,7 +341,7 @@ class AccountServiceTest {
             // given
             String email = TestUtils.FAKER.internet().emailAddress().toLowerCase();
 
-            when(redisRepository.hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(true);
+            when(redisRepository.hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(true);
 
             // when
             BusinessException exception = assertThrows(BusinessException.class,
@@ -353,7 +353,7 @@ class AccountServiceTest {
                       () -> assertEquals(TOO_MANY_REQUESTS, exception.getErrorCode(),
                                          "errorCode는 TOO_MANY_REQUESTS여야 합니다."));
 
-            verify(redisRepository, times(1)).hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
+            verify(redisRepository, times(1)).hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
             verify(accountRepository, never()).findByEmail(eq(email));
             verify(emailService, never()).sendVerificationEmail(eq(email), anyString());
             verify(redisRepository, never()).setValue(anyString(), anyString(), any(Duration.class));
@@ -365,7 +365,7 @@ class AccountServiceTest {
             // given
             String email = TestUtils.FAKER.internet().emailAddress().toLowerCase();
 
-            when(redisRepository.hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
+            when(redisRepository.hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
 
             // when
@@ -378,7 +378,7 @@ class AccountServiceTest {
                       () -> assertEquals(ACCOUNT_NOT_FOUND, exception.getErrorCode(),
                                          "errorCode는 ACCOUNT_NOT_FOUND여야 합니다."));
 
-            verify(redisRepository, times(1)).hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
+            verify(redisRepository, times(1)).hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
             verify(accountRepository, times(1)).findByEmail(eq(email));
             verify(emailService, never()).sendVerificationEmail(eq(email), anyString());
             verify(redisRepository, never()).setValue(anyString(), anyString(), any(Duration.class));
@@ -397,7 +397,7 @@ class AccountServiceTest {
 
             account.setStatus(AccountStatus.ACTIVE);
 
-            when(redisRepository.hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
+            when(redisRepository.hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
@@ -410,7 +410,7 @@ class AccountServiceTest {
                       () -> assertEquals(ALREADY_VERIFIED_EMAIL, exception.getErrorCode(),
                                          "errorCode는 ALREADY_VERIFIED_EMAIL이여야 합니다."));
 
-            verify(redisRepository, times(1)).hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
+            verify(redisRepository, times(1)).hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
             verify(accountRepository, times(1)).findByEmail(eq(email));
             verify(emailService, never()).sendVerificationEmail(eq(email), anyString());
             verify(redisRepository, never()).setValue(anyString(), anyString(), any(Duration.class));
@@ -429,7 +429,7 @@ class AccountServiceTest {
 
             account.setStatus(AccountStatus.DELETED);
 
-            when(redisRepository.hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
+            when(redisRepository.hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
@@ -442,7 +442,7 @@ class AccountServiceTest {
                       () -> assertEquals(ACCOUNT_ALREADY_WITHDRAWN, exception.getErrorCode(),
                                          "errorCode는 ACCOUNT_ALREADY_WITHDRAWN이여야 합니다."));
 
-            verify(redisRepository, times(1)).hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
+            verify(redisRepository, times(1)).hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
             verify(accountRepository, times(1)).findByEmail(eq(email));
             verify(emailService, never()).sendVerificationEmail(eq(email), anyString());
             verify(redisRepository, never()).setValue(anyString(), anyString(), any(Duration.class));
@@ -461,7 +461,7 @@ class AccountServiceTest {
 
             account.setStatus(AccountStatus.BLOCKED);
 
-            when(redisRepository.hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
+            when(redisRepository.hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email))).thenReturn(false);
             when(accountRepository.findByEmail(eq(email))).thenReturn(Optional.of(account));
 
             // when
@@ -474,7 +474,7 @@ class AccountServiceTest {
                       () -> assertEquals(ACCOUNT_BLOCKED, exception.getErrorCode(),
                                          "errorCode는 ACCOUNT_BLOCKED여야 합니다."));
 
-            verify(redisRepository, times(1)).hasKey(eq(VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
+            verify(redisRepository, times(1)).hasKey(eq(REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + email));
             verify(accountRepository, times(1)).findByEmail(eq(email));
             verify(emailService, never()).sendVerificationEmail(eq(email), anyString());
             verify(redisRepository, never()).setValue(anyString(), anyString(), any(Duration.class));
@@ -498,7 +498,7 @@ class AccountServiceTest {
             UUID id = UUID.randomUUID();
             ReflectionTestUtils.setField(account, "id", id);
 
-            String redisKey = VERIFICATION_KEY_PREFIX + token;
+            String redisKey = REDIS_VERIFICATION_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(Optional.of(id.toString()));
             when(accountRepository.findById(eq(id))).thenReturn(Optional.of(account));
@@ -521,7 +521,7 @@ class AccountServiceTest {
             // given
             String token = UUID.randomUUID().toString();
 
-            String redisKey = VERIFICATION_KEY_PREFIX + token;
+            String redisKey = REDIS_VERIFICATION_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(Optional.empty());
 
@@ -546,7 +546,7 @@ class AccountServiceTest {
             String token = UUID.randomUUID().toString();
             UUID   id    = UUID.randomUUID();
 
-            String redisKey = VERIFICATION_KEY_PREFIX + token;
+            String redisKey = REDIS_VERIFICATION_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(Optional.of(id.toString()));
             when(accountRepository.findById(eq(id))).thenReturn(Optional.empty());
@@ -579,7 +579,7 @@ class AccountServiceTest {
 
             account.setStatus(AccountStatus.ACTIVE);
 
-            String redisKey = VERIFICATION_KEY_PREFIX + token;
+            String redisKey = REDIS_VERIFICATION_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(Optional.of(id.toString()));
             when(accountRepository.findById(eq(id))).thenReturn(Optional.of(account));
@@ -612,7 +612,7 @@ class AccountServiceTest {
 
             account.setStatus(AccountStatus.DELETED);
 
-            String redisKey = VERIFICATION_KEY_PREFIX + token;
+            String redisKey = REDIS_VERIFICATION_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(Optional.of(id.toString()));
             when(accountRepository.findById(eq(id))).thenReturn(Optional.of(account));
@@ -645,7 +645,7 @@ class AccountServiceTest {
 
             account.setStatus(AccountStatus.BLOCKED);
 
-            String redisKey = VERIFICATION_KEY_PREFIX + token;
+            String redisKey = REDIS_VERIFICATION_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(Optional.of(id.toString()));
             when(accountRepository.findById(eq(id))).thenReturn(Optional.of(account));
@@ -1019,7 +1019,7 @@ class AccountServiceTest {
             PasswordResetConfirmRequest request     = new PasswordResetConfirmRequest(newPassword, newPassword);
 
             String token    = UUID.randomUUID().toString().replace("-", "");
-            String redisKey = PASSWORD_RESET_KEY_PREFIX + token;
+            String redisKey = REDIS_PASSWORD_RESET_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(
                     Optional.of(accountId.toString()));
@@ -1099,7 +1099,7 @@ class AccountServiceTest {
             PasswordResetConfirmRequest request     = new PasswordResetConfirmRequest(newPassword, newPassword);
 
             String token    = UUID.randomUUID().toString().replace("-", "");
-            String redisKey = PASSWORD_RESET_KEY_PREFIX + token;
+            String redisKey = REDIS_PASSWORD_RESET_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(
                     Optional.of(accountId.toString()));
@@ -1134,7 +1134,7 @@ class AccountServiceTest {
             PasswordResetConfirmRequest request     = new PasswordResetConfirmRequest(newPassword, newPassword);
 
             String token    = UUID.randomUUID().toString().replace("-", "");
-            String redisKey = PASSWORD_RESET_KEY_PREFIX + token;
+            String redisKey = REDIS_PASSWORD_RESET_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(
                     Optional.of(accountId.toString()));
@@ -1170,7 +1170,7 @@ class AccountServiceTest {
             PasswordResetConfirmRequest request     = new PasswordResetConfirmRequest(newPassword, newPassword);
 
             String token    = UUID.randomUUID().toString().replace("-", "");
-            String redisKey = PASSWORD_RESET_KEY_PREFIX + token;
+            String redisKey = REDIS_PASSWORD_RESET_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(
                     Optional.of(accountId.toString()));
@@ -1206,7 +1206,7 @@ class AccountServiceTest {
             PasswordResetConfirmRequest request     = new PasswordResetConfirmRequest(newPassword, newPassword);
 
             String token    = UUID.randomUUID().toString().replace("-", "");
-            String redisKey = PASSWORD_RESET_KEY_PREFIX + token;
+            String redisKey = REDIS_PASSWORD_RESET_KEY_PREFIX + token;
 
             when(redisRepository.getValue(eq(redisKey), eq(String.class))).thenReturn(
                     Optional.of(accountId.toString()));

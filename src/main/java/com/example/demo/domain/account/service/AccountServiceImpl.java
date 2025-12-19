@@ -14,10 +14,10 @@ import static com.example.demo.common.response.ErrorCode.OAUTH_USER_CANNOT_RESET
 import static com.example.demo.common.response.ErrorCode.PASSWORD_MISMATCH;
 import static com.example.demo.common.response.ErrorCode.TOO_MANY_REQUESTS;
 import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
-import static com.example.demo.infra.redis.constant.RedisConst.PASSWORD_RESET_KEY_PREFIX;
-import static com.example.demo.infra.redis.constant.RedisConst.PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX;
-import static com.example.demo.infra.redis.constant.RedisConst.VERIFICATION_KEY_PREFIX;
-import static com.example.demo.infra.redis.constant.RedisConst.VERIFICATION_RATE_LIMIT_KEY_PREFIX;
+import static com.example.demo.infra.redis.constant.RedisConst.REDIS_PASSWORD_RESET_KEY_PREFIX;
+import static com.example.demo.infra.redis.constant.RedisConst.REDIS_PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX;
+import static com.example.demo.infra.redis.constant.RedisConst.REDIS_VERIFICATION_KEY_PREFIX;
+import static com.example.demo.infra.redis.constant.RedisConst.REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX;
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.mail.properties.EmailProperties;
@@ -151,7 +151,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void resendVerificationEmail(final String email) {
         String lowerCaseEmail = email.toLowerCase();
-        String rateLimitKey   = VERIFICATION_RATE_LIMIT_KEY_PREFIX + lowerCaseEmail;
+        String rateLimitKey   = REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX + lowerCaseEmail;
 
         if (redisRepository.hasKey(rateLimitKey)) throw new BusinessException(TOO_MANY_REQUESTS);
 
@@ -178,7 +178,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public AccountInfoResponse verifyEmail(final String token) {
-        String redisKey = VERIFICATION_KEY_PREFIX + token;
+        String redisKey = REDIS_VERIFICATION_KEY_PREFIX + token;
 
         UUID accountId = UUID.fromString(
                 redisRepository.getValue(redisKey, String.class)
@@ -249,7 +249,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void sendPasswordResetEmail(final String email) {
         String lowerCaseEmail = email.toLowerCase();
-        String rateLimitKey   = PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX + lowerCaseEmail;
+        String rateLimitKey   = REDIS_PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX + lowerCaseEmail;
 
         Account account = accountRepository.findByEmail(lowerCaseEmail)
                                            .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
@@ -274,7 +274,7 @@ public class AccountServiceImpl implements AccountService {
     public void confirmPasswordReset(final String token, final PasswordResetConfirmRequest request) {
         if (!request.isNewPasswordConfirmed()) throw new BusinessException(PASSWORD_MISMATCH);    // 신규 비밀번호 != 신규 비밀번호 확인
 
-        String redisKey = PASSWORD_RESET_KEY_PREFIX + token;
+        String redisKey = REDIS_PASSWORD_RESET_KEY_PREFIX + token;
         UUID accountId = UUID.fromString(
                 redisRepository.getValue(redisKey, String.class)
                                .orElseThrow(() -> new BusinessException(INVALID_VERIFICATION_TOKEN))
@@ -357,7 +357,7 @@ public class AccountServiceImpl implements AccountService {
      */
     private void sendVerificationEmailWithToken(final Account account) {
         String verificationToken = UUID.randomUUID().toString().replace("-", "");
-        redisRepository.setValue(VERIFICATION_KEY_PREFIX + verificationToken,
+        redisRepository.setValue(REDIS_VERIFICATION_KEY_PREFIX + verificationToken,
                                  account.getId().toString(),
                                  Duration.ofMinutes(emailProperties.getVerificationTokenExpiryMinutes()));
 
@@ -372,7 +372,7 @@ public class AccountServiceImpl implements AccountService {
      */
     private void sendPasswordResetEmailWithToken(final Account account) {
         String passwordResetToken = UUID.randomUUID().toString().replace("-", "");
-        redisRepository.setValue(PASSWORD_RESET_KEY_PREFIX + passwordResetToken,
+        redisRepository.setValue(REDIS_PASSWORD_RESET_KEY_PREFIX + passwordResetToken,
                                  account.getId().toString(),
                                  Duration.ofMinutes(emailProperties.getPasswordResetTokenExpiryMinutes()));
 

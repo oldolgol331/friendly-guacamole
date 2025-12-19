@@ -23,9 +23,9 @@ public abstract class RedisConst {
     public static final String REDIS_ACCESS_TOKEN_BLACKLIST_PREFIX = "bt:";
 
     // 계정 이메일 관련
-    public static final String VERIFICATION_KEY_PREFIX              = "email-verification:";
-    public static final String VERIFICATION_RATE_LIMIT_KEY_PREFIX   = "rate-limit:resend-verification-email:";
-    public static final String PASSWORD_RESET_KEY_PREFIX            = "password-reset:";
-    public static final String PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX = "rate-limit:password-reset-email:";
+    public static final String REDIS_VERIFICATION_KEY_PREFIX              = "email-verification:";
+    public static final String REDIS_VERIFICATION_RATE_LIMIT_KEY_PREFIX   = "rate-limit:resend-verification-email:";
+    public static final String REDIS_PASSWORD_RESET_KEY_PREFIX            = "password-reset:";
+    public static final String REDIS_PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX = "rate-limit:password-reset-email:";
 
 }
