@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = PRIVATE)
 @Schema(name = "예약 도메인 요청 DTO")
-public class ReservationRequest {
+public abstract class ReservationRequest {
 
     @Data
     @NoArgsConstructor
