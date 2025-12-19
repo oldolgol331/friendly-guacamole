@@ -7,8 +7,8 @@ import static com.example.demo.common.response.ErrorCode.PAYMENT_NOT_FOUND_IN_PG
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.infra.payment.client.PGPaymentApiBaseClient;
 import com.example.demo.infra.payment.portone.dto.PortOneCancelPaymentApiBaseRequest;
-import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiBaseRequest;
-import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiBaseResponse;
+import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiRequest;
+import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
@@ -28,13 +28,13 @@ import org.springframework.web.client.RestClient;
  */
 @Component
 @Slf4j
-public class PortOnePGPaymentApiBaseClient implements PGPaymentApiBaseClient<PortOnePaymentApiBaseRequest,
-        PortOnePaymentApiBaseResponse,
+public class PortOnePGPaymentApiClient implements PGPaymentApiBaseClient<PortOnePaymentApiRequest,
+        PortOnePaymentApiResponse,
         PortOneCancelPaymentApiBaseRequest> {
 
     private final RestClient restClient;
 
-    public PortOnePGPaymentApiBaseClient(@Qualifier("portOneRestClient") final RestClient restClient) {
+    public PortOnePGPaymentApiClient(@Qualifier("portOneRestClient") final RestClient restClient) {
         this.restClient = restClient;
     }
 
@@ -45,7 +45,7 @@ public class PortOnePGPaymentApiBaseClient implements PGPaymentApiBaseClient<Por
      * @return 포트원 결제 정보 응답 DTO
      */
     @Override
-    public PortOnePaymentApiBaseResponse getPayment(final PortOnePaymentApiBaseRequest request) {
+    public PortOnePaymentApiResponse getPayment(final PortOnePaymentApiRequest request) {
         String paymentId = request.getPaymentKey();
         return restClient.get()
                          .uri("/payments/{paymentId}", paymentId)
@@ -58,7 +58,7 @@ public class PortOnePGPaymentApiBaseClient implements PGPaymentApiBaseClient<Por
                              log.error("PortOne Server Error - paymentId: {}", paymentId);
                              throw new BusinessException(PAYMENT_API_ERROR);
                          })
-                         .body(PortOnePaymentApiBaseResponse.class);
+                         .body(PortOnePaymentApiResponse.class);
     }
 
     /**

@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(name = "포트원(PortOne) 결제 요청 DTO")
-public class PortOnePaymentApiBaseRequest extends PGPaymentApiBaseRequest {
+public class PortOnePaymentApiRequest extends PGPaymentApiBaseRequest {
 
     @NotBlank(message = "결제 ID는 필수 입력 값입니다.")
     @Schema(description = "포트원(PortOne) 결제 ID")

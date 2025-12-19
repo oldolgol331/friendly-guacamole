@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Schema(name = "포트원(PortOne) 결제 응답 DTO")
-public class PortOnePaymentApiBaseResponse extends PGPaymentApiBaseResponse {
+public class PortOnePaymentApiResponse extends PGPaymentApiBaseResponse {
 
     @Schema(description = "포트원(PortOne) 결제 ID")
     private String id;
