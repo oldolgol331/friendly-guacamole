@@ -80,6 +80,10 @@ public class Payment extends BaseAuditingEntity {
     @NotBlank
     private String paymentMethod;       // 결제 방법
 
+    @Column(nullable = false)
+    @NotBlank
+    private String paymentInfo;         // 결제 상품 정보: {공연명} {좌석 번호}
+
     @Column(nullable = false, precision = 19, scale = 4)
     @NotNull
     private BigDecimal amount;          // 결제 금액
@@ -100,10 +104,12 @@ public class Payment extends BaseAuditingEntity {
     private Payment(final Reservation reservation,
                     final String paymentKey,
                     final String paymentMethod,
+                    final String paymentInfo,
                     final BigDecimal amount) {
         this.reservation = reservation;
         this.paymentKey = paymentKey;
         this.paymentMethod = paymentMethod;
+        this.paymentInfo = paymentInfo;
         this.amount = amount;
         this.status = PENDING;
     }
@@ -122,9 +128,10 @@ public class Payment extends BaseAuditingEntity {
     public static Payment of(final Account account,
                              final Reservation reservation,
                              final String paymentKey,
+                             final String paymentInfo,
                              final BigDecimal amount) {
         validateAmount(amount);
-        Payment payment = new Payment(reservation, paymentKey, "UNKNOWN", amount);
+        Payment payment = new Payment(reservation, paymentKey, "UNKNOWN", paymentInfo, amount);
         payment.setRelationshipWithAccount(account);
         return payment;
     }
@@ -143,9 +150,10 @@ public class Payment extends BaseAuditingEntity {
                              final Reservation reservation,
                              final String paymentKey,
                              final String paymentMethod,
+                             final String paymentInfo,
                              final BigDecimal amount) {
         validateAmount(amount);
-        Payment payment = new Payment(reservation, paymentKey, paymentMethod, amount);
+        Payment payment = new Payment(reservation, paymentKey, paymentMethod, paymentInfo, amount);
         payment.setRelationshipWithAccount(account);
         return payment;
     }

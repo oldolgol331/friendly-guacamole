@@ -87,6 +87,7 @@ CREATE TABLE payments
     seat_id        BIGINT UNSIGNED NOT NULL COMMENT '결제한 좌석 식별자',
     payment_key    VARCHAR(255)    NOT NULL COMMENT 'PG사 결제 ID',
     payment_method VARCHAR(255)    NOT NULL COMMENT '결제 수단',
+    payment_info   VARCHAR(255)    NOT NULL COMMENT '결제 상품 정보: {공연명} {좌석 번호}',
     amount         DECIMAL(19, 4)  NOT NULL DEFAULT 0.0000 COMMENT '결제 금액',
     status         VARCHAR(255)    NOT NULL DEFAULT 'PENDING' COMMENT '결제 상태',
     approve_at     DATETIME                 DEFAULT NULL COMMENT '결제 승인 일시',
