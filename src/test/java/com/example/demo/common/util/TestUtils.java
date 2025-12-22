@@ -26,6 +26,7 @@ import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceLi
 import com.example.demo.domain.performance.model.Performance;
 import com.example.demo.domain.performance.model.Seat;
 import com.example.demo.domain.reservation.dto.PaymentRequest.PrePaymentRequest;
+import com.example.demo.domain.reservation.dto.PaymentResponse.PrePaymentInfoResponse;
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
 import com.example.demo.domain.reservation.model.Payment;
 import com.example.demo.domain.reservation.model.Reservation;
@@ -414,6 +415,24 @@ public abstract class TestUtils {
                              .setLazy("seatId", () -> FAKER.number().numberBetween(1, Long.MAX_VALUE))
                              .set("paymentMethod", "CARD")
                              .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .sample();
+    }
+
+    public static PrePaymentInfoResponse createPrePaymentInfoResponse() {
+        return FIXTURE_MONKEY.giveMeBuilder(PrePaymentInfoResponse.class)
+                             .instantiate(Instantiator.constructor()
+                                                      .parameter(String.class, "paymentKey")
+                                                      .parameter(Long.class, "performanceId")
+                                                      .parameter(Long.class, "seatId")
+                                                      .parameter(String.class, "paymentInfo")
+                                                      .parameter(int.class, "price")
+                                                      .parameter(LocalDateTime.class, "expiredAt"))
+                             .setLazy("paymentKey", TestUtils::generatePaymentKey)
+                             .setLazy("performanceId", () -> FAKER.number().numberBetween(1, Long.MAX_VALUE))
+                             .setLazy("seatId", () -> FAKER.number().numberBetween(1, Long.MAX_VALUE))
+                             .setLazy("paymentInfo", () -> FAKER.commerce().productName())
+                             .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .setLazy("expiredAt", () -> LocalDateTime.now().plusMinutes(10))
                              .sample();
     }
 
