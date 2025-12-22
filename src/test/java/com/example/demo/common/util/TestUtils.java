@@ -1,5 +1,9 @@
 package com.example.demo.common.util;
 
+import static com.example.demo.common.util.CommonUtils.isAllowedIpRange;
+import static com.example.demo.common.util.CommonUtils.isLocalIpAddress;
+import static com.example.demo.common.util.CommonUtils.isProxyHeader;
+import static com.example.demo.common.util.CommonUtils.isValidIpAddress;
 import static com.example.demo.domain.account.constant.AccountConst.PASSWORD_PATTERN;
 import static java.util.stream.Collectors.joining;
 import static lombok.AccessLevel.PRIVATE;
@@ -21,6 +25,7 @@ import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceDe
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceListResponse;
 import com.example.demo.domain.performance.model.Performance;
 import com.example.demo.domain.performance.model.Seat;
+import com.example.demo.domain.reservation.dto.PaymentRequest.PrePaymentRequest;
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
 import com.example.demo.domain.reservation.model.Payment;
 import com.example.demo.domain.reservation.model.Reservation;
@@ -395,6 +400,30 @@ public abstract class TestUtils {
 
     public static Payment createPayment(final Reservation reservation) {
         return createPayments(List.of(reservation)).getFirst();
+    }
+
+    public static PrePaymentRequest createPrePaymentRequest() {
+        return FIXTURE_MONKEY.giveMeBuilder(PrePaymentRequest.class)
+                             .instantiate(Instantiator.constructor()
+                                                      .parameter(Long.class, "performanceId")
+                                                      .parameter(Long.class, "seatId")
+                                                      .parameter(String.class, "paymentMethod")
+                                                      .parameter(int.class, "price"))
+                             .setLazy("performanceId", () -> FAKER.number().numberBetween(1, Long.MAX_VALUE))
+                             .setLazy("seatId", () -> FAKER.number().numberBetween(1, Long.MAX_VALUE))
+                             .set("paymentMethod", "CARD")
+                             .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .sample();
+    }
+
+    public static String generateIpAddress() {
+        while (true) {
+            String ipAddress = FAKER.internet().publicIpV4Address();
+            if (isValidIpAddress(ipAddress)
+                && !isLocalIpAddress(ipAddress)
+                && !isProxyHeader(ipAddress)
+                && isAllowedIpRange(ipAddress)) return ipAddress;
+        }
     }
 
 }
