@@ -75,7 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
      * @param reservation - 예약 엔티티
      * @param request     - 결제 전 사전 정보 요청 DTO
      * @param paymentInfo - 결제 상품 정보
-     * @param clientIp - 클라이언트 IP 주소
+     * @param clientIp    - 클라이언트 IP 주소
      * @return 사전 결제 정보 응답 DTO
      */
     @Override
@@ -88,12 +88,9 @@ public class PaymentServiceImpl implements PaymentService {
 
         LocalDateTime generateTime = LocalDateTime.now();
 
-        String paymentKey;
-        do {
-            paymentKey = generatePaymentKey(generateTime); // 결제 UUID 생성
-        } while (paymentRepository.existsByPaymentKey(paymentKey));
-        LocalDateTime expiredAt = generateTime.plusMinutes(REDIS_PRE_PAYMENT_EXPIRE_MINUTES);   // Redis 데이터 만료 시간
-        String        redisKey  = getPrePaymentRedisKey(paymentKey);   // Redis 키 생성
+        String        paymentKey = generatePaymentKey(generateTime); // 결제 UUID 생성
+        LocalDateTime expiredAt  = generateTime.plusMinutes(REDIS_PRE_PAYMENT_EXPIRE_MINUTES);   // Redis 데이터 만료 시간
+        String        redisKey   = getPrePaymentRedisKey(paymentKey);   // Redis 키 생성
 
         PaymentValue paymentValue = new PaymentValue(paymentKey,
                                                      request.getPaymentMethod(),
