@@ -23,12 +23,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByPaymentKey(String paymentKey);
 
-    Optional<Payment> findByAccount_IdAndPaymentKey(UUID accountId, String paymentKey);
+    Optional<Payment> findByReservation_AccountIdAndPaymentKey(UUID accountId, String paymentKey);
 
     @Query("SELECT p FROM Payment p WHERE p.reservation.accountId = :accountId AND p.reservation.seatId = :seatId")
     Optional<Payment> findByReservationId(@Param("accountId") UUID accountId, @Param("seatId") Long seatId);
 
-    List<Payment> findByAccount_Id(UUID accountId);
+    List<Payment> findByReservation_AccountId(UUID accountId);
 
     boolean existsByPaymentKey(String paymentKey);
 

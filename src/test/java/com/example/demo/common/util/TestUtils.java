@@ -1,6 +1,7 @@
 package com.example.demo.common.util;
 
 import static com.example.demo.domain.account.constant.AccountConst.PASSWORD_PATTERN;
+import static java.util.stream.Collectors.joining;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.example.demo.domain.account.dto.AccountRequest.AccountPasswordUpdateRequest;
@@ -21,6 +22,7 @@ import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceLi
 import com.example.demo.domain.performance.model.Performance;
 import com.example.demo.domain.performance.model.Seat;
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
+import com.example.demo.domain.reservation.model.Payment;
 import com.example.demo.domain.reservation.model.Reservation;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
@@ -30,6 +32,7 @@ import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitra
 import com.navercorp.fixturemonkey.api.introspector.FailoverIntrospector;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPlugin;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -381,6 +384,34 @@ public abstract class TestUtils {
                                       () -> FAKER.word().noun() + FAKER.number().numberBetween(1, Integer.MAX_VALUE))
                              .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
                              .sampleList(size);
+    }
+
+    public static List<Payment> createPayments(final List<Reservation> reservations) {
+        return reservations.stream()
+                           .map(r -> FIXTURE_MONKEY.giveMeBuilder(Payment.class)
+                                                   .instantiate(Instantiator.factoryMethod("of")
+                                                                            .parameter(Reservation.class, "reservation")
+                                                                            .parameter(String.class, "paymentKey")
+                                                                            .parameter(String.class, "paymentInfo")
+                                                                            .parameter(BigDecimal.class, "amount")
+                                                                            .parameter(String.class, "clientIp"))
+                                                   .set("reservation", r)
+                                                   .setLazy("paymentKey",
+                                                            () -> IntStream.range(0, 3)
+                                                                           .mapToObj(i -> UUID.randomUUID()
+                                                                                              .toString()
+                                                                                              .replace("-", ""))
+                                                                           .collect(joining()))
+                                                   .setLazy("paymentInfo", () -> FAKER.commerce().productName())
+                                                   .setLazy("amount", () -> BigDecimal.valueOf(
+                                                           FAKER.number().numberBetween(1, Integer.MAX_VALUE)))
+                                                   .setLazy("clientIp", () -> FAKER.internet().ipV4Address())
+                                                   .sample())
+                           .toList();
+    }
+
+    public static Payment createPayment(final Reservation reservation) {
+        return createPayments(List.of(reservation)).getFirst();
     }
 
 }

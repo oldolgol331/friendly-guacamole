@@ -15,7 +15,6 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
-import com.example.demo.domain.account.model.Account;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -23,8 +22,8 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -59,19 +58,18 @@ public class Payment extends BaseAuditingEntity {
     private Long id;                    // ID
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "account_id",
-                nullable = false,
-                updatable = false,
-                foreignKey = @ForeignKey(name = "FK_payments_accounts",
-                                         foreignKeyDefinition = "BINARY(16)"))
-    private Account account;            // 결제 계정
-
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "reservation_id",
-                nullable = false,
-                updatable = false,
-                foreignKey = @ForeignKey(name = "FK_payments_reservations"))
+    @JoinColumns({
+            @JoinColumn(name = "account_id",
+                        referencedColumnName = "account_id",
+                        insertable = false,
+                        foreignKey = @ForeignKey(name = "FK_payments_reservations")),
+            @JoinColumn(name = "seat_id",
+                        referencedColumnName = "seat_id",
+                        insertable = false,
+                        foreignKey = @ForeignKey(name = "FK_payments_reservations"))
+    })
     private Reservation reservation;    // 예약 정보
+
 
     @Column(nullable = false, updatable = false)
     @NotBlank
@@ -125,47 +123,39 @@ public class Payment extends BaseAuditingEntity {
     /**
      * Payment 객체 생성
      *
-     * @param account     - Account 객체
      * @param reservation - Reservation 객체
      * @param paymentKey  - PG사 결제 ID
      * @param amount      - 결제 금액
      * @param clientIp    - 결제 요청 클라이언트 IP
      * @return Payment 객체
      */
-    public static Payment of(final Account account,
-                             final Reservation reservation,
+    public static Payment of(final Reservation reservation,
                              final String paymentKey,
                              final String paymentInfo,
                              final BigDecimal amount,
                              final String clientIp) {
         validateAmount(amount);
-        Payment payment = new Payment(reservation, paymentKey, "UNKNOWN", paymentInfo, amount, clientIp);
-        payment.setRelationshipWithAccount(account);
-        return payment;
+        return new Payment(reservation, paymentKey, "UNKNOWN", paymentInfo, amount, clientIp);
     }
 
     /**
      * Payment 객체 생성
      *
-     * @param account       - Account 객체
      * @param reservation   - Reservation 객체
      * @param paymentKey    - PG사 결제 ID
      * @param paymentMethod - 결제 방법
      * @param amount        - 결제 금액
-     * @param clientIp    - 결제 요청 클라이언트 IP
+     * @param clientIp      - 결제 요청 클라이언트 IP
      * @return Payment 객체
      */
-    public static Payment of(final Account account,
-                             final Reservation reservation,
+    public static Payment of(final Reservation reservation,
                              final String paymentKey,
                              final String paymentMethod,
                              final String paymentInfo,
                              final BigDecimal amount,
                              final String clientIp) {
         validateAmount(amount);
-        Payment payment = new Payment(reservation, paymentKey, paymentMethod, paymentInfo, amount, clientIp);
-        payment.setRelationshipWithAccount(account);
-        return payment;
+        return new Payment(reservation, paymentKey, paymentMethod, paymentInfo, amount, clientIp);
     }
 
     // ========================= 검증 메서드 =========================
@@ -178,18 +168,6 @@ public class Payment extends BaseAuditingEntity {
     private static void validateAmount(final BigDecimal input) {
         if (input == null || input.compareTo(BigDecimal.ZERO) <= 0)
             throw new BusinessException(INVALID_PAYMENT_AMOUNT);
-    }
-
-    // ========================= 연관관계 메서드 =========================
-
-    /**
-     * 계정과의 관계를 설정합니다.
-     *
-     * @param account - 계정
-     */
-    private void setRelationshipWithAccount(final Account account) {
-        this.account = account;
-        account.getPayments().add(this);
     }
 
     // ========================= JPA 콜백 메서드 =========================

@@ -91,14 +91,13 @@ CREATE TABLE payments
     amount         DECIMAL(19, 4)  NOT NULL DEFAULT 0.0000 COMMENT '결제 금액',
     status         VARCHAR(255)    NOT NULL DEFAULT 'PENDING' COMMENT '결제 상태',
     client_ip      VARCHAR(255)    NOT NULL COMMENT '결제 요청 클라이언트 IP',
-    approve_at     DATETIME                 DEFAULT NULL COMMENT '결제 승인 일시',
+    approved_at     DATETIME                 DEFAULT NULL COMMENT '결제 승인 일시',
     receipt_url    VARCHAR(255)             DEFAULT NULL COMMENT '영수증 URL',
     canceled_at    DATETIME                 DEFAULT NULL COMMENT '결제 취소 일시',
     cancel_reason  VARCHAR(255)             DEFAULT NULL COMMENT '결제 취소 사유',
     created_at     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
     updated_at     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
     CONSTRAINT PK_payments PRIMARY KEY (payment_id),
-    CONSTRAINT FK_payments_accounts FOREIGN KEY (account_id) REFERENCES accounts (account_id),
     CONSTRAINT FK_payments_reservations FOREIGN KEY (account_id, seat_id) REFERENCES reservations (account_id, seat_id),
     CONSTRAINT UK_payments_payment_key UNIQUE (payment_key)
 );

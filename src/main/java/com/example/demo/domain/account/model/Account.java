@@ -20,7 +20,6 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
-import com.example.demo.domain.reservation.model.Payment;
 import com.example.demo.domain.reservation.model.Reservation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -96,9 +95,6 @@ public class Account extends BaseAuditingEntity {
 
     @OneToMany(mappedBy = "account", cascade = REMOVE, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();         // 예약 정보 목록
-
-    @OneToMany(mappedBy = "account", cascade = REMOVE, orphanRemoval = true)
-    private List<Payment> payments = new ArrayList<>();                 // 결제 정보 목록
 
     private Account(final String email,
                     final String nickname,

@@ -102,8 +102,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         redisRepository.setValue(redisKey, paymentValue, Duration.ofMinutes(REDIS_PRE_PAYMENT_EXPIRE_MINUTES));
 
-        Payment payment = Payment.of(account,
-                                     reservation,
+        Payment payment = Payment.of(reservation,
                                      paymentKey,
                                      request.getPaymentMethod(),
                                      paymentInfo,
@@ -128,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     public Payment findByAccountIdAndPaymentKey(final UUID accountId, final String paymentKey) {
-        return paymentRepository.findByAccount_IdAndPaymentKey(accountId, paymentKey)
+        return paymentRepository.findByReservation_AccountIdAndPaymentKey(accountId, paymentKey)
                                 .orElseThrow(() -> new BusinessException(PAYMENT_NOT_FOUND));
     }
 
@@ -271,7 +270,7 @@ public class PaymentServiceImpl implements PaymentService {
      * @param command   - PG사 결제 데이터
      */
     private void isPaymentInfoMatch(final UUID accountId, final Payment payment, final PaymentVerifyCommand command) {
-        if (!payment.getAccount().getId().equals(accountId))    // 결제 계정 확인
+        if (!payment.getReservation().getAccount().getId().equals(accountId))    // 결제 계정 확인
             throw new BusinessException(PAYMENT_ACCOUNT_MISMATCH);
         if (payment.getAmount().compareTo(command.getAmount()) != 0)    // 결제 금액 확인
             throw new BusinessException(PAYMENT_AMOUNT_MISMATCH);
