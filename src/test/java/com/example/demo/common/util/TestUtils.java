@@ -388,25 +388,13 @@ public abstract class TestUtils {
 
     public static List<Payment> createPayments(final List<Reservation> reservations) {
         return reservations.stream()
-                           .map(r -> FIXTURE_MONKEY.giveMeBuilder(Payment.class)
-                                                   .instantiate(Instantiator.factoryMethod("of")
-                                                                            .parameter(Reservation.class, "reservation")
-                                                                            .parameter(String.class, "paymentKey")
-                                                                            .parameter(String.class, "paymentInfo")
-                                                                            .parameter(BigDecimal.class, "amount")
-                                                                            .parameter(String.class, "clientIp"))
-                                                   .set("reservation", r)
-                                                   .setLazy("paymentKey",
-                                                            () -> IntStream.range(0, 3)
-                                                                           .mapToObj(i -> UUID.randomUUID()
-                                                                                              .toString()
-                                                                                              .replace("-", ""))
-                                                                           .collect(joining()))
-                                                   .setLazy("paymentInfo", () -> FAKER.commerce().productName())
-                                                   .setLazy("amount", () -> BigDecimal.valueOf(
-                                                           FAKER.number().numberBetween(1, Integer.MAX_VALUE)))
-                                                   .setLazy("clientIp", () -> FAKER.internet().ipV4Address())
-                                                   .sample())
+                           .map(r -> Payment.of(r,
+                                                IntStream.range(0, 3)
+                                                         .mapToObj(i -> UUID.randomUUID().toString().replace("-", ""))
+                                                         .collect(joining()),
+                                                FAKER.commerce().productName(),
+                                                BigDecimal.valueOf(FAKER.number().numberBetween(1, Integer.MAX_VALUE)),
+                                                FAKER.internet().ipV4Address()))
                            .toList();
     }
 
