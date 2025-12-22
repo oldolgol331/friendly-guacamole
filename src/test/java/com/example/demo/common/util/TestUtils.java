@@ -332,7 +332,7 @@ public abstract class TestUtils {
                         .mapToObj(
                                 i -> Seat.of(
                                         FAKER.word().noun() + FAKER.number().numberBetween(1, Integer.MAX_VALUE),
-                                        FAKER.number().numberBetween(1, Integer.MAX_VALUE),
+                                        FAKER.number().numberBetween(0, Integer.MAX_VALUE),
                                         performance
                                 )
                         )
@@ -344,12 +344,7 @@ public abstract class TestUtils {
     }
 
     public static List<Reservation> createReservations(final Account account, final List<Seat> seats) {
-        return seats.stream().map(s -> {
-            Reservation reservation = Reservation.of(account, s);
-            if (FAKER.bool().bool())
-                reservation.complete(FAKER.timeAndDate().future().atZone(ZoneId.systemDefault()).toLocalDateTime());
-            return reservation;
-        }).toList();
+        return seats.stream().map(s -> Reservation.of(account, s)).toList();
     }
 
     public static Reservation createReservation(final Account account, final Seat seat) {
@@ -393,7 +388,7 @@ public abstract class TestUtils {
                                                          .mapToObj(i -> UUID.randomUUID().toString().replace("-", ""))
                                                          .collect(joining()),
                                                 FAKER.commerce().productName(),
-                                                BigDecimal.valueOf(FAKER.number().numberBetween(1, Integer.MAX_VALUE)),
+                                                BigDecimal.valueOf(FAKER.number().numberBetween(0, Integer.MAX_VALUE)),
                                                 FAKER.internet().ipV4Address()))
                            .toList();
     }

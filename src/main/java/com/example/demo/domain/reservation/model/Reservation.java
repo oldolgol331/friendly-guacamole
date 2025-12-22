@@ -1,7 +1,6 @@
 package com.example.demo.domain.reservation.model;
 
 import static com.example.demo.common.response.ErrorCode.INVALID_RESERVATION_TIME;
-import static com.example.demo.domain.performance.model.SeatStatus.RESERVED;
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -93,7 +92,6 @@ public class Reservation extends BaseAuditingEntity {
      */
     public static Reservation of(final Account account, final Seat seat) {
         Reservation reservation = new Reservation(seat);
-        seat.setStatus(RESERVED);
         reservation.setRelationshipWithAccount(account);
         return reservation;
     }

@@ -82,9 +82,8 @@ class ReservationServiceTest {
             ReflectionTestUtils.setField(performance, "id", 1L);
             Seat seat = createSeat(performance);
             ReflectionTestUtils.setField(seat, "id", 1L);
-            Reservation reservation = createReservation(account, seat);
-            ReflectionTestUtils.setField(reservation, "reservationTime", null);
-            ReservationCreateRequest request = new ReservationCreateRequest(seat.getId());
+            Reservation              reservation = createReservation(account, seat);
+            ReservationCreateRequest request     = new ReservationCreateRequest(seat.getId());
 
             when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
             when(seatRepository.findById(eq(seat.getId()))).thenReturn(Optional.of(seat));
@@ -168,7 +167,7 @@ class ReservationServiceTest {
             Reservation   reservation   = createReservation(account, seat);
             UUID          accountId     = account.getId();
             Long          seatId        = seat.getId();
-            ReservationId reservationId = reservation.getReservationId();
+            ReservationId reservationId = new ReservationId(accountId, seatId);
 
             when(reservationRepository.findById(eq(reservationId))).thenReturn(Optional.of(reservation));
 
