@@ -42,7 +42,7 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping
-    @Operation(summary = "좌석 예매", description = "공연 좌석을 예매합니다.")
+    @Operation(summary = "좌석 예약", description = "공연 좌석을 예약합니다.")
     public ResponseEntity<ApiResponse<Void>> reserveSeat(
             @AuthenticationPrincipal final CustomUserDetails userDetails,
             @Valid @RequestBody final ReservationCreateRequest request
@@ -53,7 +53,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{seatId}")
-    @Operation(summary = "예매 취소", description = "예매된 좌석을 취소합니다.")
+    @Operation(summary = "예약 취소", description = "예약된 좌석을 취소합니다.")
     public ResponseEntity<ApiResponse<Void>> cancelReservation(
             @AuthenticationPrincipal final CustomUserDetails userDetails,
             @PathVariable("seatId") @Min(1) final Long id

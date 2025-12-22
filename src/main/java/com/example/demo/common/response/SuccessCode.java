@@ -48,7 +48,12 @@ public enum SuccessCode {
 
     // 예약(Reservation)
     RESERVATION_CREATE_SUCCESS(HttpStatus.CREATED, "좌석 예약 생성이 성공적으로 완료되었습니다."),
-    RESERVATION_CANCEL_SUCCESS(HttpStatus.OK, "좌석 예약 취소가 성공적으로 완료되었습니다.");
+    RESERVATION_CANCEL_SUCCESS(HttpStatus.OK, "좌석 예약 취소가 성공적으로 완료되었습니다."),
+
+    // 결제(Payment)
+    PRE_PAYMENT_SAVE_SUCCESS(HttpStatus.CREATED, "결제 검증 정보가 성공적으로 저장되었습니다."),
+    PAYMENT_SUCCESS(HttpStatus.OK, "결제가 성공적으로 완료되었습니다."),
+    PAYMENT_REFUND_SUCCESS(HttpStatus.OK, "결제 취소가 성공적으로 완료되었습니다.");
 
     private final HttpStatus status;
     private final String     message;

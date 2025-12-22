@@ -28,4 +28,8 @@ public abstract class RedisConst {
     public static final String REDIS_PASSWORD_RESET_KEY_PREFIX            = "password-reset:";
     public static final String REDIS_PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX = "rate-limit:password-reset-email:";
 
+    // 결제 관련
+    public static final String REDIS_PRE_PAYMENT_KEY_PREFIX     = "pre-payment:%s";
+    public static final int    REDIS_PRE_PAYMENT_EXPIRE_MINUTES = 10;
+
 }

@@ -25,6 +25,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
@@ -180,6 +181,16 @@ public class Payment extends BaseAuditingEntity {
     private void setRelationshipWithAccount(final Account account) {
         this.account = account;
         account.getPayments().add(this);
+    }
+
+    // ========================= JPA 콜백 메서드 =========================
+
+    /**
+     * 결제 상태를 확인하고, 결제 상태가 null인 경우 PENDING으로 설정합니다.
+     */
+    @PrePersist
+    private void statusCheck() {
+        if (status == null) status = PENDING;
     }
 
     // ========================= 비즈니스 메서드 =========================

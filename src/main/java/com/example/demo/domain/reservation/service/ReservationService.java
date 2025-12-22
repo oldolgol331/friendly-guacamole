@@ -2,6 +2,7 @@ package com.example.demo.domain.reservation.service;
 
 import com.example.demo.domain.reservation.dto.ReservationRequest.ReservationCreateRequest;
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
+import com.example.demo.domain.reservation.model.Reservation;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,10 @@ public interface ReservationService {
 
     void cancelReservation(UUID accountId, Long seatId);
 
+    void cancelReservation(Reservation reservation);
+
     Page<ReservationInfoResponse> getMyReservations(UUID accountId, Pageable pageable);
+
+    Reservation findReservationById(UUID accountId, Long seatId);
 
 }

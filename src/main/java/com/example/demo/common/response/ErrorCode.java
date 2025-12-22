@@ -36,6 +36,7 @@ public enum ErrorCode {
     TOO_MANY_REQUESTS(HttpStatus.TOO_MANY_REQUESTS, "CO012", "너무 많은 요청을 보냈습니다. 잠시 후 다시 시도해주세요."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "CO013", "요청하신 리소스를 찾을 수 없습니다."),
     MISSING_INPUT_VALUE(HttpStatus.BAD_REQUEST, "CO014", "필수 입력값이 누락되었습니다."),
+    INVALID_CLIENT_IP(HttpStatus.BAD_REQUEST, "CO015", "유효하지 않은 클라이언트 IP입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "CO999", "서버 내부 오류가 발생했습니다. 관리자에게 문의하세요."),
 
     // 계정(Account) & 인증(Auth)
@@ -96,7 +97,10 @@ public enum ErrorCode {
     INVALID_PAYMENT_STATUS(HttpStatus.BAD_REQUEST, "PY015", "결제 상태가 유효하지 않습니다."),
     PAYMENT_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY016", "결제 처리 중 오류가 발생했습니다."),
     PAYMENT_NOT_FOUND_IN_PG(HttpStatus.NOT_FOUND, "PY017", "PG사에서 해당 결제를 찾을 수 없습니다."),
-    PAYMENT_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PY018", "PG사 결제 API 호출 중 오류가 발생했습니다.");
+    PAYMENT_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PY018", "PG사 결제 API 호출 중 오류가 발생했습니다."),
+    EXPIRE_PAYMENT_VERIFICATION_TIME(HttpStatus.BAD_REQUEST, "PY019", "결제 검증 유효 시간이 만료되었습니다."),
+    PAYMENT_ACCOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "PY020", "결제 계정 정보가 일치하지 않습니다."),
+    PAYMENT_KEY_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY021", "결제 키 생성에 실패했습니다.");
 
     private final HttpStatus status;
     private final String     code;

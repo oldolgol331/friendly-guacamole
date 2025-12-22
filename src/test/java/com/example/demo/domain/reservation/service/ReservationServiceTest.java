@@ -168,7 +168,7 @@ class ReservationServiceTest {
             Reservation   reservation   = createReservation(account, seat);
             UUID          accountId     = account.getId();
             Long          seatId        = seat.getId();
-            ReservationId reservationId = new ReservationId(accountId, seatId);
+            ReservationId reservationId = reservation.getReservationId();
 
             when(reservationRepository.findById(eq(reservationId))).thenReturn(Optional.of(reservation));
 

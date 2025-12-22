@@ -124,6 +124,15 @@ public class Reservation extends BaseAuditingEntity {
     // ========================= 비즈니스 메서드 =========================
 
     /**
+     * 예약 ID(복합키)를 반환합니다.
+     *
+     * @return ReservationId 객체
+     */
+    public ReservationId getReservationId() {
+        return new ReservationId(accountId, seatId);
+    }
+
+    /**
      * 예약을 확정합니다.
      *
      * @param reservationTime - 예약 확정 시간

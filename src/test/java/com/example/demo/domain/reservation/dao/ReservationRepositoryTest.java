@@ -65,7 +65,7 @@ class ReservationRepositoryTest {
 
             // when
             reservationRepository.save(reservation);
-            ReservationId id = new ReservationId(account.getId(), seat.getId());
+            ReservationId id = reservation.getReservationId();
             em.flush();
 
             // then
@@ -93,7 +93,7 @@ class ReservationRepositoryTest {
             Performance   performance = em.persistAndFlush(createPerformance());
             Seat          seat        = em.persistAndFlush(createSeat(performance));
             Reservation   reservation = em.persistAndFlush(createReservation(account, seat));
-            ReservationId id          = new ReservationId(account.getId(), seat.getId());
+            ReservationId id          = reservation.getReservationId();
 
             // when
             Reservation findReservation = reservationRepository.findById(id).get();
@@ -135,7 +135,7 @@ class ReservationRepositoryTest {
             Performance   performance = em.persistAndFlush(createPerformance());
             Seat          seat        = em.persistAndFlush(createSeat(performance));
             Reservation   reservation = em.persistAndFlush(createReservation(account, seat));
-            ReservationId id          = new ReservationId(reservation.getAccountId(), reservation.getSeatId());
+            ReservationId id          = reservation.getReservationId();
 
             // when
             reservationRepository.deleteById(id);

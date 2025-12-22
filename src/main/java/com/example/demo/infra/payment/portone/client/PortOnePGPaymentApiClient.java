@@ -6,12 +6,17 @@ import static com.example.demo.common.response.ErrorCode.PAYMENT_NOT_FOUND_IN_PG
 
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.infra.payment.client.PGPaymentApiBaseClient;
-import com.example.demo.infra.payment.portone.dto.PortOneCancelPaymentApiBaseRequest;
+import com.example.demo.infra.payment.portone.dto.PortOneCancelPaymentApiRequest;
 import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiRequest;
 import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiResponse;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.Timer.Sample;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -30,12 +35,15 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 public class PortOnePGPaymentApiClient implements PGPaymentApiBaseClient<PortOnePaymentApiRequest,
         PortOnePaymentApiResponse,
-        PortOneCancelPaymentApiBaseRequest> {
+        PortOneCancelPaymentApiRequest> {
 
-    private final RestClient restClient;
+    private final RestClient    restClient;
+    private final MeterRegistry meterRegistry;
 
-    public PortOnePGPaymentApiClient(@Qualifier("portOneRestClient") final RestClient restClient) {
+    public PortOnePGPaymentApiClient(@Qualifier("portOneRestClient") final RestClient restClient,
+                                     final MeterRegistry meterRegistry) {
         this.restClient = restClient;
+        this.meterRegistry = meterRegistry;
     }
 
     /**
@@ -45,20 +53,33 @@ public class PortOnePGPaymentApiClient implements PGPaymentApiBaseClient<PortOne
      * @return 포트원 결제 정보 응답 DTO
      */
     @Override
+    @Retryable(value = Exception.class, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public PortOnePaymentApiResponse getPayment(final PortOnePaymentApiRequest request) {
         String paymentId = request.getPaymentKey();
-        return restClient.get()
-                         .uri("/payments/{paymentId}", paymentId)
-                         .retrieve()
-                         .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                             log.error("PortOne Client Error - paymentId: {}", paymentId);
-                             throw new BusinessException(PAYMENT_NOT_FOUND_IN_PG);
-                         })
-                         .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
-                             log.error("PortOne Server Error - paymentId: {}", paymentId);
-                             throw new BusinessException(PAYMENT_API_ERROR);
-                         })
-                         .body(PortOnePaymentApiResponse.class);
+        Sample sample    = Timer.start(meterRegistry);
+
+        try {
+            return restClient.get()
+                             .uri("/payments/{paymentId}", paymentId)
+                             .retrieve()
+                             .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                                 log.error("PortOne Client Error - paymentId: {}", paymentId);
+                                 meterRegistry.counter("payment.api.error", "type", "client", "paymentId", paymentId)
+                                              .increment();
+                                 throw new BusinessException(PAYMENT_NOT_FOUND_IN_PG);
+                             })
+                             .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                                 log.error("PortOne Server Error - paymentId: {}", paymentId);
+                                 meterRegistry.counter("payment.api.error", "type", "general", "paymentId", paymentId)
+                                              .increment();
+                                 throw new BusinessException(PAYMENT_API_ERROR);
+                             })
+                             .body(PortOnePaymentApiResponse.class);
+        } catch (Exception e) {
+            sample.stop(Timer.builder("payment.api.duration").tag("status", "error").register(meterRegistry));
+            throw e;
+        }
+
     }
 
     /**
@@ -67,7 +88,7 @@ public class PortOnePGPaymentApiClient implements PGPaymentApiBaseClient<PortOne
      * @param request - 포트원 결제 취소 요청 DTO
      */
     @Override
-    public void cancelPayment(final String paymentId, final PortOneCancelPaymentApiBaseRequest request) {
+    public void cancelPayment(final String paymentId, final PortOneCancelPaymentApiRequest request) {
         restClient.post()
                   .uri("/payments/{paymentId}/cancel", paymentId)
                   .body(request)

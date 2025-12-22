@@ -8,14 +8,13 @@ import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.domain.account.dao.AccountRepository;
 import com.example.demo.domain.account.model.Account;
+import com.example.demo.domain.performance.dao.SeatRepository;
+import com.example.demo.domain.performance.model.Seat;
 import com.example.demo.domain.reservation.dao.ReservationRepository;
 import com.example.demo.domain.reservation.dto.ReservationRequest.ReservationCreateRequest;
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
 import com.example.demo.domain.reservation.model.Reservation;
 import com.example.demo.domain.reservation.model.ReservationId;
-import com.example.demo.domain.performance.dao.SeatRepository;
-import com.example.demo.domain.performance.model.Seat;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -58,9 +57,8 @@ public class ReservationServiceImpl implements ReservationService {
         Seat seat = seatRepository.findById(request.getSeatId())
                                   .orElseThrow(() -> new BusinessException(SEAT_NOT_FOUND));
 
-        Reservation reservation = reservationRepository.save(Reservation.of(account, seat));
-        // TODO: 결제 완료 -> 예약 확정 시 호출
-        reservation.complete(LocalDateTime.now());  // HACK: 임시로 예약 확정 처리
+        reservationRepository.save(Reservation.of(account, seat));
+        seat.reserve();
     }
 
     /**
@@ -79,6 +77,18 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     /**
+     * 예약된 좌석을 취소합니다.
+     *
+     * @param reservation - 예약 엔티티
+     */
+    @Transactional
+    @Override
+    public void cancelReservation(final Reservation reservation) {
+        reservation.cancel();
+        reservationRepository.delete(reservation);
+    }
+
+    /**
      * 계정의 예약 목록을 조회합니다.
      *
      * @param accountId - 계정 ID
@@ -88,6 +98,19 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Page<ReservationInfoResponse> getMyReservations(final UUID accountId, final Pageable pageable) {
         return reservationRepository.getMyReservations(accountId, pageable);
+    }
+
+    /**
+     * 예약 정보 엔티티를 조회합니다.
+     *
+     * @param accountId - 계정 ID
+     * @param seatId    - 좌석 ID
+     * @return 예약 정보 엔티티
+     */
+    @Override
+    public Reservation findReservationById(final UUID accountId, final Long seatId) {
+        return reservationRepository.findById(new ReservationId(accountId, seatId))
+                                    .orElseThrow(() -> new BusinessException(RESERVATION_NOT_FOUND));
     }
 
 }

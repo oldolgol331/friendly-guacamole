@@ -68,3 +68,4 @@ payment:
     api:
       url: ${PG_PAYMENT_PORTONE_BASE_URL}
       secret-key: ${PG_PAYMENT_PORTONE_SECRET_KEY}
+      timeout-millis: ${PG_PAYMENT_PORTONE_TIMEOUT_MILLIS:5000}

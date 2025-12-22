@@ -23,7 +23,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(name = "포트원(PortOne) 결제 취소 요청 DTO")
-public class PortOneCancelPaymentApiBaseRequest extends PGCancelPaymentApiBaseRequest {
+public class PortOneCancelPaymentApiRequest extends PGCancelPaymentApiBaseRequest {
+
+    @Schema(description = "PG사 결제 ID")
+    private String paymentId;
+
+    @Schema(description = "취소 금액")
+    private int amount;
 
     @Schema(description = "취소 사유")
     private String reason;

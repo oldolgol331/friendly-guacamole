@@ -109,6 +109,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/reservations").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/reservations").authenticated()
 
+                        // Payment
+                        .requestMatchers(HttpMethod.POST,
+                                         "/api/v1/payments/prepare",
+                                         "/api/v1/payments/complete",
+                                         "/api/v1/payments/refund").authenticated()
+
                         // ETC
                         .anyRequest().authenticated())
 

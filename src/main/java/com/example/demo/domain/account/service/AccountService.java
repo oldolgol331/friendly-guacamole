@@ -47,4 +47,6 @@ public interface AccountService {
 
     void withdrawAccount(UUID accountId, AccountWithdrawRequest request);
 
+    Account findByAccountId(UUID accountId);
+
 }

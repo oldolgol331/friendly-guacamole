@@ -272,7 +272,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public void confirmPasswordReset(final String token, final PasswordResetConfirmRequest request) {
-        if (!request.isNewPasswordConfirmed()) throw new BusinessException(PASSWORD_MISMATCH);    // 신규 비밀번호 != 신규 비밀번호 확인
+        if (!request.isNewPasswordConfirmed())
+            throw new BusinessException(PASSWORD_MISMATCH);    // 신규 비밀번호 != 신규 비밀번호 확인
 
         String redisKey = REDIS_PASSWORD_RESET_KEY_PREFIX + token;
         UUID accountId = UUID.fromString(
@@ -346,6 +347,18 @@ public class AccountServiceImpl implements AccountService {
         accountStatusCheck(account);
 
         account.withdraw();
+    }
+
+    /**
+     * 계정 엔티티를 조회합니다.
+     *
+     * @param accountId - 계정 ID
+     * @return 조회된 계정 엔티티
+     */
+    @Override
+    public Account findByAccountId(final UUID accountId) {
+        return accountRepository.findByIdAndStatus(accountId, ACTIVE)
+                                .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
     }
 
     // ========================= 내부 메서드 =========================
