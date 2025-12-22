@@ -16,11 +16,11 @@ import static com.example.demo.common.util.TestUtils.createPerformance;
 import static com.example.demo.common.util.TestUtils.createReservation;
 import static com.example.demo.common.util.TestUtils.createSeat;
 import static com.example.demo.common.util.TestUtils.generateIpAddress;
+import static com.example.demo.common.util.TestUtils.generatePaymentKey;
 import static com.example.demo.domain.reservation.model.PaymentStatus.CANCELLED;
 import static com.example.demo.domain.reservation.model.PaymentStatus.PAID;
 import static com.example.demo.domain.reservation.model.PaymentStatus.PENDING;
 import static com.example.demo.infra.redis.constant.RedisConst.REDIS_PRE_PAYMENT_EXPIRE_MINUTES;
-import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -49,10 +49,8 @@ import com.example.demo.infra.redis.dao.RedisRepository;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
@@ -85,15 +83,6 @@ class PaymentServiceTest {
     PaymentRepository         paymentRepository;
     @Mock
     RedisRepository           redisRepository;
-
-    private String generatePaymentKey() {
-        return "Payment:%s:%s".formatted(
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
-                IntStream.range(0, 3)
-                         .mapToObj(i -> UUID.randomUUID().toString().replace("-", ""))
-                         .collect(joining())
-        );
-    }
 
     @Nested
     @DisplayName("savePrePayment() 테스트")

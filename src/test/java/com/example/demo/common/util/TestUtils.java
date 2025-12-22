@@ -40,6 +40,7 @@ import com.navercorp.fixturemonkey.jakarta.validation.plugin.JakartaValidationPl
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -414,6 +415,15 @@ public abstract class TestUtils {
                              .set("paymentMethod", "CARD")
                              .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
                              .sample();
+    }
+
+    public static String generatePaymentKey() {
+        return "Payment:%s:%s".formatted(
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
+                IntStream.range(0, 3)
+                         .mapToObj(i -> UUID.randomUUID().toString().replace("-", ""))
+                         .collect(joining())
+        );
     }
 
     public static String generateIpAddress() {
