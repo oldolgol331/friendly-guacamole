@@ -24,7 +24,8 @@ public interface PaymentService {
     PrePaymentInfoResponse savePrePayment(Account account,
                                           Reservation reservation,
                                           PrePaymentRequest request,
-                                          String paymentInfo);
+                                          String paymentInfo,
+                                          String clientIp);
 
     Payment findByAccountIdAndPaymentKey(UUID accountId,String paymentKey);
 

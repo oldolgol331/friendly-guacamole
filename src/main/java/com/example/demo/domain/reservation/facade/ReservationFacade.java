@@ -73,7 +73,9 @@ public class ReservationFacade {
      * @return 사전 결제 정보 응답 DTO
      */
     @Transactional
-    public PrePaymentInfoResponse savePrePayment(final UUID accountId, final PrePaymentRequest request) {
+    public PrePaymentInfoResponse savePrePayment(final UUID accountId,
+                                                 final PrePaymentRequest request,
+                                                 final String clientIp) {
         Account     account     = accountService.findByAccountId(accountId);
         Reservation reservation = reservationService.findReservationById(accountId, request.getSeatId());
         Seat        seat        = reservation.getSeat();
@@ -81,7 +83,7 @@ public class ReservationFacade {
 
         String paymentInfo = "%s %s".formatted(performance.getName(), seat.getSeatCode());
 
-        return paymentService.savePrePayment(account, reservation, request, paymentInfo);
+        return paymentService.savePrePayment(account, reservation, request, paymentInfo, clientIp);
     }
 
     // ========================= 내부 메서드 =========================
@@ -153,7 +155,7 @@ public class ReservationFacade {
      * 포트원 결제 취소 실패 시 관리자에게 알림을 보냅니다.
      *
      * @param paymentKey - PG사 결제 ID
-     * @param reason - 결제 취소 실패 사유
+     * @param reason     - 결제 취소 실패 사유
      */
     private void alertManualPaymentCancelRequired(final String paymentKey, final String reason) {
         log.error("포트원 수동 취소 필요 - paymentKey: {}, reason: {}", paymentKey, reason);

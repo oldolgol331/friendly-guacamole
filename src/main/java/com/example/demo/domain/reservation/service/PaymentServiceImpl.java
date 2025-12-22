@@ -75,13 +75,17 @@ public class PaymentServiceImpl implements PaymentService {
      * @param reservation - 예약 엔티티
      * @param request     - 결제 전 사전 정보 요청 DTO
      * @param paymentInfo - 결제 상품 정보
+     * @param clientIp - 클라이언트 IP 주소
      * @return 사전 결제 정보 응답 DTO
      */
     @Override
     public PrePaymentInfoResponse savePrePayment(final Account account,
                                                  final Reservation reservation,
                                                  final PrePaymentRequest request,
-                                                 final String paymentInfo) {
+                                                 final String paymentInfo,
+                                                 final String clientIp) {
+        if (!isValidClientIp(clientIp)) throw new BusinessException(INVALID_CLIENT_IP);  // 클라이언트 IP 검증
+
         LocalDateTime generateTime = LocalDateTime.now();
 
         String paymentKey;
@@ -103,7 +107,8 @@ public class PaymentServiceImpl implements PaymentService {
                                      paymentKey,
                                      request.getPaymentMethod(),
                                      paymentInfo,
-                                     BigDecimal.valueOf(request.getPrice()));
+                                     BigDecimal.valueOf(request.getPrice()),
+                                     clientIp);
         paymentRepository.save(payment);
 
         return new PrePaymentInfoResponse(paymentKey,

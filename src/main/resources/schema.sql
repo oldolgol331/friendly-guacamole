@@ -90,6 +90,7 @@ CREATE TABLE payments
     payment_info   VARCHAR(255)    NOT NULL COMMENT '결제 상품 정보: {공연명} {좌석 번호}',
     amount         DECIMAL(19, 4)  NOT NULL DEFAULT 0.0000 COMMENT '결제 금액',
     status         VARCHAR(255)    NOT NULL DEFAULT 'PENDING' COMMENT '결제 상태',
+    client_ip      VARCHAR(255)    NOT NULL COMMENT '결제 요청 클라이언트 IP',
     approve_at     DATETIME                 DEFAULT NULL COMMENT '결제 승인 일시',
     receipt_url    VARCHAR(255)             DEFAULT NULL COMMENT '영수증 URL',
     canceled_at    DATETIME                 DEFAULT NULL COMMENT '결제 취소 일시',

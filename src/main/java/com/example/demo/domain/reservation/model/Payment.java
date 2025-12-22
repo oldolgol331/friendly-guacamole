@@ -94,6 +94,9 @@ public class Payment extends BaseAuditingEntity {
     @NotNull
     private PaymentStatus status;       // 결제 상태
 
+    @Column(nullable = false, updatable = false)
+    private String clientIp;            // 결제 요청 클라이언트 IP
+
     private LocalDateTime approvedAt;   // 결제 승인 일시
 
     private String receiptUrl;          // 영수증 URL
@@ -106,13 +109,15 @@ public class Payment extends BaseAuditingEntity {
                     final String paymentKey,
                     final String paymentMethod,
                     final String paymentInfo,
-                    final BigDecimal amount) {
+                    final BigDecimal amount,
+                    final String clientIp) {
         this.reservation = reservation;
         this.paymentKey = paymentKey;
         this.paymentMethod = paymentMethod;
         this.paymentInfo = paymentInfo;
         this.amount = amount;
         this.status = PENDING;
+        this.clientIp = clientIp;
     }
 
     // ========================= 생성자 메서드 =========================
@@ -124,15 +129,17 @@ public class Payment extends BaseAuditingEntity {
      * @param reservation - Reservation 객체
      * @param paymentKey  - PG사 결제 ID
      * @param amount      - 결제 금액
+     * @param clientIp    - 결제 요청 클라이언트 IP
      * @return Payment 객체
      */
     public static Payment of(final Account account,
                              final Reservation reservation,
                              final String paymentKey,
                              final String paymentInfo,
-                             final BigDecimal amount) {
+                             final BigDecimal amount,
+                             final String clientIp) {
         validateAmount(amount);
-        Payment payment = new Payment(reservation, paymentKey, "UNKNOWN", paymentInfo, amount);
+        Payment payment = new Payment(reservation, paymentKey, "UNKNOWN", paymentInfo, amount, clientIp);
         payment.setRelationshipWithAccount(account);
         return payment;
     }
@@ -145,6 +152,7 @@ public class Payment extends BaseAuditingEntity {
      * @param paymentKey    - PG사 결제 ID
      * @param paymentMethod - 결제 방법
      * @param amount        - 결제 금액
+     * @param clientIp    - 결제 요청 클라이언트 IP
      * @return Payment 객체
      */
     public static Payment of(final Account account,
@@ -152,9 +160,10 @@ public class Payment extends BaseAuditingEntity {
                              final String paymentKey,
                              final String paymentMethod,
                              final String paymentInfo,
-                             final BigDecimal amount) {
+                             final BigDecimal amount,
+                             final String clientIp) {
         validateAmount(amount);
-        Payment payment = new Payment(reservation, paymentKey, paymentMethod, paymentInfo, amount);
+        Payment payment = new Payment(reservation, paymentKey, paymentMethod, paymentInfo, amount, clientIp);
         payment.setRelationshipWithAccount(account);
         return payment;
     }

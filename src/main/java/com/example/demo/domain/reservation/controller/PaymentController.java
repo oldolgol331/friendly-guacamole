@@ -48,10 +48,13 @@ public class PaymentController {
     @Operation(summary = "검증용 결제 정보 사전 저장", description = "PG사 결제 전 서버에 검증용 결제 정보를 저장하고, PG사 결제 ID를 발급받습니다.")
     public ResponseEntity<ApiResponse<PrePaymentInfoResponse>> savePrePayment(
             @AuthenticationPrincipal final CustomUserDetails userDetails,
-            @Valid @RequestBody final PrePaymentRequest request
+            @Valid @RequestBody final PrePaymentRequest request,
+            final HttpServletRequest req
     ) {
-        PrePaymentInfoResponse responseData = reservationFacade.savePrePayment(userDetails.getId(), request);
-        final SuccessCode      successCode  = PRE_PAYMENT_SAVE_SUCCESS;
+        PrePaymentInfoResponse responseData = reservationFacade.savePrePayment(userDetails.getId(),
+                                                                               request,
+                                                                               getClientIpAddress(req));
+        final SuccessCode successCode = PRE_PAYMENT_SAVE_SUCCESS;
         return ResponseEntity.status(successCode.getStatus()).body(ApiResponse.success(successCode, responseData));
     }
 
