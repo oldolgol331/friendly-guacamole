@@ -74,6 +74,7 @@ email:
   password-reset-base-url: ${EMAIL_PASSWORD_RESET_BASE_URL}
 payment:
   portone:
+    store-id: ${PG_PAYMENT_PORTONE_STORE_ID}
     api:
       url: ${PG_PAYMENT_PORTONE_BASE_URL}
       secret-key: ${PG_PAYMENT_PORTONE_SECRET_KEY}
