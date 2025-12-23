@@ -1,0 +1,89 @@
+name: demo-dev-docker
+
+services:
+
+  postgresql:
+    image: postgres:14.20
+    container_name: demo-dev-postgresql
+    restart: always
+    networks:
+      - demo-dev-network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      TZ: Asia/Seoul
+    ports:
+      - 5432:5432
+    volumes:
+      - ./docker/postgresql/data:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+
+  smtp4dev:
+    image: rnwood/smtp4dev:latest
+    container_name: demo-dev-smtp4dev
+    restart: always
+    networks:
+      - demo-dev-network
+    ports:
+      - 5000:80
+      - 2525:25
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+
+  init-sonarqube:
+    image: busybox:1.36.1
+    container_name: init-demo-dev-sonarqube
+    user: root
+    command: chown -R 1000:1000 /opt/sonarqube/data /opt/sonarqube/extensions /opt/sonarqube/logs
+    volumes:
+      - ./docker/sonarqube/data:/opt/sonarqube/data
+      - ./docker/sonarqube/extensions:/opt/sonarqube/extensions
+      - ./docker/sonarqube/logs:/opt/sonarqube/logs
+
+  sonarqube:
+    image: sonarqube:25.12.0.117093-community
+    container_name: demo-dev-sonarqube
+    restart: always
+    depends_on:
+      postgresql:
+        condition: service_started
+      init-sonarqube:
+        condition: service_completed_successfully
+    networks:
+      - demo-dev-network
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgresql:5432/${POSTGRES_DB}
+      SONAR_JDBC_USERNAME: ${POSTGRES_USER}
+      SONAR_JDBC_PASSWORD: ${POSTGRES_PASSWORD}
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: true
+      TZ: Asia/Seoul
+    ports:
+      - 9000:9000
+    volumes:
+      - ./docker/sonarqube/data:/opt/sonarqube/data
+      - ./docker/sonarqube/extensions:/opt/sonarqube/extensions
+      - ./docker/sonarqube/logs:/opt/sonarqube/logs
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+
+networks:
+  demo-dev-network:
+    driver: bridge

@@ -198,19 +198,13 @@ gradle-app.setting
 *.hprof
 
 ### User Specific ###
+!.env.example
 .env
 .env.*
-!.env.example
 
 ### Docker ###
-# MySQL file
-!docker-volume/mysql/conf.d/my.cnf
-docker-volume/mysql/
-
-# Redis file
-docker-volume/redis/
-
-# Nginx Proxy Manager file
-docker-volume/npm/
+!docker/**/*.cnf
+!docker/**/*.conf
+docker/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,intellij,java,gradle
