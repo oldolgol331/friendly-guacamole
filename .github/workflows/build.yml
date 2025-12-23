@@ -26,6 +26,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -81,6 +85,17 @@ jobs:
         working-directory: ./
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle
+      - name: Build and Analyze with JaCoCo
         working-directory: ./
-        run: ./gradlew build --no-daemon --info
+        run: ./gradlew clean build jacocoTestReport --no-daemon --info
+
+      - name: Add Coverage to Job Summary
+        run: |
+          cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload JaCoCo HTML Report
+        uses: actions/upload-artifact@v6
+        with:
+          name: jacoco-html-report
+          path: build/reports/jacoco/test/html/
+          retention-days: 5
