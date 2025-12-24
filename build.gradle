@@ -165,9 +165,8 @@ jacocoTestReport {
                     "**/dto/**",
                     "**/*Interceptor*",
                     "**/*Exception*",
-                    "**/common/**",
-                    "**/domain/**/model/**",
-                    "**/infra/**/config/**"
+                    "**/*Properties*",
+                    "**/model/**"
             ] + Qdomains)
         }))
     }
@@ -189,9 +188,9 @@ jacocoTestCoverageVerification {
                     "**.*Response*",
                     "**/dto/**",
                     "**.*Exception*",
+                    "**.*Properties*",
                     "**/Q*",
-                    "**/common/config/**",
-                    "**/infra/**/config/**"
+                    "**/model/**"
             ]
 
             limit {
@@ -216,6 +215,19 @@ sonar {
         property 'sonar.token', ''
         property 'sonar.sourceEncoding', 'UTF-8'
         property 'sonar.coverage.jacoco.xmlReportPaths', 'build/reports/jacoco/test/jacocoTestReport.xml'
-        property 'sonar.coverage.exclusions', '**/*Application.java,' + '**/config/**,' + '**/*Dto.java,' + '**/*Request.java,' + '**/*Response.java,' + '**/dto/**,' + '**/*Interceptor.java,' + '**/*Exception.java,' + '**/Q*.java,' + '**/common/config/**,' + '**/infra/**/config/**'
+        def coverageExclusions = [
+                '**/*Application.java',
+                '**/config/**',
+                '**/*Dto.java',
+                '**/*Request.java',
+                '**/*Response.java',
+                '**/dto/**',
+                '**/*Interceptor.java',
+                '**/*Exception.java',
+                '**/*Properties.java',
+                '**/Q*.java',
+                '**/model/**'
+        ]
+        property 'sonar.coverage.exclusions', coverageExclusions.join(',')
     }
 }
