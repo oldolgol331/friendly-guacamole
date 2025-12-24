@@ -134,6 +134,10 @@ jobs:
               -e JWT_REFRESH_TOKEN_SECRET=${{ secrets.JWT_REFRESH_TOKEN_SECRET }} \
               -e EMAIL_VERIFICATION_BASE_URL=${{ secrets.EMAIL_VERIFICATION_BASE_URL }} \
               -e EMAIL_PASSWORD_RESET_BASE_URL=${{ secrets.EMAIL_PASSWORD_RESET_BASE_URL }} \
+              -e PG_PAYMENT_PORTONE_STORE_ID=${{ secrets.PG_PAYMENT_PORTONE_STORE_ID }} \
+              -e PG_PAYMENT_PORTONE_BASE_URL=${{ secrets.PG_PAYMENT_PORTONE_BASE_URL }} \
+              -e PG_PAYMENT_PORTONE_SECRET_KEY=${{ secrets.PG_PAYMENT_PORTONE_SECRET_KEY }} \
+              -e PG_PAYMENT_PORTONE_TIMEOUT_MILLIS=${{ secrets.PG_PAYMENT_PORTONE_TIMEOUT_MILLIS }} \
               -p 8080:8080 \
               --log-opt max-size=10m \
               --log-opt max-file=3 \
