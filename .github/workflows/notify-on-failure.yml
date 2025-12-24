@@ -10,68 +10,65 @@ permissions:
   issues: write
 
 jobs:
-  notify-on-failure:
+  notify:
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check if Issue Exists
-        id: check_issue
-        uses: actions/github-script@v7
+      - name: Create or Update Issue
+        uses: actions/github-script@v8
         with:
           script: |
+            const run = context.payload.workflow_run;
+            const branchName = run.head_branch;
+            const workflowName = run.name;
+            const runUrl = run.html_url;
+            const headSha = run.head_sha.slice(0, 7);
+            
+            const issueTitle = `🚨 [${workflowName}] Failed: ${branchName}`;
+            
+            const issueBody = `
+            ## ❌ Build Failure Alert
+            
+            **워크플로우 실행 중 오류가 발생했습니다.**
+            
+            | 항목 | 내용 |
+            | --- | --- |
+            | **Workflow** | ${workflowName} |
+            | **Branch** | \`${branchName}\` |
+            | **Commit** | \`${headSha}\` |
+            | **Logs** | [👉 로그 확인하기](${runUrl}) |
+            
+            ---
+            _This issue was automatically created by GitHub Actions._
+            `;
+
             const { owner, repo } = context.repo;
-            const branchName = context.payload.workflow_run.head_branch;
+            
             const issues = await github.rest.issues.listForRepo({
               owner,
               repo,
-              state: 'all',
-              labels: ['build-failure']
+              state: 'open',
+              creator: 'github-actions[bot]'
             });
 
-            const existingIssue = issues.data.find(issue => issue.title.includes(branchName));
-            core.setOutput('issue_exists', existingIssue ? 'true' : 'false');
+            const existingIssue = issues.data.find(issue => issue.title === issueTitle);
 
-            if (existingIssue)
-              core.setOutput('issue_number', existingIssue.number);
-
-      - name: Create or Update Issue on Failure
-        env:
-          ISSUE_EXISTS: ${{ steps.check_issue.outputs.issue_exists }}
-          ISSUE_NUMBER: ${{ steps.check_issue.outputs.issue_number }}
-          BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
-          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
-          WORKFLOW_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const branchName = process.env.BRANCH_NAME;
-            const prNumber = process.env.PR_NUMBER ? `#${process.env.PR_NUMBER}` : '';
-            const workflowRunUrl = process.env.WORKFLOW_RUN_URL;
-            const title = `🚨 Build Failed: ${branchName}${prNumber ? `-${prNumber}` : ''}`;
-
-            const body = `## ❌ Build Failure Detected
-            - **Branch:** \`${branchName}\`
-            - **PR Number:** ${prNumber ? prNumber : 'N/A'}
-            - **Workflow Run:** [🔗 View Logs](${workflowRunUrl})
-
-            Please check the logs and fix the issue.`;
-
-            if (process.env.ISSUE_EXISTS === 'true') {
-              const issueNumber = process.env.ISSUE_NUMBER;
-              await github.rest.issues.update({
+            if (existingIssue) {
+              console.log(`Found open issue #${existingIssue.number}. Adding comment...`);
+              await github.rest.issues.createComment({
                 owner,
                 repo,
-                issue_number: issueNumber,
-                title: title,
-                body: body
+                issue_number: existingIssue.number,
+                body: `🔄 **추가 실패 감지**\n\n- **Commit:** \`${headSha}\`\n- **Logs:** [로그 확인](${runUrl})`
               });
-            } else
+            } else {
+              console.log("No open issue found. Creating new one...");
               await github.rest.issues.create({
                 owner,
                 repo,
-                title: title,
-                body: body,
-                labels: ['build-failure']
+                title: issueTitle,
+                body: issueBody,
+                labels: ['build-failure', 'auto-generated']
               });
+            }
