@@ -90,6 +90,7 @@ public abstract class CommonUtils {
      * @return 프록시 헤더 포함 여부
      */
     public static boolean isProxyHeader(final String ipAddress) {
+        if (ipAddress == null || ipAddress.isBlank()) return false;
         return ipAddress.contains(",");
     }
 
@@ -99,6 +100,7 @@ public abstract class CommonUtils {
      * @return
      */
     public static boolean isAllowedIpRange(final String ipAddress) {
+        if (ipAddress == null || ipAddress.isBlank()) return false;
         // TODO: 환경에 맞게 허용된 IP 대역 설정
         // 예: 회사 IP 대역, CDN IP 대역 등
         return true;
