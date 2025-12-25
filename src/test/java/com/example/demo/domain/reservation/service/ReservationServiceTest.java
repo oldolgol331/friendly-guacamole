@@ -74,7 +74,7 @@ class ReservationServiceTest {
 
         @RepeatedTest(10)
         @DisplayName("좌석 예약")
-        void reserveSeat() {
+        void reserveTemporarySeat() {
             // given
             Account account = createAccount();
             ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
@@ -86,7 +86,7 @@ class ReservationServiceTest {
             ReservationCreateRequest request     = new ReservationCreateRequest(seat.getId());
 
             when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
-            when(seatRepository.findById(eq(seat.getId()))).thenReturn(Optional.of(seat));
+            when(seatRepository.findByIdWithLock(eq(seat.getId()))).thenReturn(Optional.of(seat));
             when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
             // when
@@ -94,13 +94,13 @@ class ReservationServiceTest {
 
             // then
             verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
-            verify(seatRepository, times(1)).findById(eq(seat.getId()));
+            verify(seatRepository, times(1)).findByIdWithLock(eq(seat.getId()));
             verify(reservationRepository, times(1)).save(any(Reservation.class));
         }
 
         @RepeatedTest(10)
         @DisplayName("좌석 예약 시도, 계정이 존재하지 않음")
-        void reserveSeat_accountNotFound() {
+        void reserveTemporarySeat_accountNotFound() {
             // given
             UUID                     accountId = UUID.randomUUID();
             ReservationCreateRequest request   = new ReservationCreateRequest(1L);
@@ -124,14 +124,14 @@ class ReservationServiceTest {
 
         @RepeatedTest(10)
         @DisplayName("좌석 예약 시도, 좌석이 존재하지 않음")
-        void reserveSeat_seatNotFound() {
+        void reserveTemporarySeat_seatNotFound() {
             // given
             Account account = createAccount();
             ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
             ReservationCreateRequest request = new ReservationCreateRequest(1L);
 
             when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
-            when(seatRepository.findById(eq(request.getSeatId()))).thenReturn(Optional.empty());
+            when(seatRepository.findByIdWithLock(eq(request.getSeatId()))).thenReturn(Optional.empty());
 
             // when
             BusinessException exception = assertThrows(BusinessException.class,
@@ -144,7 +144,7 @@ class ReservationServiceTest {
                                          "errorCode는 SEAT_NOT_FOUND여야 합니다."));
 
             verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
-            verify(seatRepository, times(1)).findById(eq(request.getSeatId()));
+            verify(seatRepository, times(1)).findByIdWithLock(eq(request.getSeatId()));
             verify(reservationRepository, never()).save(any(Reservation.class));
         }
 

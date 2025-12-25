@@ -5,6 +5,7 @@ import static com.example.demo.common.util.CommonUtils.isLocalIpAddress;
 import static com.example.demo.common.util.CommonUtils.isProxyHeader;
 import static com.example.demo.common.util.CommonUtils.isValidIpAddress;
 import static com.example.demo.domain.account.constant.AccountConst.PASSWORD_PATTERN;
+import static com.example.demo.domain.reservation.model.ReservationStatus.PENDING_PAYMENT;
 import static java.util.stream.Collectors.joining;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -30,6 +31,7 @@ import com.example.demo.domain.reservation.dto.PaymentResponse.PrePaymentInfoRes
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
 import com.example.demo.domain.reservation.model.Payment;
 import com.example.demo.domain.reservation.model.Reservation;
+import com.example.demo.domain.reservation.model.ReservationStatus;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.navercorp.fixturemonkey.api.instantiator.Instantiator;
 import com.navercorp.fixturemonkey.api.introspector.BeanArbitraryIntrospector;
@@ -351,7 +353,7 @@ public abstract class TestUtils {
     }
 
     public static List<Reservation> createReservations(final Account account, final List<Seat> seats) {
-        return seats.stream().map(s -> Reservation.of(account, s)).toList();
+        return seats.stream().map(s -> Reservation.of(account, s, LocalDateTime.now().plusMinutes(5))).toList();
     }
 
     public static Reservation createReservation(final Account account, final Seat seat) {
@@ -374,7 +376,9 @@ public abstract class TestUtils {
                                                       .parameter(LocalDateTime.class, "endTime")
                                                       .parameter(String.class, "seatCode")
                                                       .parameter(int.class, "price")
-                                                      .parameter(LocalDateTime.class, "reservationTime"))
+                                                      .parameter(ReservationStatus.class, "status")
+                                                      .parameter(LocalDateTime.class, "expiredAt")
+                                                      .parameter(LocalDateTime.class, "confirmedAt"))
                              .setLazy("performanceId", () -> FAKER.number().numberBetween(1L, Long.MAX_VALUE))
                              .setLazy("seatId", () -> FAKER.number().numberBetween(1L, Long.MAX_VALUE))
                              .setLazy("accountId", () -> UUID.fromString(FAKER.internet().uuid()))
@@ -385,6 +389,9 @@ public abstract class TestUtils {
                              .setLazy("seatCode",
                                       () -> FAKER.word().noun() + FAKER.number().numberBetween(1, Integer.MAX_VALUE))
                              .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .set("status", PENDING_PAYMENT)
+                             .setLazy("expiredAt", () -> LocalDateTime.now().plusMinutes(5))
+                             .set("confirmedAt", null)
                              .sampleList(size);
     }
 

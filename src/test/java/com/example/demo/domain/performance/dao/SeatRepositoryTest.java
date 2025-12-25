@@ -3,7 +3,7 @@ package com.example.demo.domain.performance.dao;
 import static com.example.demo.common.util.TestUtils.createPerformance;
 import static com.example.demo.common.util.TestUtils.createSeat;
 import static com.example.demo.domain.performance.model.SeatStatus.AVAILABLE;
-import static com.example.demo.domain.performance.model.SeatStatus.RESERVED;
+import static com.example.demo.domain.performance.model.SeatStatus.TEMPORARY_RESERVED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -118,7 +118,7 @@ class SeatRepositoryTest {
             // given
             Performance performance = em.persistAndFlush(createPerformance());
             Seat        seat        = createSeat(performance);
-            seat.setStatus(RESERVED);
+            seat.setStatus(TEMPORARY_RESERVED);
             em.persistAndFlush(seat);
 
             // when
