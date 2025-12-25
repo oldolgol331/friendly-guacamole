@@ -3,6 +3,7 @@ package com.example.demo.domain.reservation.dto;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.example.demo.domain.reservation.model.Reservation;
+import com.example.demo.domain.reservation.model.ReservationStatus;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.querydsl.core.annotations.QueryProjection;
@@ -33,31 +34,36 @@ public abstract class ReservationResponse {
 
         @JsonProperty("performance_id")
         @Schema(description = "공연 ID")
-        private final Long          performanceId;
+        private final Long              performanceId;
         @Schema(description = "좌석 ID")
-        private final Long   seatId;
+        private final Long              seatId;
         @JsonProperty("reservation_account_id")
         @Schema(description = "예약자 ID")
-        private final UUID   accountId;
+        private final UUID              accountId;
         @Schema(description = "예약자 닉네임")
-        private final String nickname;
+        private final String            nickname;
         @JsonProperty("performance_name")
         @Schema(description = "공연 이름")
-        private final String        performanceName;
+        private final String            performanceName;
         @JsonProperty("start_time")
         @Schema(description = "공연 시작 시간")
-        private final LocalDateTime startTime;
+        private final LocalDateTime     startTime;
         @JsonProperty("end_time")
         @Schema(description = "공연 종료 시간")
-        private final LocalDateTime endTime;
+        private final LocalDateTime     endTime;
         @JsonProperty("seat_code")
         @Schema(description = "좌석 번호")
-        private final String        seatCode;
+        private final String            seatCode;
         @Schema(description = "가격")
-        private final int           price;
-        @JsonProperty("reservation_time")
+        private final int               price;
+        @Schema(description = "예약 상태")
+        private final ReservationStatus status;
+        @JsonProperty("expired_at")
+        @Schema(description = "임시 점유 만료 시간")
+        private final LocalDateTime     expiredAt;
+        @JsonProperty("confirmed_at")
         @Schema(description = "예약 확정 시간")
-        private final LocalDateTime reservationTime;
+        private final LocalDateTime     confirmedAt;
 
         @QueryProjection
         @JsonCreator
@@ -70,7 +76,9 @@ public abstract class ReservationResponse {
                                        @JsonProperty("end_time") final LocalDateTime endTime,
                                        @JsonProperty("seat_code") final String seatCode,
                                        @JsonProperty("price") final int price,
-                                       @JsonProperty("reservation_time") final LocalDateTime reservationTime) {
+                                       @JsonProperty("status") final ReservationStatus status,
+                                       @JsonProperty("expired_at") final LocalDateTime expiredAt,
+                                       @JsonProperty("confirmed_at") final LocalDateTime confirmedAt) {
             this.performanceId = performanceId;
             this.seatId = seatId;
             this.accountId = accountId;
@@ -80,7 +88,9 @@ public abstract class ReservationResponse {
             this.endTime = endTime;
             this.seatCode = seatCode;
             this.price = price;
-            this.reservationTime = reservationTime;
+            this.status = status;
+            this.expiredAt = expiredAt;
+            this.confirmedAt = confirmedAt;
         }
 
         public static ReservationInfoResponse from(final Reservation reservation) {
@@ -93,7 +103,9 @@ public abstract class ReservationResponse {
                                                reservation.getSeat().getPerformance().getEndTime(),
                                                reservation.getSeat().getSeatCode(),
                                                reservation.getSeat().getPrice(),
-                                               reservation.getReservationTime());
+                                               reservation.getStatus(),
+                                               reservation.getExpiredAt(),
+                                               reservation.getConfirmedAt());
         }
 
     }

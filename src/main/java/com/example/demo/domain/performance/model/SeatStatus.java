@@ -12,7 +12,7 @@ package com.example.demo.domain.performance.model;
  * 25. 12. 15.   oldolgol331          Initial creation
  */
 public enum SeatStatus {
-    AVAILABLE,  // 가능
-    RESERVED,   // 예약됨
-    SOLD        // 판매됨
+    AVAILABLE,          // 가능
+    TEMPORARY_RESERVED, // 예약됨
+    SOLD                // 판매됨
 }

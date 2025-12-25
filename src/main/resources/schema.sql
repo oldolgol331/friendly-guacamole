@@ -70,11 +70,13 @@ CREATE TABLE seats
 
 CREATE TABLE reservations
 (
-    account_id       BINARY(16)      NOT NULL COMMENT '예약한 계정 식별자',
-    seat_id          BIGINT UNSIGNED NOT NULL COMMENT '예약한 좌석 식별자',
-    reservation_time DATETIME                 DEFAULT NULL COMMENT '예약 확정 시간',
-    created_at       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
-    updated_at       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
+    account_id   BINARY(16)      NOT NULL COMMENT '예약한 계정 식별자',
+    seat_id      BIGINT UNSIGNED NOT NULL COMMENT '예약한 좌석 식별자',
+    status       VARCHAR(255)    NOT NULL DEFAULT 'PENDING_PAYMENT' COMMENT '예약 상태',
+    expired_at   DATETIME        NOT NULL COMMENT '임시 점유 만료 시간',
+    confirmed_at DATETIME                 DEFAULT NULL COMMENT '예약 확정 시간',
+    created_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
+    updated_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
     CONSTRAINT PK_reservations PRIMARY KEY (account_id, seat_id),
     CONSTRAINT FK_reservations_accounts FOREIGN KEY (account_id) REFERENCES accounts (account_id),
     CONSTRAINT FK_reservations_seats FOREIGN KEY (seat_id) REFERENCES seats (seat_id)
@@ -91,7 +93,7 @@ CREATE TABLE payments
     amount         DECIMAL(19, 4)  NOT NULL DEFAULT 0.0000 COMMENT '결제 금액',
     status         VARCHAR(255)    NOT NULL DEFAULT 'PENDING' COMMENT '결제 상태',
     client_ip      VARCHAR(255)    NOT NULL COMMENT '결제 요청 클라이언트 IP',
-    approved_at     DATETIME                 DEFAULT NULL COMMENT '결제 승인 일시',
+    approved_at    DATETIME                 DEFAULT NULL COMMENT '결제 승인 일시',
     receipt_url    VARCHAR(255)             DEFAULT NULL COMMENT '영수증 URL',
     canceled_at    DATETIME                 DEFAULT NULL COMMENT '결제 취소 일시',
     cancel_reason  VARCHAR(255)             DEFAULT NULL COMMENT '결제 취소 사유',

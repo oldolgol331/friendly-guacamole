@@ -40,7 +40,7 @@ public class PaymentEventListener {
     public void handlePaymentCompleted(final PaymentCompletedEvent event) {
         Payment payment = event.getPayment();
         try {
-            payment.getReservation().complete(event.getOccurredAt());
+            payment.getReservation().confirm(event.getOccurredAt());
             payment.getReservation().getSeat().confirmSale();
 
             log.info("결제 완료 이벤트 처리 완료 - paymentId: {}, reservationId: {}",

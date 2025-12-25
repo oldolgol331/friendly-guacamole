@@ -4,7 +4,7 @@ import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_RESERVED;
 import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_SOLD;
 import static com.example.demo.common.response.ErrorCode.SEAT_NOT_AVAILABLE;
 import static com.example.demo.domain.performance.model.SeatStatus.AVAILABLE;
-import static com.example.demo.domain.performance.model.SeatStatus.RESERVED;
+import static com.example.demo.domain.performance.model.SeatStatus.TEMPORARY_RESERVED;
 import static com.example.demo.domain.performance.model.SeatStatus.SOLD;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
@@ -158,9 +158,9 @@ public class Seat extends BaseAuditingEntity {
     /**
      * 좌석을 예약 처리합니다.
      */
-    public void reserve() {
+    public void reserveTemporary() {
         if (status != AVAILABLE) throw new BusinessException(SEAT_ALREADY_RESERVED);
-        status = RESERVED;
+        status = TEMPORARY_RESERVED;
     }
 
     /**
@@ -175,7 +175,7 @@ public class Seat extends BaseAuditingEntity {
      * 결제 완료 처리합니다.
      */
     public void confirmSale() {
-        if (status != RESERVED) throw new BusinessException(SEAT_NOT_AVAILABLE);
+        if (status != TEMPORARY_RESERVED) throw new BusinessException(SEAT_NOT_AVAILABLE);
         status = SOLD;
     }
 

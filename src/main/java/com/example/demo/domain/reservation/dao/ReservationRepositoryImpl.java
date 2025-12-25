@@ -62,7 +62,9 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                                                                                                                         PERFORMANCE.endTime,
                                                                                                                         SEAT.seatCode,
                                                                                                                         SEAT.price,
-                                                                                                                        RESERVATION.reservationTime)
+                                                                                                                        RESERVATION.status,
+                                                                                                                        RESERVATION.expiredAt,
+                                                                                                                        RESERVATION.confirmedAt)
                                                                )
                                                                .from(RESERVATION)
                                                                .leftJoin(RESERVATION.account, ACCOUNT)

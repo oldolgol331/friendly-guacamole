@@ -15,6 +15,7 @@ import com.example.demo.domain.reservation.dto.ReservationRequest.ReservationCre
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
 import com.example.demo.domain.reservation.model.Reservation;
 import com.example.demo.domain.reservation.model.ReservationId;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
 
+    private static final int RESERVATION_EXPIRE_MINUTES = 5;    // 예약 임시 점유 만료 시간
+
     private final ReservationRepository reservationRepository;
     private final AccountRepository     accountRepository;
     private final SeatRepository        seatRepository;
@@ -54,11 +57,13 @@ public class ReservationServiceImpl implements ReservationService {
         Account account = accountRepository.findByIdAndStatus(accountId, ACTIVE)
                                            .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
 
-        Seat seat = seatRepository.findById(request.getSeatId())
+        Seat seat = seatRepository.findByIdWithLock(request.getSeatId())
                                   .orElseThrow(() -> new BusinessException(SEAT_NOT_FOUND));
 
-        reservationRepository.save(Reservation.of(account, seat));
-        seat.reserve();
+        reservationRepository.save(
+                Reservation.of(account, seat, LocalDateTime.now().plusMinutes(RESERVATION_EXPIRE_MINUTES))
+        );
+        seat.reserveTemporary();
     }
 
     /**
