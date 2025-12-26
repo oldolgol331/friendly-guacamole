@@ -38,6 +38,7 @@ def springDocOpenApiVersion = '2.8.13'
 def querydslVersion = '5.1.0'
 def p6spyVersion = '1.12.0'
 def jjwtVersion = '0.13.0'
+def redissonVersion = '3.52.0'
 def autoParamsVersion = '11.3.1'
 def fixtureMonkeyVersion = '1.1.15'
 def datafakerVersion = '2.5.1'
@@ -83,6 +84,13 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
     // JJWT :: Extensions :: Jackson
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
+
+    // Redisson
+    implementation "org.redisson:redisson:$redissonVersion"
+    // Redisson/Spring Boot Starter
+    implementation "org.redisson:redisson-spring-boot-starter:$redissonVersion"
+    // Redisson/Spring Data Redis V3.4.x Integration
+    implementation "org.redisson:redisson-spring-data-34:$redissonVersion"
 
     // Apache HttpClient
     implementation 'org.apache.httpcomponents.client5:httpclient5'
