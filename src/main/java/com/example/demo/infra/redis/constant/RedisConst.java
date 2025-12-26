@@ -32,4 +32,8 @@ public abstract class RedisConst {
     public static final String REDIS_PRE_PAYMENT_KEY_PREFIX     = "pre-payment:%s";
     public static final int    REDIS_PRE_PAYMENT_EXPIRE_MINUTES = 10;
 
+    // 락 관련
+    public static final int  REDISSON_MAX_UNLOCK_RETRY_COUNT = 3;
+    public static final long REDISSON_RETRY_DELAY_MILLIS     = 100L;
+
 }
