@@ -126,7 +126,13 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        def includeTagsProp = project.findProperty("includeTags")
+        def excludeTagsProp = project.findProperty("excludeTags")
+
+        if (includeTagsProp) includeTags includeTags.toString().split(',').collect { it.trim() } as String[]
+        if (excludeTagsProp) excludeTags includeTags.toString().split(',').collect { it.trim() } as String[]
+    }
     systemProperty 'user.timezone', 'Asia/Seoul'
 }
 
