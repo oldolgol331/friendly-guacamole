@@ -1,5 +1,9 @@
 package com.example.demo.infra.redis.lock;
 
+import static com.example.demo.common.response.ErrorCode.LOCK_ACQUISITION_FAILED;
+import static com.example.demo.common.response.ErrorCode.LOCK_THREAD_INTERRUPTED;
+
+import com.example.demo.common.error.BusinessException;
 import jakarta.validation.constraints.Min;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -41,13 +45,13 @@ public class DistributedLockExecutor {
 
             if (!available) {
                 log.warn("락 획득 실패: {}", lockKey);
-                throw new RuntimeException("Lock Acquistion Failed");
+                throw new BusinessException(LOCK_ACQUISITION_FAILED);
             }
 
             return callback.get();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Interrupted while acquiring lock", e);
+            throw new BusinessException(LOCK_THREAD_INTERRUPTED);
         } finally {
             unlock(lock);
         }

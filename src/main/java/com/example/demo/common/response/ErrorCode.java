@@ -102,7 +102,11 @@ public enum ErrorCode {
     PAYMENT_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PY018", "PG사 결제 API 호출 중 오류가 발생했습니다."),
     EXPIRE_PAYMENT_VERIFICATION_TIME(HttpStatus.BAD_REQUEST, "PY019", "결제 검증 유효 시간이 만료되었습니다."),
     PAYMENT_ACCOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "PY020", "결제 계정 정보가 일치하지 않습니다."),
-    PAYMENT_KEY_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY021", "결제 키 생성에 실패했습니다.");
+    PAYMENT_KEY_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "PY021", "결제 키 생성에 실패했습니다."),
+
+    // 인프라(Infra)
+    LOCK_ACQUISITION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IN001", "락을 획득하지 못했습니다."),
+    LOCK_THREAD_INTERRUPTED(HttpStatus.INTERNAL_SERVER_ERROR, "IN002", "락 스레드가 중단되었습니다.");
 
     private final HttpStatus status;
     private final String     code;
