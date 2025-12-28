@@ -15,6 +15,7 @@ import com.example.demo.domain.reservation.dto.ReservationRequest.ReservationCre
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
 import com.example.demo.domain.reservation.model.Reservation;
 import com.example.demo.domain.reservation.model.ReservationId;
+import com.example.demo.infra.annotation.CustomLock;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,7 @@ public class ReservationServiceImpl implements ReservationService {
      * @param request   - 좌석 예약 요청 DTO
      */
     @Transactional
+    @CustomLock(key = "'lock:seat:' + @request.seatId", leaseTime = 3000L)
     @Override
     public void reserveSeat(final UUID accountId, final ReservationCreateRequest request) {
         Account account = accountRepository.findByIdAndStatus(accountId, ACTIVE)
