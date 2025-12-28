@@ -1,6 +1,26 @@
 name: Deploy
 
 on:
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: '🚀 배포할 환경을 선택하세요 (Default: dev)'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+      log_level:
+        description: '📝 애플리케이션 로그 레벨'
+        required: true
+        default: 'INFO'
+        type: choice
+        options:
+          - DEBUG
+          - INFO
+          - WARN
+          - ERROR
   push:
     branches:
       - main
@@ -76,6 +96,16 @@ jobs:
     needs: docker-push
     runs-on: ubuntu-latest
     steps:
+      - name: Set Environment Variables
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "TARGET_ENV=${{ inputs.target_env }}" >> $GITHUB_ENV
+            echo "LOG_LEVEL=${{ inputs.log_level }}" >> $GITHUB_ENV
+          else
+            echo "TARGET_ENV=dev" >> $GITHUB_ENV
+            echo "LOG_LEVEL=INFO" >> $GITHUB_ENV
+          fi
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
@@ -109,7 +139,7 @@ jobs:
             sudo docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
               --network ${{ env.DOCKER_NETWORK }} \
-              -e SPRING_PROFILES_ACTIVE=prod \
+              -e SPRING_PROFILES_ACTIVE=${{ env.TARGET_ENV }} \
               -e DB_HOST=${{ secrets.DB_HOST }} \
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \

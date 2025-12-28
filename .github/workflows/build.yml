@@ -1,6 +1,18 @@
 name: Build
 
 on:
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: '⏩ 유닛 테스트를 건너뛰시겠습니까? (빠른 빌드 확인용)'
+        required: false
+        default: false
+        type: boolean
+      debug_mode:
+        description: '🐞 디버깅 로그(파일 목록 등)를 출력하시겠습니까?'
+        required: false
+        default: true
+        type: boolean
   push:
     paths:
       - '**/*.java'
@@ -53,24 +65,29 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Run Unit Tests (Excluding Concurrency Tests)
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || inputs.skip_tests == false }}
         working-directory: ${{ matrix.work-dir }}
         run: ./gradlew clean test -PexcludeTags=concurrency --no-build-cache --stacktrace --info
 
       - name: Run Unit Tests (Only Concurrency Tests)
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || inputs.skip_tests == false }}
         working-directory: ${{ matrix.work-dir }}
         run: ./gradlew test -PincludeTags=concurrency --no-build-cache --stacktrace --info
 
       - name: Generate JaCoCo Report
+        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' || inputs.skip_tests == false }}
         working-directory: ${{ matrix.work-dir }}
         run: ./gradlew jacocoTestReport -x test --no-daemon --info
 
       - name: Debug and Copy Report
+        if: ${{ always() && (inputs.debug_mode == true || inputs.skip_tests == false) }}
         working-directory: ${{ matrix.work-dir }}
         run: |
           ls -R build/reports/jacoco/test
           cp build/reports/jacoco/test/jacocoTestReport.xml coverage.xml
 
       - name: Generate Code Coverage Summary
+        if: ${{ hashFiles('coverage.xml') != '' }}
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
           filename: coverage.xml
@@ -84,10 +101,12 @@ jobs:
           thresholds: '60 80'
 
       - name: Add Coverage to Job Summary
+        if: ${{ hashFiles('code-coverage-results.md') != '' }}
         run: |
           cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
       - name: Upload JaCoCo HTML Report
+        if: ${{ hashFiles('build/reports/jacoco/test/html/index.html') != '' }}
         uses: actions/upload-artifact@v6
         with:
           name: jacoco-html-report

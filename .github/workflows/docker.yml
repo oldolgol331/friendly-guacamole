@@ -1,6 +1,13 @@
 name: Docker
 
 on:
+  workflow_dispatch:
+    inputs:
+      no_cache:
+        description: '🧹 기존 캐시를 무시하고 새로 빌드하시겠습니까?'
+        required: false
+        default: false
+        type: boolean
   push:
     paths:
       - '**/Dockerfile'
@@ -43,6 +50,11 @@ jobs:
 
       - name: Build Local Dockerfiles
         run: |
+          CACHE_OPTION=""
+          if [ "${{ inputs.no_cache }}" == "true" ]; then
+            CACHE_OPTION="--no-cache"
+          fi
+          
           find . -name "Dockerfile" -not -path "*/.*" | while read dockerfile; do
             dir=$(dirname "$dockerfile")
             module_name=$(basename "$dir")
@@ -51,6 +63,7 @@ jobs:
             image_tag=$(echo "$image_tag" | tr '[:upper:]' '[:lower:]')
 
             docker buildx build \
+              $CACHE_OPTION \
               --tag "$image_tag" \
               --file "$dockerfile" \
               --cache-from type=gha,scope=$module_name \
