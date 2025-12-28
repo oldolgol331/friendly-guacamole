@@ -8,6 +8,7 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 
 import com.example.demo.domain.performance.model.Performance;
 import com.example.demo.domain.performance.model.Seat;
+import com.example.demo.infra.redis.config.TestRedisConfig;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.transaction.TransactionStatus;
@@ -40,6 +42,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * 25. 12. 26.   oldolgol331          Initial creation
  */
 @Tag("concurrency")
+@Import(TestRedisConfig.class)
 @SpringBootTest
 @SqlGroup({@Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "classpath:/sql/truncate_tables.sql"),
            @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "classpath:/sql/truncate_tables.sql")})
