@@ -43,6 +43,7 @@ def autoParamsVersion = '11.3.1'
 def fixtureMonkeyVersion = '1.1.15'
 def datafakerVersion = '2.5.1'
 def jqwikVersion = '1.9.3'
+def embeddedRedisVersion = '1.4.3'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -131,6 +132,9 @@ dependencies {
     testImplementation "net.jqwik:jqwik-time:$jqwikVersion"
     // Jqwik Testing
     testImplementation "net.jqwik:jqwik-testing:$jqwikVersion"
+
+    // Embedded Redis
+    testImplementation "com.github.codemonstur:embedded-redis:$embeddedRedisVersion"
 }
 
 test {
