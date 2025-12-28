@@ -64,10 +64,16 @@ jobs:
         working-directory: ${{ matrix.work-dir }}
         run: ./gradlew jacocoTestReport -x test --no-daemon --info
 
+      - name: Debug and Copy Report
+        working-directory: ${{ matrix.work-dir }}
+        run: |
+          ls -R build/reports/jacoco/test
+          cp build/reports/jacoco/test/jacocoTestReport.xml coverage.xml
+
       - name: Generate Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: build/reports/jacoco/test/jacocoTestReport.xml
+          filename: coverage.xml
           badge: true
           fail_below_min: false
           format: markdown
