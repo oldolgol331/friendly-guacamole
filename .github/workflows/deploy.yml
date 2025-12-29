@@ -101,9 +101,14 @@ jobs:
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "TARGET_ENV=${{ inputs.target_env }}" >> $GITHUB_ENV
             echo "LOG_LEVEL=${{ inputs.log_level }}" >> $GITHUB_ENV
+          
+          elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "TARGET_ENV=prod" >> $GITHUB_ENV
+            echo "LOG_LEVEL=INFO" >> $GITHUB_ENV
+          
           else
             echo "TARGET_ENV=dev" >> $GITHUB_ENV
-            echo "LOG_LEVEL=INFO" >> $GITHUB_ENV
+            echo "LOG_LEVEL=DEBUG" >> $GITHUB_ENV
           fi
 
       - name: Configure AWS credentials
