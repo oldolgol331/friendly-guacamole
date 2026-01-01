@@ -84,6 +84,50 @@ services:
         max-file: "3"
         compress: "true"
 
+  ollama:
+    image: ollama/ollama:0.13.5
+    container_name: demo-dev-ollama
+    restart: always
+    networks:
+      - demo-dev-network
+    environment:
+      TZ: Asia/Seoul
+    ports:
+      - 11434:11434
+    volumes:
+      - ./docker/ollama/data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+
+  ollama-init:
+    image: ollama/ollama:0.13.5
+    container_name: demo-dev-ollama-init
+    networks:
+      - demo-dev-network
+    environment:
+      OLLAMA_HOST: ollama:11434
+    depends_on:
+      - ollama
+    entrypoint: /bin/sh
+    command:
+      - "-c"
+      - |
+        until ollama list > /dev/null 2>&1; do
+          sleep 2
+        done
+        ollama pull nomic-embed-text:latest
+
 networks:
   demo-dev-network:
     driver: bridge
