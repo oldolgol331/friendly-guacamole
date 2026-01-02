@@ -91,6 +91,7 @@ services:
     networks:
       - demo-dev-network
     environment:
+      OLLAMA_MODELS: /root/.ollama/models
       TZ: Asia/Seoul
     ports:
       - 11434:11434
@@ -111,22 +112,22 @@ services:
         compress: "true"
 
   ollama-init:
-    image: ollama/ollama:0.13.5
+    image: curlimages/curl:8.17.0
     container_name: demo-dev-ollama-init
     networks:
       - demo-dev-network
-    environment:
-      OLLAMA_HOST: ollama:11434
     depends_on:
       - ollama
     entrypoint: /bin/sh
     command:
       - "-c"
       - |
-        until ollama list > /dev/null 2>&1; do
+        until curl -s http://ollama:11434/api/tags > /dev/null; do
           sleep 2
         done
-        ollama pull nomic-embed-text:latest
+        curl -X POST http://ollama:11434/api/pull \
+             -H 'Content-Type: application/json' \
+             -d '{ "name": "nomic-embed-text:latest", "stream": false }'
 
 networks:
   demo-dev-network:
