@@ -93,8 +93,6 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     private OrderSpecifier<?>[] getSortCondition(final Pageable pageable) {
         List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
 
-        boolean hasCreatedAt = pageable.getSort().stream().anyMatch(order -> "createdAt".equals(order.getProperty()));
-
         if (!pageable.getSort().isEmpty())
             pageable.getSort().forEach(order -> {
                 Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
@@ -107,7 +105,11 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                 }
             });
 
+        boolean hasCreatedAt = orderSpecifiers.stream().anyMatch(spec -> spec.getTarget().equals(RESERVATION.createdAt));
+
         if (!hasCreatedAt) orderSpecifiers.add(new OrderSpecifier(Order.DESC, RESERVATION.createdAt));
+
+        orderSpecifiers.add(RESERVATION.seatId.desc());
 
         return orderSpecifiers.toArray(new OrderSpecifier[0]);
     }

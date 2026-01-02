@@ -149,8 +149,6 @@ public class PerformanceRepositoryImpl implements PerformanceRepositoryCustom {
     private OrderSpecifier<?>[] getSortCondition(final Pageable pageable) {
         List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
 
-        boolean hasCreatedAt = pageable.getSort().stream().anyMatch(order -> "createdAt".equals(order.getProperty()));
-
         if (!pageable.getSort().isEmpty())
             pageable.getSort().forEach(order -> {
                 Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
@@ -169,7 +167,11 @@ public class PerformanceRepositoryImpl implements PerformanceRepositoryCustom {
                 }
             });
 
+        boolean hasCreatedAt = orderSpecifiers.stream().anyMatch(spec -> spec.getTarget().equals(PERFORMANCE.createdAt));
+
         if (!hasCreatedAt) orderSpecifiers.add(new OrderSpecifier(Order.DESC, PERFORMANCE.createdAt));
+
+        orderSpecifiers.add(PERFORMANCE.id.desc());
 
         return orderSpecifiers.toArray(new OrderSpecifier[0]);
     }
