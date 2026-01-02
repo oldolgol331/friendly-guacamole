@@ -44,6 +44,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -460,6 +461,10 @@ public abstract class TestUtils {
                 && !isProxyHeader(ipAddress)
                 && isAllowedIpRange(ipAddress)) return ipAddress;
         }
+    }
+
+    public static long getDiffTime(final LocalDateTime expected, final LocalDateTime actual, final ChronoUnit unit) {
+        return Math.abs(unit.between(expected, actual));
     }
 
 }
