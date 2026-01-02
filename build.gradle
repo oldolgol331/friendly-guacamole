@@ -43,6 +43,7 @@ def autoParamsVersion = '11.3.1'
 def fixtureMonkeyVersion = '1.1.15'
 def datafakerVersion = '2.5.1'
 def jqwikVersion = '1.9.3'
+def testcontainersVersion = '1.21.3'
 def embeddedRedisVersion = '1.4.3'
 
 dependencies {
@@ -132,6 +133,13 @@ dependencies {
     testImplementation "net.jqwik:jqwik-time:$jqwikVersion"
     // Jqwik Testing
     testImplementation "net.jqwik:jqwik-testing:$jqwikVersion"
+
+    // Testcontainers Core
+    testImplementation "org.testcontainers:testcontainers:$testcontainersVersion"
+    // Testcontainers :: JUnit Jupiter Extension
+    testImplementation "org.testcontainers:junit-jupiter:$testcontainersVersion"
+    // Testcontainers :: JDBC :: MySQL
+    testImplementation "org.testcontainers:mysql:$testcontainersVersion"
 
     // Embedded Redis
     testImplementation "com.github.codemonstur:embedded-redis:$embeddedRedisVersion"
