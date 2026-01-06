@@ -33,9 +33,9 @@ spring:
     redis:
       client-type: lettuce
       database: 0
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_HOST_PORT:6379}
-      password: ${REDIS_PASSWORD}
+      host: ${VALKEY_HOST:localhost}
+      port: ${VALKEY_HOST_PORT:6379}
+      password: ${VALKEY_PASSWORD}
       lettuce:
         pool:
           enabled: true
