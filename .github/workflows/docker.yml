@@ -28,7 +28,7 @@ permissions:
   packages: write
 
 env:
-  EXTERNAL_IMAGES: ""
+  EXTERNAL_IMAGES: "groonga/mroonga:mysql-8.0.44-15.21 valkey/valkey:7.2.11-alpine"
 
 jobs:
   docker:
@@ -59,15 +59,22 @@ jobs:
             dir=$(dirname "$dockerfile")
             module_name=$(basename "$dir")
 
-            image_tag="${{ github.repository }}/$module_name:latest"
-            image_tag=$(echo "$image_tag" | tr '[:upper:]' '[:lower:]')
+            if [ "$module_name" == "." ] then
+              raw_image_name="${{ github.repository }}"
+              cache_scope="root
+            else
+              raw_image_name="${{ github.repository }}/$module_name"
+              cache_scope="$module_name"
+            fi
+
+            image_tag=$(echo "$raw_image_name" | tr '[:upper:]' '[:lower:]'):latest
 
             docker buildx build \
               $CACHE_OPTION \
               --tag "$image_tag" \
               --file "$dockerfile" \
-              --cache-from type=gha,scope=$module_name \
-              --cache-to type=gha,mode=max,scope=$module_name \
+              --cache-from type=gha,scope=$cache_scope \
+              --cache-to type=gha,mode=max,scope=$cache_scope \
               --load \
               "$dir"
           done
