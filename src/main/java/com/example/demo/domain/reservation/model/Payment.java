@@ -61,11 +61,9 @@ public class Payment extends BaseAuditingEntity {
     @JoinColumns({
             @JoinColumn(name = "account_id",
                         referencedColumnName = "account_id",
-                        insertable = false,
                         foreignKey = @ForeignKey(name = "FK_payments_reservations")),
             @JoinColumn(name = "seat_id",
                         referencedColumnName = "seat_id",
-                        insertable = false,
                         foreignKey = @ForeignKey(name = "FK_payments_reservations"))
     })
     private Reservation reservation;    // 예약 정보
