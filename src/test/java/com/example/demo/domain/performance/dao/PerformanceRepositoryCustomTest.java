@@ -173,6 +173,7 @@ class PerformanceRepositoryCustomTest extends AbstractMySQLIntegrationTest {
                                                                           performances.size())
                                                                  .stream()
                                                                  .filter(p -> p.getName().contains(keyword)
+                                                                              || p.getVenue().contains(keyword)
                                                                               || p.getInfo().contains(keyword))
                                                                  .map(PerformanceListResponse::from)
                                                                  .sorted(Comparator.comparing(

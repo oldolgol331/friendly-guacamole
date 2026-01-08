@@ -133,8 +133,9 @@ public class PerformanceRepositoryImpl implements PerformanceRepositoryCustom {
     private BooleanExpression matchAgainstKeyword(final String keyword) {
         if (!StringUtils.hasText(keyword)) return null;
         return Expressions.numberTemplate(Double.class,
-                                          "function('fulltext_boolean_search_param_2', {0}, {1}, {2})",
+                                          "function('fulltext_boolean_search_param_3', {0}, {1}, {2}, {3})",
                                           PERFORMANCE.name,
+                                          PERFORMANCE.venue,
                                           PERFORMANCE.info,
                                           "+" + keyword.replaceAll("\\s+", " +"))
                           .gt(0);
