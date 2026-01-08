@@ -45,6 +45,7 @@ public enum SuccessCode {
     PERFORMANCE_READ_SUCCESS(HttpStatus.OK, "공연 상세 조회가 성공적으로 완료되었습니다."),
     UPDATE_PERFORMANCE_INFO_SUCCESS(HttpStatus.OK, "공연 정보를 성공적으로 수정했습니다."),
     DELETE_PERFORMANCE_SUCCESS(HttpStatus.OK, "공연 삭제가 성공적으로 완료되었습니다."),
+    SEAT_LIST_READ_SUCCESS(HttpStatus.OK, "좌석 목록 조회가 성공적으로 완료되었습니다."),
 
     // 예약(Reservation)
     RESERVATION_CREATE_SUCCESS(HttpStatus.CREATED, "좌석 예약 생성이 성공적으로 완료되었습니다."),

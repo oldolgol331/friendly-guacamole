@@ -6,6 +6,7 @@ import static org.hibernate.jpa.SpecHints.HINT_SPEC_LOCK_TIMEOUT;
 import com.example.demo.domain.performance.model.Seat;
 import com.example.demo.domain.performance.model.SeatStatus;
 import jakarta.persistence.QueryHint;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -30,6 +31,8 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     @Query("SELECT s FROM Seat s WHERE s.id = :id")
     @QueryHints({@QueryHint(name = HINT_SPEC_LOCK_TIMEOUT, value = "3000")})
     Optional<Seat> findByIdWithLock(@Param("id") Long id);
+
+    List<Seat> findAllByPerformanceId(Long performanceId);
 
     boolean existsByPerformanceIdAndStatusNot(Long performanceId, SeatStatus status);
 
