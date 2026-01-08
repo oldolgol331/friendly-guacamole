@@ -16,7 +16,11 @@ import com.example.demo.common.config.P6SpyConfig;
 import com.example.demo.common.config.QuerydslConfig;
 import com.example.demo.domain.performance.model.Performance;
 import com.example.demo.domain.performance.model.Seat;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
@@ -109,6 +113,50 @@ class SeatRepositoryTest {
     }
 
     @Nested
+    @DisplayName("findAllByPerformanceId() 테스트")
+    class FindAllByPerformanceIdTests {
+
+        @RepeatedTest(10)
+        @DisplayName("공연 ID로 Seat 엔티티 리스트 조회")
+        void findAllByPerformanceId() {
+            // given
+            Performance performance = em.persistAndFlush(createPerformance());
+            int         size        = 10;
+            List<Seat> seats = IntStream.range(0, size)
+                                        .mapToObj(i -> em.persistAndFlush(createSeat(performance)))
+                                        .toList();
+            Long performanceId = performance.getId();
+
+            // when
+            List<Seat> findSeats = seatRepository.findAllByPerformanceId(performanceId);
+
+            // then
+            assertNotNull(findSeats, "findSeats는 null이 아니어야 합니다.");
+            assertFalse(findSeats.isEmpty(), "findSeats는 비어있지 않아야 합니다.");
+            IntStream.range(0, size)
+                     .forEach(i -> {
+                         assertEquals(seats.get(i).getSeatCode(), findSeats.get(i).getSeatCode(), "seatCode는 같아야 합니다.");
+                         assertEquals(seats.get(i).getPrice(), findSeats.get(i).getPrice(), "price는 같아야 합니다.");
+                         assertEquals(seats.get(i).getStatus(), findSeats.get(i).getStatus(), "status는 같아야 합니다.");
+                     });
+        }
+
+        @ParameterizedTest
+        @Repeat(10)
+        @AutoSource
+        @DisplayName("존재하지 않는 공연 ID로 Seat 엔티티 리스트 조회 시도")
+        void findAllByPerformanceId_unknownPerformanceId(@Min(1) @Max(Long.MAX_VALUE) final Long unknownPerformanceId) {
+            // when
+            List<Seat> findSeats = seatRepository.findAllByPerformanceId(unknownPerformanceId);
+
+            // then
+            assertNotNull(findSeats, "findSeats는 null이 아니어야 합니다.");
+            assertTrue(findSeats.isEmpty(), "findSeats는 비어있어야 합니다.");
+        }
+
+    }
+
+    @Nested
     @DisplayName("existsByPerformanceIdAndStatusNot() 테스트")
     class ExistsByPerformanceIdAndStatusNotTests {
 
@@ -148,7 +196,9 @@ class SeatRepositoryTest {
         @Repeat(10)
         @AutoSource
         @DisplayName("존재하지 않는 공연 ID로 예약된 좌석 존재 여부 확인")
-        void existsByPerformanceIdAndStatusNot_unknownPerformanceId(final Long unknownPerformanceId) {
+        void existsByPerformanceIdAndStatusNot_unknownPerformanceId(
+                @Min(1) @Max(Long.MAX_VALUE) final Long unknownPerformanceId
+        ) {
             // when
             boolean exists = seatRepository.existsByPerformanceIdAndStatusNot(unknownPerformanceId, AVAILABLE);
 

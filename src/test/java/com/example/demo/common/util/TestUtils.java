@@ -24,8 +24,10 @@ import com.example.demo.domain.performance.dto.PerformanceRequest.PerformanceCre
 import com.example.demo.domain.performance.dto.PerformanceRequest.PerformanceUpdateRequest;
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceDetailResponse;
 import com.example.demo.domain.performance.dto.PerformanceResponse.PerformanceListResponse;
+import com.example.demo.domain.performance.dto.SeatResponse.SeatListResponse;
 import com.example.demo.domain.performance.model.Performance;
 import com.example.demo.domain.performance.model.Seat;
+import com.example.demo.domain.performance.model.SeatStatus;
 import com.example.demo.domain.reservation.dto.PaymentRequest.PrePaymentRequest;
 import com.example.demo.domain.reservation.dto.PaymentResponse.PrePaymentInfoResponse;
 import com.example.demo.domain.reservation.dto.ReservationResponse.ReservationInfoResponse;
@@ -351,6 +353,23 @@ public abstract class TestUtils {
 
     public static Seat createSeat(final Performance performance) {
         return createSeats(performance, 1).getFirst();
+    }
+
+    public static List<SeatListResponse> createSeatListResponses(final int size) {
+        return FIXTURE_MONKEY.giveMeBuilder(SeatListResponse.class)
+                             .instantiate(Instantiator.constructor()
+                                                      .parameter(Long.class, "id")
+                                                      .parameter(String.class, "seatCode")
+                                                      .parameter(int.class, "price")
+                                                      .parameter(SeatStatus.class, "status"))
+                             .setLazy("id", () -> FAKER.number().numberBetween(1, Long.MAX_VALUE))
+                             .setLazy("seatCode",
+                                      () -> FAKER.word().noun() + FAKER.number().numberBetween(1, Integer.MAX_VALUE))
+                             .setLazy("price", () -> FAKER.number().numberBetween(0, Integer.MAX_VALUE))
+                             .setLazy("status",
+                                      () -> SeatStatus.values()[FAKER.number()
+                                                                     .numberBetween(0, SeatStatus.values().length)])
+                             .sampleList(size);
     }
 
     public static List<Reservation> createReservations(final Account account, final List<Seat> seats) {
