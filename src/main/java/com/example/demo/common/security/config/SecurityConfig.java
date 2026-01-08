@@ -105,6 +105,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,
                                          "/api/v1/performances/{performanceId}").hasAuthority("ROLE_ADMIN")
 
+                        // Seat
+                        .requestMatchers(HttpMethod.GET, "/api/v1/performances/{performanceId}/seats").permitAll()
+
                         // Reservation
                         .requestMatchers(HttpMethod.POST, "/api/v1/reservations").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/reservations").authenticated()
