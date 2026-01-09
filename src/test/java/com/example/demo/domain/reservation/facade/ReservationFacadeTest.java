@@ -43,6 +43,7 @@ import com.example.demo.infra.payment.portone.client.PortOnePGPaymentApiClient;
 import com.example.demo.infra.payment.portone.dto.PortOneCancelPaymentApiRequest;
 import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiRequest;
 import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiResponse;
+import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiResponse.PaymentMethod;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -140,7 +141,7 @@ class ReservationFacadeTest {
                     paymentKey,
                     "PAID",
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                    "CARD",
+                    new PaymentMethod("CARD"),
                     "https://receipt.url",
                     "1735689600",
                     "1735689600"
@@ -184,7 +185,7 @@ class ReservationFacadeTest {
                     paymentKey,
                     "PAID",
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                    "CARD",
+                    new PaymentMethod("CARD"),
                     "https://receipt.url",
                     "1735689600",
                     "1735689600"
@@ -230,7 +231,7 @@ class ReservationFacadeTest {
                     paymentKey,
                     "PAID",
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                    "CARD",
+                    new PaymentMethod("CARD"),
                     "https://receipt.url",
                     "1735689600",
                     "1735689600"
@@ -276,7 +277,7 @@ class ReservationFacadeTest {
                     paymentKey,
                     "PAID",
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                    "CARD",
+                    new PaymentMethod("CARD"),
                     "https://receipt.url",
                     "1735689600",
                     "1735689600"
@@ -322,7 +323,7 @@ class ReservationFacadeTest {
                     paymentKey,
                     "PAID",
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                    "CARD",
+                    new PaymentMethod("CARD"),
                     "https://receipt.url",
                     "1735689600",
                     "1735689600"
@@ -368,7 +369,7 @@ class ReservationFacadeTest {
                     paymentKey,
                     "PAID",
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                    "CARD",
+                    new PaymentMethod("CARD"),
                     "https://receipt.url",
                     "1735689600",
                     "1735689600"
@@ -414,7 +415,7 @@ class ReservationFacadeTest {
                     paymentKey,
                     "PAID",
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                    "CARD",
+                    new PaymentMethod("CARD"),
                     "https://receipt.url",
                     "1735689600",
                     "1735689600"
@@ -466,16 +467,7 @@ class ReservationFacadeTest {
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(paymentService.findByAccountIdAndPaymentKey(eq(accountId), eq(request.getPaymentId()))).thenReturn(
                     payment);
-            when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(
-                    new PortOnePaymentApiResponse(
-                            request.getPaymentId(),
-                            "PAID",
-                            new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                            "CARD",
-                            "https://receipt.url",
-                            "1735689600",
-                            "1735689600"
-                    ));
+            doNothing().when(portOneApiClient).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             doNothing().when(paymentService).refundPayment(eq(payment), eq(request.getRefundReason()));
             doNothing().when(reservationService).cancelReservation(eq(payment.getReservation()));
 
@@ -485,7 +477,7 @@ class ReservationFacadeTest {
             // then
             verify(accountService, times(1)).findByAccountId(eq(accountId));
             verify(paymentService, times(1)).findByAccountIdAndPaymentKey(eq(accountId), eq(request.getPaymentId()));
-            verify(portOneApiClient, times(1)).getPayment(any(PortOnePaymentApiRequest.class));
+            verify(portOneApiClient, times(1)).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             verify(paymentService, times(1)).refundPayment(eq(payment), eq(request.getRefundReason()));
             verify(reservationService, times(1)).cancelReservation(eq(payment.getReservation()));
         }
@@ -558,16 +550,7 @@ class ReservationFacadeTest {
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(paymentService.findByAccountIdAndPaymentKey(eq(accountId), eq(request.getPaymentId()))).thenReturn(
                     payment);
-            when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(
-                    new PortOnePaymentApiResponse(
-                            request.getPaymentId(),
-                            "PAID",
-                            new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
-                            "CARD",
-                            "https://receipt.url",
-                            "1735689600",
-                            "1735689600"
-                    ));
+            doNothing().when(portOneApiClient).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             doThrow(new BusinessException(PAYMENT_ALREADY_CANCELED))
                     .when(paymentService).refundPayment(eq(payment), eq(request.getRefundReason()));
 
@@ -583,7 +566,7 @@ class ReservationFacadeTest {
 
             verify(accountService, times(1)).findByAccountId(eq(accountId));
             verify(paymentService, times(1)).findByAccountIdAndPaymentKey(eq(accountId), eq(request.getPaymentId()));
-            verify(portOneApiClient, times(1)).getPayment(any(PortOnePaymentApiRequest.class));
+            verify(portOneApiClient, times(1)).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             verify(paymentService, times(1)).refundPayment(eq(payment), eq(request.getRefundReason()));
             verify(reservationService, never()).cancelReservation(any(Reservation.class));
         }
