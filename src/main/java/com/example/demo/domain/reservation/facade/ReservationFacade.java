@@ -104,7 +104,7 @@ public class ReservationFacade {
         var command = new PaymentVerifyCommand(pgResponse.getId(),
                                                pgResponse.getAmount().getTotal(),
                                                pgResponse.getStatus(),
-                                               pgResponse.getMethod(),
+                                               pgResponse.getMethod().getType(),
                                                convertUnixToLocalDateTime(pgResponse.getPaidAt()),
                                                pgResponse.getReceiptUrl());
 
@@ -143,7 +143,10 @@ public class ReservationFacade {
         accountService.findByAccountId(accountId);
         Payment payment = paymentService.findByAccountIdAndPaymentKey(accountId, request.getPaymentId());
 
-        portOneApiClient.getPayment(new PortOnePaymentApiRequest(request.getPaymentId()));
+        portOneApiClient.cancelPayment(request.getPaymentId(),
+                                       new PortOneCancelPaymentApiRequest(request.getPaymentId(),
+                                                                          payment.getAmount().intValue(),
+                                                                          request.getRefundReason()));
 
         paymentService.refundPayment(payment, request.getRefundReason());
         reservationService.cancelReservation(payment.getReservation());

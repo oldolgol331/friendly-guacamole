@@ -35,7 +35,7 @@ public class PortOnePaymentApiResponse extends PGPaymentApiBaseResponse {
     @Schema(description = "결제 금액 정보")
     private Amount amount;
     @Schema(description = "결제 수단")
-    private String method;
+    private PaymentMethod method;
     @Schema(description = "영수증 URL")
     private String receiptUrl;
     @Schema(description = "결제 요청 일시")
@@ -46,11 +46,24 @@ public class PortOnePaymentApiResponse extends PGPaymentApiBaseResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     @Schema(name = "포트원(PortOne) 결제 금액")
     public static class Amount {
 
         @Schema(description = "총 결제 금액")
         private BigDecimal total;
+
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Schema(name = "포트원(PortOne) 결제 수단")
+    public static class PaymentMethod {
+
+        @Schema(description = "결제 수단 타입")
+        private String type;
 
     }
 
