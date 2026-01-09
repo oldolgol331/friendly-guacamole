@@ -16,7 +16,6 @@ import static com.example.demo.common.util.CommonUtils.isProxyHeader;
 import static com.example.demo.common.util.CommonUtils.isValidIpAddress;
 import static com.example.demo.infra.redis.constant.RedisConst.REDIS_PRE_PAYMENT_EXPIRE_MINUTES;
 import static com.example.demo.infra.redis.constant.RedisConst.REDIS_PRE_PAYMENT_KEY_PREFIX;
-import static java.util.stream.Collectors.joining;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 import com.example.demo.common.error.BusinessException;
@@ -34,9 +33,7 @@ import com.example.demo.infra.redis.dao.RedisRepository;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -202,12 +199,13 @@ public class PaymentServiceImpl implements PaymentService {
      */
     private String generatePaymentKey(final LocalDateTime generateTime) {
         for (int attempt = 0; attempt < PAYMENT_KEY_GENERATION_MAX_ATTEMPTS; attempt++) {
-            String paymentKey = "Payment:%s:%s".formatted(
+            /*String paymentKey = "Payment:%s:%s".formatted(
                     generateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
                     IntStream.range(0, 3)
                              .mapToObj(i -> UUID.randomUUID().toString().replace("-", ""))
                              .collect(joining())
-            );
+            );*/
+            String paymentKey = "Pay:%s".formatted(UUID.randomUUID().toString().replace("-", ""));
 
             if (!paymentRepository.existsByPaymentKey(paymentKey)) return paymentKey;
 
