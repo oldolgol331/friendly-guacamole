@@ -2,18 +2,24 @@ package com.example.demo.domain.reservation.service;
 
 import static com.example.demo.common.response.ErrorCode.ACCOUNT_NOT_FOUND;
 import static com.example.demo.common.response.ErrorCode.RESERVATION_NOT_FOUND;
+import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_RESERVED;
+import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_SOLD;
 import static com.example.demo.common.response.ErrorCode.SEAT_NOT_FOUND;
+import static com.example.demo.common.response.ErrorCode.SEAT_OCCUPIED;
 import static com.example.demo.common.util.TestUtils.createAccount;
 import static com.example.demo.common.util.TestUtils.createPerformance;
 import static com.example.demo.common.util.TestUtils.createReservation;
 import static com.example.demo.common.util.TestUtils.createReservationInfoResponses;
 import static com.example.demo.common.util.TestUtils.createSeat;
+import static com.example.demo.domain.performance.model.SeatStatus.SOLD;
+import static com.example.demo.domain.performance.model.SeatStatus.TEMPORARY_RESERVED;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -146,6 +152,131 @@ class ReservationServiceTest {
             verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
             verify(seatRepository, times(1)).findByIdWithLock(eq(request.getSeatId()));
             verify(reservationRepository, never()).save(any(Reservation.class));
+        }
+
+        @RepeatedTest(10)
+        @DisplayName("좌석 예약 시도, 좌석이 이미 예약됨")
+        void reserveTemporarySeat_seatAlreadyReserved() {
+            // given
+            Account account = createAccount();
+            ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
+            Performance performance = createPerformance();
+            ReflectionTestUtils.setField(performance, "id", 1L);
+            Seat seat = createSeat(performance);
+            ReflectionTestUtils.setField(seat, "id", 1L);
+            seat.setStatus(TEMPORARY_RESERVED);
+            ReservationCreateRequest request = new ReservationCreateRequest(seat.getId());
+
+            when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
+            when(seatRepository.findByIdWithLock(eq(seat.getId()))).thenReturn(Optional.of(seat));
+
+            // when
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> reservationService.reserveSeat(account.getId(), request),
+                                                       "BusinessException이 발생해야 합니다.");
+
+            // then
+            assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
+                      () -> assertEquals(SEAT_ALREADY_RESERVED, exception.getErrorCode(),
+                                         "errorCode는 SEAT_ALREADY_RESERVED여야 합니다."));
+
+            verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
+            verify(seatRepository, times(1)).findByIdWithLock(eq(seat.getId()));
+            verify(reservationRepository, never()).save(any(Reservation.class));
+        }
+
+        @RepeatedTest(10)
+        @DisplayName("좌석 예약 시도, 좌석이 이미 판매됨")
+        void reserveTemporarySeat_seatAlreadySold() {
+            // given
+            Account account = createAccount();
+            ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
+            Performance performance = createPerformance();
+            ReflectionTestUtils.setField(performance, "id", 1L);
+            Seat seat = createSeat(performance);
+            ReflectionTestUtils.setField(seat, "id", 1L);
+            seat.setStatus(SOLD);
+            ReservationCreateRequest request = new ReservationCreateRequest(seat.getId());
+
+            when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
+            when(seatRepository.findByIdWithLock(eq(seat.getId()))).thenReturn(Optional.of(seat));
+
+            // when
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> reservationService.reserveSeat(account.getId(), request),
+                                                       "BusinessException이 발생해야 합니다.");
+
+            // then
+            assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
+                      () -> assertEquals(SEAT_ALREADY_SOLD, exception.getErrorCode(),
+                                         "errorCode는 SEAT_ALREADY_SOLD여야 합니다."));
+
+            verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
+            verify(seatRepository, times(1)).findByIdWithLock(eq(seat.getId()));
+            verify(reservationRepository, never()).save(any(Reservation.class));
+        }
+
+        @RepeatedTest(10)
+        @DisplayName("좌석 예약 시도, 좌석이 이미 점유됨")
+        void reserveTemporarySeat_seatOccupied() {
+            // given
+            Account account = createAccount();
+            ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
+            Performance performance = createPerformance();
+            ReflectionTestUtils.setField(performance, "id", 1L);
+            Seat seat = createSeat(performance);
+            ReflectionTestUtils.setField(seat, "id", 1L);
+            Reservation              reservation = createReservation(account, seat);
+            ReservationCreateRequest request     = new ReservationCreateRequest(seat.getId());
+
+            when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
+            when(seatRepository.findByIdWithLock(eq(seat.getId()))).thenReturn(Optional.of(seat));
+            when(reservationRepository.findById(any(ReservationId.class))).thenReturn(Optional.of(reservation));
+
+            // when
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> reservationService.reserveSeat(account.getId(), request),
+                                                       "BusinessException이 발생해야 합니다.");
+
+            // then
+            assertAll(() -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
+                      () -> assertEquals(SEAT_OCCUPIED, exception.getErrorCode(),
+                                         "errorCode는 SEAT_OCCUPIED여야 합니다."));
+
+            verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
+            verify(seatRepository, times(1)).findByIdWithLock(eq(seat.getId()));
+            verify(reservationRepository, times(1)).findById(any(ReservationId.class));
+            verify(reservationRepository, never()).save(any(Reservation.class));
+        }
+
+        @RepeatedTest(10)
+        @DisplayName("좌석 예약 시도, 취소된 예약이 존재함")
+        void reserveTemporarySeat_cancelledReservationExists() {
+            // given
+            Account account = createAccount();
+            ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
+            Performance performance = createPerformance();
+            ReflectionTestUtils.setField(performance, "id", 1L);
+            Seat seat = createSeat(performance);
+            ReflectionTestUtils.setField(seat, "id", 1L);
+            Reservation              reservation = createReservation(account, seat);
+            reservation.cancel();
+            ReservationCreateRequest request     = new ReservationCreateRequest(seat.getId());
+
+            when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
+            when(seatRepository.findByIdWithLock(eq(seat.getId()))).thenReturn(Optional.of(seat));
+            when(reservationRepository.findById(any(ReservationId.class))).thenReturn(Optional.of(reservation));
+            doNothing().when(reservationRepository).deleteById(any(ReservationId.class));
+
+            // when
+            reservationService.reserveSeat(account.getId(), request);
+
+            // then
+            verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
+            verify(seatRepository, times(1)).findByIdWithLock(eq(seat.getId()));
+            verify(reservationRepository, times(1)).findById(any(ReservationId.class));
+            verify(reservationRepository, times(1)).deleteById(any(ReservationId.class));
+            verify(reservationRepository, times(1)).save(any(Reservation.class));
         }
 
     }

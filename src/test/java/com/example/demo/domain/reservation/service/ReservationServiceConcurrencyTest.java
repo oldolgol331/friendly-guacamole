@@ -4,11 +4,13 @@ import static com.example.demo.common.util.TestUtils.createAccounts;
 import static com.example.demo.common.util.TestUtils.createPerformance;
 import static com.example.demo.common.util.TestUtils.createSeat;
 import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
+import static com.example.demo.domain.performance.model.SeatStatus.SOLD;
 import static com.example.demo.domain.performance.model.SeatStatus.TEMPORARY_RESERVED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.domain.account.dao.AccountRepository;
 import com.example.demo.domain.account.model.Account;
 import com.example.demo.domain.performance.dao.PerformanceRepository;
@@ -151,6 +153,140 @@ class ReservationServiceConcurrencyTest {
             assertEquals(TEMPORARY_RESERVED, seat.getStatus(), "좌석 상태는 TEMPORARY_RESERVED여야 합니다.");
             assertEquals(1, successCount, "성공한 예약은 1개여야 합니다.");
             assertEquals(seatId, reservation.getSeatId(), "예약된 좌석 ID가 일치해야 합니다.");
+        }
+
+        @Test
+        @DisplayName("[Redisson 락 동작 테스트] 동시에 예약 시 좌석이 이미 예약된 경우 예외 발생")
+        void reserveSeat_seatAlreadyReserved() throws InterruptedException {
+            // given
+            List<Account> accounts = createAccounts(THREAD_COUNT);
+            accounts.forEach(
+                    account -> {
+                        account.setNickname(
+                                account.getNickname() + "_" + UUID.randomUUID().toString().substring(0, 5)
+                        );
+                        account.setStatus(ACTIVE);
+                    }
+            );
+            List<UUID> accountIds = transactionTemplate.execute(
+                    status -> accountRepository.saveAll(accounts)
+                                               .stream()
+                                               .map(Account::getId)
+                                               .toList()
+            );
+            Seat seat = transactionTemplate.execute(
+                    status -> {
+                        Seat s = seatRepository.save(createSeat(performanceRepository.save(createPerformance())));
+                        s.setStatus(TEMPORARY_RESERVED); // 좌석 상태를 TEMPORARY_RESERVED로 설정
+                        return seatRepository.save(s);
+                    }
+            );
+
+            ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+            CountDownLatch  startLatch      = new CountDownLatch(1);
+            CountDownLatch  endLatch        = new CountDownLatch(THREAD_COUNT);
+
+            AtomicInteger successCount = new AtomicInteger(0);
+
+            // when
+            for (int i = 1; i <= THREAD_COUNT; i++) {
+                int threadIndex = i;
+                executorService.execute(() -> {
+                    try {
+                        startLatch.await();
+
+                        UUID                     accountId = accountIds.get(threadIndex - 1);
+                        ReservationCreateRequest request   = new ReservationCreateRequest(seat.getId());
+
+                        log.info("[Thread-{}] 예약 요청 시작, 계정 ID: {}", threadIndex, accountId);
+                        reservationService.reserveSeat(accountId, request);
+
+                        successCount.incrementAndGet();
+                    } catch (BusinessException e) {
+                        log.error("[Thread-{}] BusinessException: {}", threadIndex, e.getErrorCode());
+                    } catch (Exception e) {
+                        log.error("[Thread-{}] Error: ", threadIndex, e);
+                    } finally {
+                        endLatch.countDown();
+                    }
+                });
+            }
+            startLatch.countDown();
+            endLatch.await();
+            executorService.shutdown();
+
+            // then
+            Seat seatAfterTest = seatRepository.findById(seat.getId()).orElseThrow();
+
+            assertEquals(TEMPORARY_RESERVED, seatAfterTest.getStatus(), "좌석 상태는 TEMPORARY_RESERVED여야 합니다.");
+            assertEquals(0, successCount.get(), "성공한 예약 수는 0이어야 합니다.");
+        }
+
+        @Test
+        @DisplayName("[Redisson 락 동작 테스트] 동시에 예약 시 좌석이 이미 판매된 경우 예외 발생")
+        void reserveSeat_seatAlreadySold() throws InterruptedException {
+            // given
+            List<Account> accounts = createAccounts(THREAD_COUNT);
+            accounts.forEach(
+                    account -> {
+                        account.setNickname(
+                                account.getNickname() + "_" + UUID.randomUUID().toString().substring(0, 5)
+                        );
+                        account.setStatus(ACTIVE);
+                    }
+            );
+            List<UUID> accountIds = transactionTemplate.execute(
+                    status -> accountRepository.saveAll(accounts)
+                                               .stream()
+                                               .map(Account::getId)
+                                               .toList()
+            );
+            Seat seat = transactionTemplate.execute(
+                    status -> {
+                        Seat s = seatRepository.save(createSeat(performanceRepository.save(createPerformance())));
+                        s.setStatus(SOLD); // 좌석 상태를 SOLD로 설정
+                        return seatRepository.save(s);
+                    }
+            );
+
+            ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+            CountDownLatch  startLatch      = new CountDownLatch(1);
+            CountDownLatch  endLatch        = new CountDownLatch(THREAD_COUNT);
+
+            AtomicInteger successCount = new AtomicInteger(0);
+
+            // when
+            for (int i = 1; i <= THREAD_COUNT; i++) {
+                int threadIndex = i;
+                executorService.execute(() -> {
+                    try {
+                        startLatch.await();
+
+                        UUID                     accountId = accountIds.get(threadIndex - 1);
+                        ReservationCreateRequest request   = new ReservationCreateRequest(seat.getId());
+
+                        log.info("[Thread-{}] 예약 요청 시작, 계정 ID: {}", threadIndex, accountId);
+                        reservationService.reserveSeat(accountId, request);
+
+                        successCount.incrementAndGet();
+                    } catch (BusinessException e) {
+                        log.error("[Thread-{}] BusinessException: {}", threadIndex, e.getErrorCode());
+                    } catch (Exception e) {
+                        log.error("[Thread-{}] Error: ", threadIndex, e);
+                    } finally {
+                        endLatch.countDown();
+                    }
+                });
+            }
+            startLatch.countDown();
+            endLatch.await();
+            executorService.shutdown();
+
+            // then
+            Seat seatAfterTest = seatRepository.findById(seat.getId()).orElseThrow();
+
+            assertEquals(SOLD, seatAfterTest.getStatus(), "좌석 상태는 SOLD여야 합니다.");
+            assertEquals(0, successCount.get(), "성공한 예약 수는 0이어야 합니다.");
         }
 
     }
