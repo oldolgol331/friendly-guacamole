@@ -81,6 +81,7 @@ public enum ErrorCode {
     INVALID_CONFIRMED_AT(HttpStatus.BAD_REQUEST, "RS002", "예약 확정 시간이 유효하지 않습니다."),
     INVALID_EXPIRED_AT(HttpStatus.BAD_REQUEST, "RS003", "예약 임시 점유 만료 시간이 유효하지 않습니다."),
     INVALID_RESERVATION_STATUS(HttpStatus.BAD_REQUEST, "RS004", "예약 상태가 유효하지 않습니다."),
+    RESERVATION_ALREADY_CONFIRMED(HttpStatus.CONFLICT, "RS005", "이미 확정된 예약입니다."),
 
     // 결제(Payment)
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "PY001", "해당 결제 정보를 찾을 수 없습니다."),

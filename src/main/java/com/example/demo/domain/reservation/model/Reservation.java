@@ -3,6 +3,7 @@ package com.example.demo.domain.reservation.model;
 import static com.example.demo.common.response.ErrorCode.INVALID_CONFIRMED_AT;
 import static com.example.demo.common.response.ErrorCode.INVALID_EXPIRED_AT;
 import static com.example.demo.common.response.ErrorCode.INVALID_RESERVATION_STATUS;
+import static com.example.demo.common.response.ErrorCode.RESERVATION_ALREADY_CONFIRMED;
 import static com.example.demo.domain.reservation.model.ReservationStatus.CANCELLED;
 import static com.example.demo.domain.reservation.model.ReservationStatus.CONFIRMED;
 import static com.example.demo.domain.reservation.model.ReservationStatus.PENDING_PAYMENT;
@@ -179,6 +180,17 @@ public class Reservation extends BaseAuditingEntity {
         if (status == CANCELLED) throw new BusinessException(INVALID_RESERVATION_STATUS);
         status = CANCELLED;
         seat.cancel();
+    }
+
+    /**
+     * 예약 점유 만료 시간을 재설정합니다.
+     *
+     * @param expiredAt - 예약 임시 점유 만료 시간
+     */
+    public void reset(final LocalDateTime expiredAt){
+        if (status == CONFIRMED || confirmedAt != null) throw new BusinessException(RESERVATION_ALREADY_CONFIRMED);
+        status = PENDING_PAYMENT;
+        this.expiredAt = expiredAt;
     }
 
 }

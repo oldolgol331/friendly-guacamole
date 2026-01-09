@@ -73,16 +73,20 @@ public class ReservationServiceImpl implements ReservationService {
                 ReservationId         id            = new ReservationId(accountId, seat.getId());
                 Optional<Reservation> opReservation = reservationRepository.findById(id);
 
-                if (opReservation.isPresent())
-                    switch (opReservation.get().getStatus()) {
+                if (opReservation.isPresent()) {
+                    Reservation reservation = opReservation.get();
+
+                    switch (reservation.getStatus()) {
                         case PENDING_PAYMENT -> throw new BusinessException(SEAT_OCCUPIED);
                         case CONFIRMED -> throw new BusinessException(SEAT_ALREADY_SOLD);
-                        case CANCELLED -> reservationRepository.deleteById(id);
+                        case CANCELLED -> reservation.reset(
+                                LocalDateTime.now().plusMinutes(RESERVATION_EXPIRE_MINUTES)
+                        );
                     }
-
-                reservationRepository.save(
-                        Reservation.of(account, seat, LocalDateTime.now().plusMinutes(RESERVATION_EXPIRE_MINUTES))
-                );
+                } else
+                    reservationRepository.save(
+                            Reservation.of(account, seat, LocalDateTime.now().plusMinutes(RESERVATION_EXPIRE_MINUTES))
+                    );
                 seat.reserveTemporary();
             }
         }
@@ -95,12 +99,12 @@ public class ReservationServiceImpl implements ReservationService {
      * @param seatId    - 예약된 좌석 ID
      */
     @Transactional
+    @CustomLock(key = "'lock:reservation:' + #accountId + ':' + #seatId", leaseTime = 3000L)
     @Override
     public void cancelReservation(final UUID accountId, final Long seatId) {
         Reservation reservation = reservationRepository.findById(new ReservationId(accountId, seatId))
                                                        .orElseThrow(() -> new BusinessException(RESERVATION_NOT_FOUND));
         reservation.cancel();
-        reservationRepository.delete(reservation);
     }
 
     /**
@@ -109,10 +113,13 @@ public class ReservationServiceImpl implements ReservationService {
      * @param reservation - 예약 엔티티
      */
     @Transactional
+    @CustomLock(
+            key = "'lock:reservation:' + #reservation.reservationId.accountId + ':' + #reservation.reservationId.seatId",
+            leaseTime = 3000L
+    )
     @Override
     public void cancelReservation(final Reservation reservation) {
         reservation.cancel();
-        reservationRepository.delete(reservation);
     }
 
     /**
