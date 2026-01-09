@@ -2,7 +2,10 @@ package com.example.demo.domain.reservation.service;
 
 import static com.example.demo.common.response.ErrorCode.ACCOUNT_NOT_FOUND;
 import static com.example.demo.common.response.ErrorCode.RESERVATION_NOT_FOUND;
+import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_RESERVED;
+import static com.example.demo.common.response.ErrorCode.SEAT_ALREADY_SOLD;
 import static com.example.demo.common.response.ErrorCode.SEAT_NOT_FOUND;
+import static com.example.demo.common.response.ErrorCode.SEAT_OCCUPIED;
 import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
 
 import com.example.demo.common.error.BusinessException;
@@ -17,6 +20,7 @@ import com.example.demo.domain.reservation.model.Reservation;
 import com.example.demo.domain.reservation.model.ReservationId;
 import com.example.demo.infra.annotation.CustomLock;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -62,10 +66,26 @@ public class ReservationServiceImpl implements ReservationService {
         Seat seat = seatRepository.findByIdWithLock(request.getSeatId())
                                   .orElseThrow(() -> new BusinessException(SEAT_NOT_FOUND));
 
-        reservationRepository.save(
-                Reservation.of(account, seat, LocalDateTime.now().plusMinutes(RESERVATION_EXPIRE_MINUTES))
-        );
-        seat.reserveTemporary();
+        switch (seat.getStatus()) {
+            case TEMPORARY_RESERVED -> throw new BusinessException(SEAT_ALREADY_RESERVED);
+            case SOLD -> throw new BusinessException(SEAT_ALREADY_SOLD);
+            default -> {
+                ReservationId         id            = new ReservationId(accountId, seat.getId());
+                Optional<Reservation> opReservation = reservationRepository.findById(id);
+
+                if (opReservation.isPresent())
+                    switch (opReservation.get().getStatus()) {
+                        case PENDING_PAYMENT -> throw new BusinessException(SEAT_OCCUPIED);
+                        case CONFIRMED -> throw new BusinessException(SEAT_ALREADY_SOLD);
+                        case CANCELLED -> reservationRepository.deleteById(id);
+                    }
+
+                reservationRepository.save(
+                        Reservation.of(account, seat, LocalDateTime.now().plusMinutes(RESERVATION_EXPIRE_MINUTES))
+                );
+                seat.reserveTemporary();
+            }
+        }
     }
 
     /**

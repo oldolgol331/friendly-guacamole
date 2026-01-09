@@ -74,6 +74,7 @@ public enum ErrorCode {
     SEAT_ALREADY_RESERVED(HttpStatus.CONFLICT, "ST002", "이미 예약된 좌석입니다."),
     SEAT_ALREADY_SOLD(HttpStatus.CONFLICT, "ST003", "이미 판매된 좌석입니다."),
     SEAT_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "ST004", "예약 가능한 상태가 아닙니다."),
+    SEAT_OCCUPIED(HttpStatus.CONFLICT, "ST005", "이미 점유된 좌석입니다."),
 
     // 예매(Reservation)
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "RS001", "해당 예약 정보를 찾을 수 없습니다."),
