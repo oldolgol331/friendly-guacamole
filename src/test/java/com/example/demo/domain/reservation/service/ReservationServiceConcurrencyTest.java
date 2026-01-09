@@ -1,11 +1,14 @@
 package com.example.demo.domain.reservation.service;
 
+import static com.example.demo.common.util.TestUtils.createAccount;
 import static com.example.demo.common.util.TestUtils.createAccounts;
 import static com.example.demo.common.util.TestUtils.createPerformance;
 import static com.example.demo.common.util.TestUtils.createSeat;
 import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
+import static com.example.demo.domain.performance.model.SeatStatus.AVAILABLE;
 import static com.example.demo.domain.performance.model.SeatStatus.SOLD;
 import static com.example.demo.domain.performance.model.SeatStatus.TEMPORARY_RESERVED;
+import static com.example.demo.domain.reservation.model.ReservationStatus.CANCELLED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
@@ -21,6 +24,7 @@ import com.example.demo.domain.reservation.dto.ReservationRequest.ReservationCre
 import com.example.demo.domain.reservation.model.Reservation;
 import com.example.demo.domain.reservation.model.ReservationId;
 import com.example.demo.infra.redis.config.TestRedisConfig;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -140,8 +144,9 @@ class ReservationServiceConcurrencyTest {
             Reservation reservation  = null;
             int         successCount = 0;
             for (UUID accountId : accountIds) {
-                Optional<Reservation> opReservation =
-                        reservationRepository.findById(new ReservationId(accountId, seatId));
+                Optional<Reservation> opReservation = reservationRepository.findById(
+                        new ReservationId(accountId, seatId)
+                );
                 if (opReservation.isPresent()) {
                     successCount++;
                     reservation = opReservation.get();
@@ -287,6 +292,130 @@ class ReservationServiceConcurrencyTest {
 
             assertEquals(SOLD, seatAfterTest.getStatus(), "좌석 상태는 SOLD여야 합니다.");
             assertEquals(0, successCount.get(), "성공한 예약 수는 0이어야 합니다.");
+        }
+
+    }
+
+    @Nested
+    @DisplayName("cancelReservation() 테스트")
+    class CancelReservationTests {
+
+        @Test
+        @DisplayName("[Redisson 락 동작 테스트] 동시에 예약 취소 시 락 획득에 성공한 클라이언트만 취소되어야 함")
+        void cancelReservation() throws InterruptedException {
+            // given
+            Account account = createAccount();
+            account.setStatus(ACTIVE);
+            UUID accountId = transactionTemplate.execute(
+                    status -> accountRepository.save(account).getId()
+            );
+            Long seatId = transactionTemplate.execute(
+                    status -> seatRepository.save(createSeat(performanceRepository.save(createPerformance()))).getId()
+            );
+            ReservationId reservationId = transactionTemplate.execute(
+                    status -> reservationRepository.save(Reservation.of(
+                            accountRepository.findById(accountId).get(),
+                            seatRepository.findById(seatId).get(),
+                            LocalDateTime.now().plusMinutes(5)
+                    )).getReservationId()
+            );
+
+            ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+            CountDownLatch  startLatch      = new CountDownLatch(1);
+            CountDownLatch  endLatch        = new CountDownLatch(THREAD_COUNT);
+
+            AtomicInteger successThreadIndex = new AtomicInteger();
+
+            // when
+            for (int i = 1; i <= THREAD_COUNT; i++) {
+                int threadIndex = i;
+                executorService.execute(() -> {
+                    try {
+                        startLatch.await();
+
+                        log.info("[Thread-{}] 예약 취소 시도", threadIndex);
+                        reservationService.cancelReservation(accountId, seatId);
+
+                        successThreadIndex.set(threadIndex);
+                    } catch (Exception e) {
+                        log.error("[Thread-{}] Error: ", threadIndex, e);
+                    } finally {
+                        endLatch.countDown();
+                    }
+                });
+            }
+            startLatch.countDown();
+            endLatch.await();
+            executorService.shutdown();
+
+            // then
+            Seat        seat        = seatRepository.findById(seatId).orElseThrow();
+            Reservation reservation = reservationRepository.findById(reservationId).get();
+
+            log.info("Expected Success Index: {}", successThreadIndex);
+
+            assertEquals(AVAILABLE, seat.getStatus(), "좌석 상태가 AVAILABLE여야 합니다.");
+            assertEquals(CANCELLED, reservation.getStatus(), "예약 상태가 CANCELLED여야 합니다.");
+        }
+
+        @Test
+        @DisplayName("[Redisson 락 동작 테스트] 동시에 예약 취소 시 락 획득에 성공한 클라이언트만 취소되어야 함 (Reservation 엔티티 직접 전달)")
+        void cancelReservationEntity() throws InterruptedException {
+            // given
+            Account account = createAccount();
+            account.setStatus(ACTIVE);
+            UUID accountId = transactionTemplate.execute(
+                    status -> accountRepository.save(account).getId()
+            );
+            Long seatId = transactionTemplate.execute(
+                    status -> seatRepository.save(createSeat(performanceRepository.save(createPerformance()))).getId()
+            );
+            ReservationId reservationId = transactionTemplate.execute(
+                    status -> reservationRepository.save(Reservation.of(
+                            accountRepository.findById(accountId).get(),
+                            seatRepository.findById(seatId).get(),
+                            LocalDateTime.now().plusMinutes(5)
+                    )).getReservationId()
+            );
+
+            ExecutorService executorService = Executors.newFixedThreadPool(THREAD_COUNT);
+            CountDownLatch  startLatch      = new CountDownLatch(1);
+            CountDownLatch  endLatch        = new CountDownLatch(THREAD_COUNT);
+
+            AtomicInteger successThreadIndex = new AtomicInteger();
+
+            // when
+            for (int i = 1; i <= THREAD_COUNT; i++) {
+                int threadIndex = i;
+                executorService.execute(() -> {
+                    try {
+                        startLatch.await();
+
+                        transactionTemplate.executeWithoutResult(status -> {
+                            log.info("[Thread-{}] 예약 취소 시도", threadIndex);
+                            reservationService.cancelReservation(reservationRepository.findById(reservationId).get());
+                        });
+
+                        successThreadIndex.set(threadIndex);
+                    } catch (Exception e) {
+                        log.error("[Thread-{}] Error: ", threadIndex, e);
+                    } finally {
+                        endLatch.countDown();
+                    }
+                });
+            }
+            startLatch.countDown();
+            endLatch.await();
+            executorService.shutdown();
+
+            // then
+            Seat        seat        = seatRepository.findById(seatId).orElseThrow();
+            Reservation reservation = reservationRepository.findById(reservationId).get();
+
+            log.info("Expected Success Index: {}", successThreadIndex);
+
+            assertEquals(AVAILABLE, seat.getStatus(), "좌석 상태가 AVAILABLE여야 합니다.");
+            assertEquals(CANCELLED, reservation.getStatus(), "예약 상태가 CANCELLED여야 합니다.");
         }
 
     }

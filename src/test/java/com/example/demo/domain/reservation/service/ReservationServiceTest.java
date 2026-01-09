@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -259,14 +258,14 @@ class ReservationServiceTest {
             ReflectionTestUtils.setField(performance, "id", 1L);
             Seat seat = createSeat(performance);
             ReflectionTestUtils.setField(seat, "id", 1L);
-            Reservation              reservation = createReservation(account, seat);
+            Reservation reservation = createReservation(account, seat);
             reservation.cancel();
-            ReservationCreateRequest request     = new ReservationCreateRequest(seat.getId());
+            ReservationCreateRequest request       = new ReservationCreateRequest(seat.getId());
+            ReservationId            reservationId = new ReservationId(account.getId(), seat.getId());
 
             when(accountRepository.findByIdAndStatus(eq(account.getId()), any())).thenReturn(Optional.of(account));
             when(seatRepository.findByIdWithLock(eq(seat.getId()))).thenReturn(Optional.of(seat));
-            when(reservationRepository.findById(any(ReservationId.class))).thenReturn(Optional.of(reservation));
-            doNothing().when(reservationRepository).deleteById(any(ReservationId.class));
+            when(reservationRepository.findById(eq(reservationId))).thenReturn(Optional.of(reservation));
 
             // when
             reservationService.reserveSeat(account.getId(), request);
@@ -274,9 +273,8 @@ class ReservationServiceTest {
             // then
             verify(accountRepository, times(1)).findByIdAndStatus(eq(account.getId()), any());
             verify(seatRepository, times(1)).findByIdWithLock(eq(seat.getId()));
-            verify(reservationRepository, times(1)).findById(any(ReservationId.class));
-            verify(reservationRepository, times(1)).deleteById(any(ReservationId.class));
-            verify(reservationRepository, times(1)).save(any(Reservation.class));
+            verify(reservationRepository, times(1)).findById(eq(reservationId));
+            verify(reservationRepository, never()).save(any(Reservation.class));
         }
 
     }
@@ -307,7 +305,22 @@ class ReservationServiceTest {
 
             // then
             verify(reservationRepository, times(1)).findById(eq(reservationId));
-            verify(reservationRepository, times(1)).delete(eq(reservation));
+        }
+
+        @RepeatedTest(10)
+        @DisplayName("예약 취소 (Reservation 엔티티 직접 전달)")
+        void cancelReservationEntity() {
+            // given
+            Account account = createAccount();
+            ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
+            Performance performance = createPerformance();
+            ReflectionTestUtils.setField(performance, "id", 1L);
+            Seat seat = createSeat(performance);
+            ReflectionTestUtils.setField(seat, "id", 1L);
+            Reservation reservation = createReservation(account, seat);
+
+            // when
+            reservationService.cancelReservation(reservation);
         }
 
         @RepeatedTest(10)
@@ -331,7 +344,6 @@ class ReservationServiceTest {
                                          "errorCode는 RESERVATION_NOT_FOUND여야 합니다."));
 
             verify(reservationRepository, times(1)).findById(eq(reservationId));
-            verify(reservationRepository, never()).delete(any(Reservation.class));
         }
 
     }
@@ -379,6 +391,91 @@ class ReservationServiceTest {
             assertEquals(0, result.getTotalElements(), "총 예약 수는 0이어야 합니다.");
             assertEquals(0, result.getContent().size(), "페이지 내 예약 수는 0이어야 합니다.");
             verify(reservationRepository, times(1)).getMyReservations(eq(accountId), eq(pageable));
+        }
+
+    }
+
+    @Nested
+    @DisplayName("findReservationById() 테스트")
+    class FindReservationByIdTests {
+
+        @RepeatedTest(10)
+        @DisplayName("예약 정보 조회")
+        void findReservationById() {
+            // given
+            Account account = createAccount();
+            ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
+            Performance performance = createPerformance();
+            ReflectionTestUtils.setField(performance, "id", 1L);
+            Seat seat = createSeat(performance);
+            ReflectionTestUtils.setField(seat, "id", 1L);
+            Reservation reservation = createReservation(account, seat);
+            UUID        accountId   = account.getId();
+            Long        seatId      = seat.getId();
+            ReflectionTestUtils.setField(reservation, "accountId", accountId);
+            ReflectionTestUtils.setField(reservation, "seatId", seatId);
+            ReservationId reservationId = new ReservationId(accountId, seatId);
+
+            assertEquals(accountId, reservation.getAccountId(), "Reservation 객체의 accountId가 일치해야 합니다.");
+            assertEquals(seatId, reservation.getSeatId(), "Reservation 객체의 seatId가 일치해야 합니다.");
+
+            when(reservationRepository.findById(eq(reservationId))).thenReturn(Optional.of(reservation));
+
+            // when
+            Reservation result = reservationService.findReservationById(accountId, seatId);
+
+            // then
+            assertAll(
+                    () -> assertNotNull(result, "result는 null이 아니어야 합니다."),
+                    () -> assertEquals(accountId, result.getAccountId(), "accountId가 일치해야 합니다."),
+                    () -> assertEquals(seatId, result.getSeatId(), "seatId가 일치해야 합니다.")
+            );
+            verify(reservationRepository, times(1)).findById(eq(reservationId));
+        }
+
+        @RepeatedTest(10)
+        @DisplayName("예약 정보 조회 시도, 예약이 존재하지 않음")
+        void findReservationById_reservationNotFound() {
+            // given
+            UUID accountId = UUID.randomUUID();
+            Long seatId    = 1L;
+
+            when(reservationRepository.findById(any(ReservationId.class))).thenReturn(Optional.empty());
+
+            // when
+            BusinessException exception = assertThrows(BusinessException.class,
+                                                       () -> reservationService.findReservationById(accountId, seatId),
+                                                       "BusinessException이 발생해야 합니다.");
+
+            // then
+            assertAll(
+                    () -> assertNotNull(exception, "exception은 null이 아니어야 합니다."),
+                    () -> assertEquals(RESERVATION_NOT_FOUND, exception.getErrorCode(),
+                                       "errorCode는 RESERVATION_NOT_FOUND여야 합니다.")
+            );
+            verify(reservationRepository, times(1)).findById(any(ReservationId.class));
+        }
+
+    }
+
+    @Nested
+    @DisplayName("cancelReservation(Reservation) 테스트")
+    class CancelReservationEntityTests {
+
+        @RepeatedTest(10)
+        @DisplayName("예약 취소 (Reservation 엔티티 직접 전달)")
+        void cancelReservationEntity() {
+            // given
+            Account account = createAccount();
+            ReflectionTestUtils.setField(account, "id", UUID.randomUUID());
+            Performance performance = createPerformance();
+            ReflectionTestUtils.setField(performance, "id", 1L);
+            Seat seat = createSeat(performance);
+            ReflectionTestUtils.setField(seat, "id", 1L);
+            Reservation reservation = createReservation(account, seat);
+
+            // when
+            reservationService.cancelReservation(reservation);
         }
 
     }
