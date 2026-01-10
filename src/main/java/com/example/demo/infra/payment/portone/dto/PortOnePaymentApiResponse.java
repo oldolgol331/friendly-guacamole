@@ -2,6 +2,7 @@ package com.example.demo.infra.payment.portone.dto;
 
 import com.example.demo.infra.payment.dto.PGPaymentApiBaseResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
@@ -36,10 +37,13 @@ public class PortOnePaymentApiResponse extends PGPaymentApiBaseResponse {
     private Amount amount;
     @Schema(description = "결제 수단")
     private PaymentMethod method;
+    @JsonProperty("receiptUrl")
     @Schema(description = "영수증 URL")
     private String receiptUrl;
+    @JsonProperty("requestedAt")
     @Schema(description = "결제 요청 일시")
     private String requestedAt;
+    @JsonProperty("paidAt")
     @Schema(description = "결제 완료 일시")
     private String paidAt;
 

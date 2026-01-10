@@ -1,7 +1,5 @@
 package com.example.demo.domain.reservation.facade;
 
-import static com.example.demo.common.util.DateUtils.convertUnixToLocalDateTime;
-
 import com.example.demo.common.error.BusinessException;
 import com.example.demo.domain.account.model.Account;
 import com.example.demo.domain.account.service.AccountService;
@@ -18,6 +16,8 @@ import com.example.demo.domain.reservation.service.ReservationService;
 import com.example.demo.infra.payment.portone.client.PortOnePGPaymentApiClient;
 import com.example.demo.infra.payment.portone.dto.PortOneCancelPaymentApiRequest;
 import com.example.demo.infra.payment.portone.dto.PortOnePaymentApiRequest;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -105,7 +105,9 @@ public class ReservationFacade {
                                                pgResponse.getAmount().getTotal(),
                                                pgResponse.getStatus(),
                                                pgResponse.getMethod().getType(),
-                                               convertUnixToLocalDateTime(pgResponse.getPaidAt()),
+                                               ZonedDateTime.parse(pgResponse.getPaidAt())
+                                                            .withZoneSameInstant(ZoneId.systemDefault())
+                                                            .toLocalDateTime(),
                                                pgResponse.getReceiptUrl());
 
         try {
