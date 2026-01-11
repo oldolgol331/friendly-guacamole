@@ -151,48 +151,6 @@ services:
         max-file: "3"
         compress: "true"
 
-  ollama:
-    profiles: [ "dev" ]
-    image: "ollama/ollama:0.13.5"
-    container_name: "demo-dev-ollama"
-    restart: "unless-stopped"
-    networks: [ "demo-dev-network" ]
-    environment:
-      - "OLLAMA_MODELS=/root/.ollama/models"
-      - "TZ=Asia/Seoul"
-    ports: [ "11434:11434" ]
-    volumes: [ "ollama-data:/root/.ollama" ]
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: "nvidia"
-              count: "all"
-              capabilities: [ "gpu" ]
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-        compress: "true"
-
-  ollama-init:
-    profiles: [ "dev" ]
-    image: "curlimages/curl:8.17.0"
-    container_name: "demo-dev-ollama-init"
-    networks: [ "demo-dev-network" ]
-    depends_on: [ "ollama" ]
-    entrypoint: /bin/sh
-    command:
-      - "-c"
-      - |
-        until curl -s http://ollama:11434/api/tags > /dev/null; do
-          sleep 2
-        done
-        curl -X POST http://ollama:11434/api/pull \
-             -H 'Content-Type: application/json' \
-             -d '{ "name": "nomic-embed-text:latest", "stream": false }'
-
 volumes:
   mysql-data:
     driver: local
@@ -207,8 +165,6 @@ volumes:
   sonarqube-data:
     driver: local
   sonarqube-extensions:
-    driver: local
-  ollama-data:
     driver: local
 
 networks:
