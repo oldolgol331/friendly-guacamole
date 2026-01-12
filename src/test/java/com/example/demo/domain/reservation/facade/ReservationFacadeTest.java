@@ -143,21 +143,14 @@ class ReservationFacadeTest {
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
                     new PaymentMethod("CARD"),
                     "https://receipt.url",
-                    "1735689600",
-                    "1735689600"
-            );
-
-            PaymentVerifyCommand command = new PaymentVerifyCommand(
-                    paymentKey,
-                    BigDecimal.valueOf(1000),
-                    "PAID",
-                    "CARD",
-                    LocalDateTime.of(2025, 12, 22, 13, 12, 34),
-                    "https://receipt.url"
+                    "2025-12-22T13:12:34+09:00",
+                    "2025-12-22T13:12:34+09:00"
             );
 
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(portOneResponse);
+            doNothing().when(paymentService).verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class),
+                                                              eq(clientIp));
 
             // when
             reservationFacade.verifyPayment(accountId, paymentKey, clientIp);
@@ -181,21 +174,21 @@ class ReservationFacadeTest {
 
             Account account = createAccount();
             PortOnePaymentApiResponse portOneResponse = new PortOnePaymentApiResponse(
-
                     paymentKey,
                     "PAID",
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
                     new PaymentMethod("CARD"),
                     "https://receipt.url",
-                    "1735689600",
-                    "1735689600"
+                    "2025-12-22T13:12:34+09:00",
+                    "2025-12-22T13:12:34+09:00"
             );
 
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(portOneResponse);
             doThrow(new BusinessException(EXPIRE_PAYMENT_VERIFICATION_TIME))
                     .when(paymentService)
-                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class), eq(clientIp));
+                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class),
+                                      eq(clientIp));
             doNothing().when(portOneApiClient).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             doNothing().when(paymentService).cancelPayment(anyString(), anyString());
 
@@ -233,15 +226,16 @@ class ReservationFacadeTest {
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
                     new PaymentMethod("CARD"),
                     "https://receipt.url",
-                    "1735689600",
-                    "1735689600"
+                    "2025-12-22T13:12:34+09:00",
+                    "2025-12-22T13:12:34+09:00"
             );
 
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(portOneResponse);
             doThrow(new BusinessException(PAYMENT_VERIFICATION_FAILED))
                     .when(paymentService)
-                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class), eq(clientIp));
+                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class),
+                                      eq(clientIp));
             doNothing().when(portOneApiClient).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             doNothing().when(paymentService).cancelPayment(anyString(), anyString());
 
@@ -279,15 +273,16 @@ class ReservationFacadeTest {
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
                     new PaymentMethod("CARD"),
                     "https://receipt.url",
-                    "1735689600",
-                    "1735689600"
+                    "2025-12-22T13:12:34+09:00",
+                    "2025-12-22T13:12:34+09:00"
             );
 
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(portOneResponse);
             doThrow(new BusinessException(PAYMENT_AMOUNT_MISMATCH))
                     .when(paymentService)
-                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class), eq(clientIp));
+                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class),
+                                      eq(clientIp));
             doNothing().when(portOneApiClient).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             doNothing().when(paymentService).cancelPayment(anyString(), anyString());
 
@@ -325,15 +320,16 @@ class ReservationFacadeTest {
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
                     new PaymentMethod("CARD"),
                     "https://receipt.url",
-                    "1735689600",
-                    "1735689600"
+                    "2025-12-22T13:12:34+09:00",
+                    "2025-12-22T13:12:34+09:00"
             );
 
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(portOneResponse);
             doThrow(new BusinessException(PAYMENT_ACCOUNT_MISMATCH))
                     .when(paymentService)
-                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class), eq(clientIp));
+                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class),
+                                      eq(clientIp));
             doNothing().when(portOneApiClient).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             doNothing().when(paymentService).cancelPayment(anyString(), anyString());
 
@@ -371,15 +367,16 @@ class ReservationFacadeTest {
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
                     new PaymentMethod("CARD"),
                     "https://receipt.url",
-                    "1735689600",
-                    "1735689600"
+                    "2025-12-22T13:12:34+09:00",
+                    "2025-12-22T13:12:34+09:00"
             );
 
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(portOneResponse);
             doThrow(new BusinessException(PAYMENT_NOT_COMPLETED))
                     .when(paymentService)
-                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class), eq(clientIp));
+                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class),
+                                      eq(clientIp));
             doNothing().when(portOneApiClient).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             doNothing().when(paymentService).cancelPayment(anyString(), anyString());
 
@@ -417,15 +414,16 @@ class ReservationFacadeTest {
                     new PortOnePaymentApiResponse.Amount(BigDecimal.valueOf(10000)),
                     new PaymentMethod("CARD"),
                     "https://receipt.url",
-                    "1735689600",
-                    "1735689600"
+                    "2025-12-22T13:12:34+09:00",
+                    "2025-12-22T13:12:34+09:00"
             );
 
             when(accountService.findByAccountId(eq(accountId))).thenReturn(account);
             when(portOneApiClient.getPayment(any(PortOnePaymentApiRequest.class))).thenReturn(portOneResponse);
             doThrow(new BusinessException(PAYMENT_NOT_FOUND))
                     .when(paymentService)
-                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class), eq(clientIp));
+                    .verifyAndApprove(eq(accountId), any(PaymentVerifyCommand.class),
+                                      eq(clientIp));
             doNothing().when(portOneApiClient).cancelPayment(anyString(), any(PortOneCancelPaymentApiRequest.class));
             doNothing().when(paymentService).cancelPayment(anyString(), anyString());
 
