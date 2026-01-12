@@ -59,9 +59,9 @@ jobs:
             dir=$(dirname "$dockerfile")
             module_name=$(basename "$dir")
 
-            if [ "$module_name" == "." ] then
+            if [ "$module_name" == "." ]; then
               raw_image_name="${{ github.repository }}"
-              cache_scope="root
+              cache_scope="root"
             else
               raw_image_name="${{ github.repository }}/$module_name"
               cache_scope="$module_name"
