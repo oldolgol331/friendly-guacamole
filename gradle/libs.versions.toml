@@ -1,0 +1,103 @@
+[versions]
+java = "21"
+springBoot = "3.4.13"
+springDependencyManagement = "1.1.7"
+lombok = "9.1.0"
+jacoco = "0.8.14"
+sonarqube = "7.2.2.6593"
+
+ulidCreator = "5.2.3"
+jacksonDatabind = "3.0.2"
+springDocOpenApi = "2.8.13"
+querydsl = "5.1.0"
+p6spy = "1.12.0"
+jjwt = "0.13.0"
+redisson = "3.52.0"
+autoParams = "11.3.1"
+fixtureMonkey = "1.1.15"
+datafaker = "2.5.1"
+jqwik = "1.9.3"
+testcontainers = "1.21.3"
+embeddedRedis = "1.4.3"
+
+[libraries]
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis" }
+spring-boot-starter-mail = { module = "org.springframework.boot:spring-boot-starter-mail" }
+spring-boot-starter-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-retry = { module = "org.springframework.retry:spring-retry" }
+
+ulid-creator = { module = "com.github.f4b6a3:ulid-creator", version.ref = "ulidCreator" }
+
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
+jackson-databind = { module = "tools.jackson.core:jackson-databind", version.ref = "jacksonDatabind" }
+
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springDocOpenApi" }
+
+querydsl-jpa = { module = "com.querydsl:querydsl-jpa", version.ref = "querydsl" }
+querydsl-apt = { module = "com.querydsl:querydsl-apt", version.ref = "querydsl" }
+jakarta-annotation-api = { module = "jakarta.annotation:jakarta.annotation-api" }
+jakarta-persistence-api = { module = "jakarta.persistence:jakarta.persistence-api" }
+
+p6spy-spring-boot-starter = { module = "com.github.gavlyukovskiy:p6spy-spring-boot-starter", version.ref = "p6spy" }
+
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+
+redisson = { module = "org.redisson:redisson", version.ref = "redisson" }
+redisson-spring-boot-starter = { module = "org.redisson:redisson-spring-boot-starter", version.ref = "redisson" }
+redisson-spring-data = { module = "org.redisson:redisson-spring-data-34", version.ref = "redisson" }
+
+apache-httpclient = { module = "org.apache.httpcomponents.client5:httpclient5" }
+
+spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
+spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose" }
+h2 = { module = "com.h2database:h2" }
+mysql-connector-j = { module = "com.mysql:mysql-connector-j" }
+spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-security-test = { module = "org.springframework.security:spring-security-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+autoparams = { module = "io.github.autoparams:autoparams", version.ref = "autoParams" }
+autoparams-lombok = { module = "io.github.autoparams:autoparams-lombok", version.ref = "autoParams" }
+autoparams-mockito = { module = "io.github.autoparams:autoparams-mockito", version.ref = "autoParams" }
+
+fixture-monkey-autoparams = { module = "com.navercorp.fixturemonkey:fixture-monkey-autoparams", version.ref = "fixtureMonkey" }
+fixture-monkey-jackson = { module = "com.navercorp.fixturemonkey:fixture-monkey-jackson", version.ref = "fixtureMonkey" }
+fixture-monkey-javax-validation = { module = "com.navercorp.fixturemonkey:fixture-monkey-javax-validation", version.ref = "fixtureMonkey" }
+fixture-monkey-mockito = { module = "com.navercorp.fixturemonkey:fixture-monkey-mockito", version.ref = "fixtureMonkey" }
+fixture-monkey-starter = { module = "com.navercorp.fixturemonkey:fixture-monkey-starter", version.ref = "fixtureMonkey" }
+
+datafaker = { module = "net.datafaker:datafaker", version.ref = "datafaker" }
+
+jqwik = { module = "net.jqwik:jqwik", version.ref = "jqwik" }
+jqwik-api = { module = "net.jqwik:jqwik-api", version.ref = "jqwik" }
+jqwik-engine = { module = "net.jqwik:jqwik-engine", version.ref = "jqwik" }
+jqwik-time = { module = "net.jqwik:jqwik-time", version.ref = "jqwik" }
+jqwik-testing = { module = "net.jqwik:jqwik-testing", version.ref = "jqwik" }
+
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
+
+embedded-redis = { module = "com.github.codemonstur:embedded-redis", version.ref = "embeddedRedis" }
+
+[bundles]
+jjwt = ["jjwt-api", "jjwt-impl", "jjwt-jackson"]
+redisson = ["redisson", "redisson-spring-boot-starter", "redisson-spring-data"]
+autoparams = ["autoparams", "autoparams-lombok", "autoparams-mockito"]
+fixture-monkey = ["fixture-monkey-autoparams", "fixture-monkey-jackson", "fixture-monkey-javax-validation", "fixture-monkey-mockito", "fixture-monkey-starter"]
+jqwik = ["jqwik", "jqwik-api", "jqwik-engine", "jqwik-time", "jqwik-testing"]
+testcontainers = ["testcontainers", "testcontainers-junit-jupiter", "testcontainers-mysql"]
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombok" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }

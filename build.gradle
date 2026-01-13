@@ -1,14 +1,11 @@
 plugins {
     id 'idea'
     id 'java'
-    id 'org.springframework.boot' version '3.4.13'
-    id 'io.spring.dependency-management' version '1.1.7'
-    // Lombok
-    id 'io.freefair.lombok' version '9.1.0'
-    // JaCoCo
     id 'jacoco'
-    // SonarQube
-    id 'org.sonarqube' version '7.2.2.6593'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.lombok)
+    alias(libs.plugins.sonarqube)
 }
 
 idea {
@@ -23,7 +20,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
     }
 }
 
@@ -31,118 +28,48 @@ repositories {
     mavenCentral()
 }
 
-// dependency versions
-def ulidCreatorVersion = '5.2.3'
-def jacksonDatabindVersion = '3.0.2'
-def springDocOpenApiVersion = '2.8.13'
-def querydslVersion = '5.1.0'
-def p6spyVersion = '1.12.0'
-def jjwtVersion = '0.13.0'
-def redissonVersion = '3.52.0'
-def autoParamsVersion = '11.3.1'
-def fixtureMonkeyVersion = '1.1.15'
-def datafakerVersion = '2.5.1'
-def jqwikVersion = '1.9.3'
-def testcontainersVersion = '1.21.3'
-def embeddedRedisVersion = '1.4.3'
-
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.retry:spring-retry'
+    implementation libs.spring.boot.starter.actuator
+    implementation libs.spring.boot.starter.data.jpa
+    implementation libs.spring.boot.starter.data.redis
+    implementation libs.spring.boot.starter.mail
+    implementation libs.spring.boot.starter.oauth2.client
+    implementation libs.spring.boot.starter.security
+    implementation libs.spring.boot.starter.validation
+    implementation libs.spring.boot.starter.web
+    implementation libs.spring.retry
 
-    // ULID Creator
-    implementation "com.github.f4b6a3:ulid-creator:$ulidCreatorVersion"
+    implementation libs.ulid.creator
+    implementation libs.jackson.datatype.jsr310
+    implementation libs.jackson.databind
+    implementation libs.springdoc.openapi.starter.webmvc.ui
+    implementation libs.p6spy.spring.boot.starter
+    implementation libs.apache.httpclient
 
-    // Jackson Datatype: JSR310
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    // Jackson Databind
-    implementation "tools.jackson.core:jackson-databind:$jacksonDatabindVersion"
+    implementation libs.querydsl.jpa, { artifact { classifier = 'jakarta' } }
+    annotationProcessor libs.querydsl.apt, { artifact { classifier = 'jakarta' } }
+    annotationProcessor libs.jakarta.annotation.api
+    annotationProcessor libs.jakarta.persistence.api
 
-    // SpringDoc OpenAPI Starter WebMVC UI
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocOpenApiVersion"
+    implementation libs.bundles.jjwt
+    implementation libs.bundles.redisson
 
-    // Querydsl JPA Support
-    implementation "com.querydsl:querydsl-jpa:$querydslVersion:jakarta"
-    // Querydsl APT Support
-    annotationProcessor "com.querydsl:querydsl-apt:$querydslVersion:jakarta"
-    // Jakarta Annotations API
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
-    // Jakarta Persistence API
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+    developmentOnly libs.spring.boot.devtools
+    developmentOnly libs.spring.boot.docker.compose
+    runtimeOnly libs.mysql.connector.j
+    annotationProcessor libs.spring.boot.configuration.processor
 
-    // P6Spy Spring Boot Starter
-    implementation "com.github.gavlyukovskiy:p6spy-spring-boot-starter:$p6spyVersion"
+    testImplementation libs.spring.boot.starter.test
+    testImplementation libs.spring.security.test
+    testRuntimeOnly libs.h2
+    testRuntimeOnly libs.junit.platform.launcher
+    testImplementation libs.datafaker
+    testImplementation libs.embedded.redis
 
-    // JJWT :: API
-    implementation "io.jsonwebtoken:jjwt-api:$jjwtVersion"
-    // JJWT :: Impl
-    runtimeOnly "io.jsonwebtoken:jjwt-impl:$jjwtVersion"
-    // JJWT :: Extensions :: Jackson
-    runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jjwtVersion"
-
-    // Redisson
-    implementation "org.redisson:redisson:$redissonVersion"
-    // Redisson/Spring Boot Starter
-    implementation "org.redisson:redisson-spring-boot-starter:$redissonVersion"
-    // Redisson/Spring Data Redis V3.4.x Integration
-    implementation "org.redisson:redisson-spring-data-34:$redissonVersion"
-
-    // Apache HttpClient
-    implementation 'org.apache.httpcomponents.client5:httpclient5'
-
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-    runtimeOnly "com.h2database:h2"
-    runtimeOnly "com.mysql:mysql-connector-j"
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    // AutoParams
-    testImplementation "io.github.autoparams:autoparams:$autoParamsVersion"
-    // AutoParams Lombok
-    testImplementation "io.github.autoparams:autoparams-lombok:$autoParamsVersion"
-    // AutoParams Mockito
-    testImplementation "io.github.autoparams:autoparams-mockito:$autoParamsVersion"
-
-    // Fixture Monkey
-    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-autoparams:$fixtureMonkeyVersion"
-    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-jackson:$fixtureMonkeyVersion"
-    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-javax-validation:$fixtureMonkeyVersion"
-    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-mockito:$fixtureMonkeyVersion"
-    testImplementation "com.navercorp.fixturemonkey:fixture-monkey-starter:$fixtureMonkeyVersion"
-
-    // Datafaker
-    testImplementation "net.datafaker:datafaker:$datafakerVersion"
-
-    // Jqwik
-    testImplementation "net.jqwik:jqwik:$jqwikVersion"
-    // Jqwik API
-    testImplementation "net.jqwik:jqwik-api:$jqwikVersion"
-    // Jqwik Engine
-    testImplementation "net.jqwik:jqwik-engine:$jqwikVersion"
-    // Jqwik Time
-    testImplementation "net.jqwik:jqwik-time:$jqwikVersion"
-    // Jqwik Testing
-    testImplementation "net.jqwik:jqwik-testing:$jqwikVersion"
-
-    // Testcontainers Core
-    testImplementation "org.testcontainers:testcontainers:$testcontainersVersion"
-    // Testcontainers :: JUnit Jupiter Extension
-    testImplementation "org.testcontainers:junit-jupiter:$testcontainersVersion"
-    // Testcontainers :: JDBC :: MySQL
-    testImplementation "org.testcontainers:mysql:$testcontainersVersion"
-
-    // Embedded Redis
-    testImplementation "com.github.codemonstur:embedded-redis:$embeddedRedisVersion"
+    testImplementation libs.bundles.autoparams
+    testImplementation libs.bundles.fixture.monkey
+    testImplementation libs.bundles.jqwik
+    testImplementation libs.bundles.testcontainers
 }
 
 test {
@@ -165,7 +92,7 @@ bootJar {
 }
 
 jacoco {
-    toolVersion = '0.8.14'
+    toolVersion = libs.versions.jacoco.get()
 }
 
 jacocoTestReport {
