@@ -1,13 +1,11 @@
 package com.example.demo.common.mail.service;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.javamail.JavaMailSender;
 
 /**
  * PackageName : com.example.demo.common.mail.service
@@ -35,7 +32,7 @@ class EmailServiceTest {
     private EmailServiceImpl emailService;
 
     @Mock
-    private JavaMailSender mailSender;
+    private EmailSender emailSender;
 
     @Nested
     @DisplayName("sendVerificationEmail() 테스트")
@@ -45,20 +42,16 @@ class EmailServiceTest {
         @DisplayName("이메일 인증 링크 전송 성공")
         void sendVerificationEmail_Success() throws Exception {
             // given
-            String toEmail = "test@example.com";
+            String toEmail          = "test@example.com";
             String verificationLink = "http://example.com/verify?token=abc123";
-            MimeMessage mimeMessage = mock(MimeMessage.class);
 
-            // mailSender가 MimeMessage를 생성하도록 설정
-            when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
-            doNothing().when(mailSender).send(any(MimeMessage.class));
+            doNothing().when(emailSender).sendHtmlEmailWithRetry(eq(toEmail), eq("[ticket] 회원가입 이메일 인증"), anyString());
 
             // when
             emailService.sendVerificationEmail(toEmail, verificationLink);
 
             // then
-            verify(mailSender, times(1)).createMimeMessage();
-            verify(mailSender, times(1)).send(any(MimeMessage.class));
+            verify(emailSender, times(1)).sendHtmlEmailWithRetry(eq(toEmail), eq("[ticket] 회원가입 이메일 인증"), anyString());
         }
 
     }
@@ -71,45 +64,19 @@ class EmailServiceTest {
         @DisplayName("비밀번호 재설정 링크 전송 성공")
         void sendPasswordResetEmail_Success() throws Exception {
             // given
-            String toEmail = "test@example.com";
+            String toEmail   = "test@example.com";
             String resetLink = "http://example.com/reset?token=abc123";
-            MimeMessage mimeMessage = mock(MimeMessage.class);
 
-            when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
-            doNothing().when(mailSender).send(any(MimeMessage.class));
+            doNothing().when(emailSender)
+                       .sendHtmlEmailWithRetry(eq(toEmail), eq("[ticket] 비밀번호 재설정 요청 안내"), anyString());
 
             // when
             emailService.sendPasswordResetEmail(toEmail, resetLink);
 
             // then
-            verify(mailSender, times(1)).createMimeMessage();
-            verify(mailSender, times(1)).send(any(MimeMessage.class));
-        }
-
-    }
-
-    @Nested
-    @DisplayName("sendHtmlEmailWithRetry() 테스트")
-    class SendHtmlEmailWithRetryTests {
-
-        @Test
-        @DisplayName("HTML 이메일 발송 성공")
-        void sendHtmlEmailWithRetry_Success() throws Exception {
-            // given
-            String toEmail = "test@example.com";
-            String subject = "Test Subject";
-            String htmlBody = "<html><body>Test Body</body></html>";
-            MimeMessage mimeMessage = mock(MimeMessage.class);
-
-            when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
-            doNothing().when(mailSender).send(any(MimeMessage.class));
-
-            // when
-            emailService.sendHtmlEmailWithRetry(toEmail, subject, htmlBody);
-
-            // then
-            verify(mailSender, times(1)).createMimeMessage();
-            verify(mailSender, times(1)).send(any(MimeMessage.class));
+            verify(emailSender, times(1)).sendHtmlEmailWithRetry(
+                    eq(toEmail), eq("[ticket] 비밀번호 재설정 요청 안내"), anyString()
+            );
         }
 
     }
