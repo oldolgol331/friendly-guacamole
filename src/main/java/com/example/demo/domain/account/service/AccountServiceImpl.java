@@ -13,6 +13,7 @@ import static com.example.demo.common.response.ErrorCode.OAUTH_PROVIDER_NOT_SUPP
 import static com.example.demo.common.response.ErrorCode.OAUTH_USER_CANNOT_RESET_PASSWORD;
 import static com.example.demo.common.response.ErrorCode.PASSWORD_MISMATCH;
 import static com.example.demo.common.response.ErrorCode.TOO_MANY_REQUESTS;
+import static com.example.demo.domain.account.constant.AccountConst.PASSWORD_PATTERN;
 import static com.example.demo.domain.account.model.AccountStatus.ACTIVE;
 import static com.example.demo.infra.redis.constant.RedisConst.REDIS_PASSWORD_RESET_KEY_PREFIX;
 import static com.example.demo.infra.redis.constant.RedisConst.REDIS_PASSWORD_RESET_RATE_LIMIT_KEY_PREFIX;
@@ -76,6 +77,7 @@ public class AccountServiceImpl implements AccountService {
         String lowerCaseEmail = request.getEmail().toLowerCase();
 
         if (!request.isPasswordConfirmed()) throw new BusinessException(PASSWORD_MISMATCH); // 비밀번호 != 비밀번호 확인
+        if (!PASSWORD_PATTERN.matcher(request.getPassword()).matches()) throw new BusinessException(INVALID_PASSWORD);
         if (accountRepository.existsByEmail(lowerCaseEmail)) throw new BusinessException(EMAIL_DUPLICATION);  // 이메일 중복
         if (accountRepository.existsByNickname(request.getNickname()))
             throw new BusinessException(NICKNAME_DUPLICATION); // 닉네임 중복
@@ -274,6 +276,8 @@ public class AccountServiceImpl implements AccountService {
     public void confirmPasswordReset(final String token, final PasswordResetConfirmRequest request) {
         if (!request.isNewPasswordConfirmed())
             throw new BusinessException(PASSWORD_MISMATCH);    // 신규 비밀번호 != 신규 비밀번호 확인
+        if (!PASSWORD_PATTERN.matcher(request.getNewPassword()).matches())
+            throw new BusinessException(INVALID_PASSWORD);
 
         String redisKey = REDIS_PASSWORD_RESET_KEY_PREFIX + token;
         UUID accountId = UUID.fromString(
@@ -298,6 +302,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void changePassword(final UUID accountId, final AccountPasswordUpdateRequest request) {
         if (!request.isNewPasswordConfirmed()) throw new BusinessException(PASSWORD_MISMATCH); // 신규 비밀번호 != 신규 비밀번호 확인
+        if (!PASSWORD_PATTERN.matcher(request.getNewPassword()).matches())
+            throw new BusinessException(INVALID_PASSWORD);
 
         Account account = accountRepository.findById(accountId)
                                            .orElseThrow(() -> new BusinessException(ACCOUNT_NOT_FOUND));
