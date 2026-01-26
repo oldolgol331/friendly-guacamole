@@ -1,9 +1,11 @@
 package com.example.demo.domain.account.model;
 
+import static com.example.demo.common.response.ErrorCode.OAUTH_PROVIDER_ALREADY_DELETED;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.example.demo.common.error.BusinessException;
 import com.example.demo.common.model.BaseAuditingEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -101,7 +103,7 @@ public class OAuthConnection extends BaseAuditingEntity {
      * OAuth 연동 정보를 삭제 처리합니다. OAuth 연동 정보의 삭제일시를 현재 시간으로 설정합니다.
      */
     public void delete() {
-        if (deletedAt != null) throw new IllegalStateException("이미 삭제된 OAuth 연동 정보입니다.");
+        if (deletedAt != null) throw new BusinessException(OAUTH_PROVIDER_ALREADY_DELETED);
         deletedAt = LocalDateTime.now();
     }
 

@@ -85,8 +85,7 @@ public class Account extends BaseAuditingEntity {
     @Enumerated(STRING)
     @Column(nullable = false)
     @NotNull
-    private AccountStatus status;
-    // 계정 상태: INACTIVE(비활성), ACTIVE(활성), DELETED(탈퇴함), BLOCKED(차단됨)
+    private AccountStatus status;                                       // 계정 상태: INACTIVE(비활성), ACTIVE(활성), DELETED(탈퇴함), BLOCKED(차단됨)
 
     private LocalDateTime deletedAt = null;                             // 탈퇴 일시
 

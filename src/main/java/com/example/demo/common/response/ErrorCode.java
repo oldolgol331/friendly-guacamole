@@ -63,6 +63,7 @@ public enum ErrorCode {
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "AC021", "비밀번호 형식이 올바르지 않습니다. (8~20자, 영문 대문자/소문자/숫자/특수문자 포함)"),
     INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "AC022", "닉네임 형식이 올바르지 않습니다. (2~15자, 특수문자 제외"),
     OAUTH_PASSWORD_CHANGE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "AC023", "소셜 로그인 계정은 비밀번호를 변경할 수 없습니다."),
+    OAUTH_PROVIDER_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "AC024", "이미 삭제된 OAuth 제공자입니다."),
 
     // 공연(Performance)
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PM001", "해당 공연을 찾을 수 없습니다."),
